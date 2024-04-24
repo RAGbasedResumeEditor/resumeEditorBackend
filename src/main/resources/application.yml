@@ -1,0 +1,35 @@
+server:
+  port: 8088
+
+# JPA
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/resumeEditor
+    username: root
+    password: 1234
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    # ??? SQL? ??? ???? ??
+    show-sql: true
+    # Hibernate? ?????? ???? ???? ????? ?????? ??
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        # SQL ??? ??? ??? ? ????? ???? ??
+        format_sql: true
+
+
+#spring:
+#  application:
+#    name: resumeEditor
+#  data:
+#    mongodb:
+#      database: resumeEditor
+#      uri: mongodb+srv://blatherr:5guwmOptKmNjPHZv@resumeeditor.etlwzt4.mongodb.net/?retryWrites=true&w=majority&appName=resumeEditor
+##      host: localhost
+##      port: 27017
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

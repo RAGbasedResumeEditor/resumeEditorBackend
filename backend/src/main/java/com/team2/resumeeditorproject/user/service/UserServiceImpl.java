@@ -18,9 +18,10 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private ModelMapper modelMapper;
-//-------------------------------------------
+
     @Override
     public UserDTO createUser(UserDTO userDTO) {
+        String aa = userDTO.getEmail();
         User user = modelMapper.map(userDTO, User.class);
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);

@@ -14,10 +14,13 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
-#    properties:
-#      hibernate:
-#        format_sql: true
 
+openai:
+  url:
+    model: https://api.openai.com/v1/models
+    model-list: https://api.openai.com/v1/models/
+    legacy-prompt: https://api.openai.com/v1/completions
+    prompt: https://api.openai.com/v1/chat/completions
 
 #spring:
 #  application:

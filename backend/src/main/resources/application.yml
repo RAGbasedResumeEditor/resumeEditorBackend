@@ -14,11 +14,52 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+#    properties:
+#      hibernate:
+#        format_sql: true
 
-openai:
-  url:
-    model: https://api.openai.com/v1/models
-    model-list: https://api.openai.com/v1/models/
-    legacy-prompt: https://api.openai.com/v1/completions
-    prompt: https://api.openai.com/v1/chat/completions
 
+#spring:
+#  application:
+#    name: resumeEditor
+#  data:
+#    mongodb:
+#      database: resumeEditor
+#      uri: mongodb+srv://blatherr:5guwmOptKmNjPHZv@resumeeditor.etlwzt4.mongodb.net/?retryWrites=true&w=majority&appName=resumeEditor
+##      host: localhost
+##      port: 27017
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+--- # Page Reload
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  devtools:
+    livereload:
+      enabled: true
+    remote:
+      restart:
+        enabled: true
+--- # Redis
+spring:
+  redis:
+    host: localhost
+    port: 6379
+--- # SMTP
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: iamyeongyeong@gmail.com
+    password: mrkh jqji vcyw lnrg
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.enable: false
+--- # jwt
+spring:
+  jwt:
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie

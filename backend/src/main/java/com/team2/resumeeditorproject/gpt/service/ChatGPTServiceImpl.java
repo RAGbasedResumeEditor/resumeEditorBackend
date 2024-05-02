@@ -22,9 +22,9 @@ import java.util.Map;
 /**
  * ChatGPT Service 구현체
  *
- * @author : lee
+ * @author : 김상휘
  * @fileName : ChatGPTServiceImpl
- * @since : 12/29/23
+ * @since : 04/26/24
  */
 @Slf4j
 @Service

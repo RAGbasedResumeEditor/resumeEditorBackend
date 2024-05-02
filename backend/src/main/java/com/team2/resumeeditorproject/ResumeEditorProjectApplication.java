@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 public class ResumeEditorProjectApplication {
 
 	public static void main(String[] args) {
+		String getVersion = org.springframework.core.SpringVersion.getVersion();
+
+		System.out.println(getVersion);
 		SpringApplication.run(ResumeEditorProjectApplication.class, args);
 	}
 

@@ -34,11 +34,18 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 	//gpt 3.5
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-	implementation 'com.squareup.okhttp3:okhttp:4.9.1'
-	//gson
-	implementation 'com.google.code.gson:gson:2.8.8'
-	//json
-	implementation 'org.json:json:20210307'
+	//webclient 추가
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'io.projectreactor:reactor-core'
+
+	//text compare용 diff-match-patch
+	implementation 'org.bitbucket.cowwoc:diff-match-patch:1.2'
+
+	//langchain4j
+	implementation 'dev.langchain4j:langchain4j:0.26.1'
+	implementation 'dev.langchain4j:langchain4j-open-ai:0.26.1'
+	implementation 'dev.langchain4j:langchain4j-qdrant:0.26.1'
+
 }
 
 tasks.named('test') {

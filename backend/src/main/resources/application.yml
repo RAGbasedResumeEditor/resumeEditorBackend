@@ -22,14 +22,3 @@ openai:
     legacy-prompt: https://api.openai.com/v1/completions
     prompt: https://api.openai.com/v1/chat/completions
 
-#spring:
-#  application:
-#    name: resumeEditor
-#  data:
-#    mongodb:
-#      database: resumeEditor
-#      uri: mongodb+srv://blatherr:5guwmOptKmNjPHZv@resumeeditor.etlwzt4.mongodb.net/?retryWrites=true&w=majority&appName=resumeEditor
-##      host: localhost
-##      port: 27017
-#  autoconfigure:
-#    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

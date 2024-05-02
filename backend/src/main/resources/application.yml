@@ -5,7 +5,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3307/resumeEditor
+    url: jdbc:mysql://127.0.0.1:3306/resumeEditor
     username: root
     password: 1234
   jpa:
@@ -63,3 +63,11 @@ spring:
 spring:
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie
+
+openai:
+  secret-key: ${OPENAI_API_KEY}
+  url:
+    model: https://api.openai.com/v1/models
+    model-list: https://api.openai.com/v1/models/
+    legacy-prompt: https://api.openai.com/v1/completions
+    prompt: https://api.openai.com/v1/chat/completions

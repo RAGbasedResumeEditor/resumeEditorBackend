@@ -21,10 +21,4 @@ public class Board {
         this.name = name;
         this.age = age;
     }
-
-    public void setName(String name) {
-    }
-
-    public void setAge(String age) {
-    }
 }

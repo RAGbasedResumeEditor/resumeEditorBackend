@@ -22,28 +22,47 @@ repositories {
 }
 
 dependencies {
-//	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' //MongoDB
+//   implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' //MongoDB
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.mysql:mysql-connector-j' //mysql
+	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.modelmapper:modelmapper:2.4.4'
-//----- 새로 추가한 dependencies
+
+	// dependencies added by Sanghwi
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+	//gpt 3.5
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+	//webclient 추가
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'io.projectreactor:reactor-core'
+	//text compare용 diff-match-patch
+	implementation 'org.bitbucket.cowwoc:diff-match-patch:1.2'
+
+	// dependencies added by Ajin
+	// security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-web'
+	// jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+	// dependencies added by YeonGyeong
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // thymeleaf
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2' // swagger
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // validator
 	implementation group: 'org.springframework.boot', name:'spring-boot-starter-mail', version:'3.0.5' // mail 인증
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis' //redis
 	implementation 'com.sun.mail:jakarta.mail:2.0.1' // jakarta mail
-	implementation 'org.springframework.boot:spring-boot-starter-security' // spring security
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' //spring security
 	testImplementation 'org.springframework.security:spring-security-test' // spring security
-	implementation 'io.jsonwebtoken:jjwt-api:0.12.3' // jwt
-	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3' // jwt
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3' // jwt
+
+	// dependencies added by Eunbi
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 tasks.named('test') {

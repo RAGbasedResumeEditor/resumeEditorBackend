@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.user.controller;
 
-import com.team2.resumeeditorproject.user.jwt.JWTUtil;
+import com.team2.resumeeditorproject.user.Jwt.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

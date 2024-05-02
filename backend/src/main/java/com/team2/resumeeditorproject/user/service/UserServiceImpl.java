@@ -3,35 +3,57 @@ package com.team2.resumeeditorproject.user.service;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
-//-------------------------------------------
-    @Override
-    public UserDTO createUser(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
-        User savedUser = userRepository.save(user);
-        return modelMapper.map(savedUser, UserDTO.class);
-    }
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public List<UserDTO> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
-                .collect(Collectors.toList());
-    }
+    public Long signup(UserDTO userDto)   { //DB 저장
 
+        String userEmail=userDto.getEmail();
+        String userPassword=userDto.getPassword();
+
+        //중복 검사
+        Boolean isExists=userRepository.existsByEmail(userEmail);
+        if(isExists){
+            return -1L; //회원가입 실패
+        }
+
+        //회원가입 진행
+        User user=User.builder() // User Entity
+                .name(userDto.getName())
+                .nickname(userDto.getNickname())
+                .email(userEmail)
+                .username(userEmail)
+                .password(bCryptPasswordEncoder.encode(userPassword))
+                .role("ROLE_USER") // 바꿀 예정
+                .birthdate(userDto.getBirthdate())
+                .age(userDto.getAge())
+                .gender(userDto.getGender())
+                .occupation((userDto.getOccupation()))
+                .company(userDto.getCompany())
+                .wish(userDto.getWish())
+                .status(userDto.getStatus())
+                .build();
+        return userRepository.save(user).getuNum();
+    }
+    @Override
+    public Boolean checkEmailDuplicate(String email) {
+        System.out.println("email: "+email);
+        return userRepository.existsByEmail(email);
+    }
+    @Override
+    public Boolean checkNicknameDuplicate(String nickname) {
+        System.out.println("Nickname: "+nickname);
+        return userRepository.existsByNickname(nickname);
+    }
 }

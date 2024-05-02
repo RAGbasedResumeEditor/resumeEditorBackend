@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume Editor</title>
+    <style>
+        body{
+        text-align:center
+        }
+    </style>
+</head>
+<body>
+<form method="POST" class="loginForm" id="loginForm" th:action="@{/login}" accept-charset="UTF-8">
+    <h1><b>Resume Editor</b></h1><hr><br>
+    <label>username:</label>
+    <input id="username" name="username"/><br>
+    <label>pw:</label>
+    <input type="password" id="password" name="password"/><br><br>
+    <button type="submit">login</button><br><br><br><hr>
+</form>
+    <h4><a href="/user/signup">회원가입</a></h4>
+</body>
+</html>

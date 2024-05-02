@@ -1,31 +1,29 @@
 package com.team2.resumeeditorproject.user.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserDTO {
     private Long uNum;
     private String email;
+    private String username;
+    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*\\W)(?=\\S+$).{6,12}", message = "비밀번호는 8~12자 영문 소문자, 숫자, 특수문자를 사용하세요.")
     private String password;
+    private String role;
     private String name;
     private int age;
+    private int birthdate;
     private char gender;
     private String nickname;
     private String company;
     private String occupation;
     private String wish;
     private int status;
-    private int mode;
-    private Date indate;
+    private int mode=1;
+    private Date indate=new Date();
     private Date deldate;
 }

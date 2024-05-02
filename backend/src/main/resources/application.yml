@@ -30,3 +30,36 @@ spring:
 ##      port: 27017
 #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+--- # Page Reload
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  devtools:
+    livereload:
+      enabled: true
+    remote:
+      restart:
+        enabled: true
+--- # Redis
+spring:
+  redis:
+    host: localhost
+    port: 6379
+--- # SMTP
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: iamyeongyeong@gmail.com
+    password: mrkh jqji vcyw lnrg
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.enable: false
+--- # jwt
+spring:
+  jwt:
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie

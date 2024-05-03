@@ -67,7 +67,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String access = jwtUtil.createJwt("access", username, role, 600000L); //생명주기 10분
         String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L); //생명주기 24시간
 
-        //응답 설정
+        //응답 설정 //status, time, response 설정예정
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value()); //200

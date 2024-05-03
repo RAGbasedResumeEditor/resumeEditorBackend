@@ -20,7 +20,7 @@ public class User {
     private String role;
     private String name;
     private int age;
-    private int birthdate;
+    private String birthdate;
     private char gender;
     private String nickname;
     private String company;
@@ -32,7 +32,7 @@ public class User {
     private Date deldate;
 
     @Builder
-    public User(Long uNum, String email, String username, String password, String role,String name, int age, int birthdate, char gender, String nickname, String company, String occupation, String wish, int status, int mode, Date indate, Date deldate) {
+    public User(Long uNum, String email, String username, String password, String role,String name, int age, String birthdate, char gender, String nickname, String company, String occupation, String wish, int status, int mode, Date indate, Date deldate) {
         this.uNum = uNum;
         this.email = email;
         this.username=username;
@@ -108,11 +108,11 @@ public class User {
         this.age = age;
     }
 
-    public int getBirthdate() {
+    public String getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(int birthdate) {
+    public void setBirthdate(String birthdate) {
         this.birthdate = birthdate;
     }
 

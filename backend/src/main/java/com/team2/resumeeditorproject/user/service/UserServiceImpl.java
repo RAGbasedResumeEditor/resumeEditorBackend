@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService{
                 .name(userDto.getName())
                 .nickname(userDto.getNickname())
                 .email(userEmail)
-                .username(userEmail)
+                .username(userDto.getUsername())
                 .password(bCryptPasswordEncoder.encode(userPassword))
                 .role("ROLE_USER") // 바꿀 예정
                 .birthdate(userDto.getBirthdate())

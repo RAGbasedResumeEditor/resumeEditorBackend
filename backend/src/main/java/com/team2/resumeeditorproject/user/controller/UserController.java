@@ -60,7 +60,7 @@ public class UserController extends HttpServlet {
             response.put("status","Success"); //1. 상태(실패)
             response.put("time", String.valueOf(new Date())); //2. 시간
             response.put("response","회원가입 성공"); //3. 메시지 내용(성공)
-            res.sendRedirect("http://localhost:8088/login");
+            //res.sendRedirect("http://localhost:8088/login");
             return ResponseEntity.ok(response);
         }catch(Exception e){ // 회원가입 실패 시
             errorResponse.put("status","Fail"); //1. 상태(실패)

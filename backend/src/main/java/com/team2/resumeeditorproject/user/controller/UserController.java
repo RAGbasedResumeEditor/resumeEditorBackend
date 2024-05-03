@@ -112,14 +112,4 @@ public class UserController extends HttpServlet {
 
     }
 
-    @GetMapping("/user/login")
-    public String loginForm(){
-        return "login";
-    }
-
-    @PostMapping("/user/login")
-    public String loginEnd(){
-        return "Home";
-    }
-
 }

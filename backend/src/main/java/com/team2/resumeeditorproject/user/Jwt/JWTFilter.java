@@ -49,8 +49,7 @@ public class JWTFilter extends OncePerRequestFilter {
             writer.print("access token expired");
 
             //response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //프론트엔드측과 협업된 응답코드 보내야함
-            //ex) 토큰만료시 400응답 => 400응답 이런식으로 어떤응답을 줄 지 상태코드와 응답메시지를 규약하는것이 중요
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //401
             return;
         }
 
@@ -58,6 +57,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // 마찬가지로 다음 필터로 넘기지 않음
         String category = jwtUtil.getCategory(accessToken);
 
+        //access가 아닌 refresh인 경우
         if (!category.equals("access")) {
 
             //response body

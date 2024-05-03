@@ -24,6 +24,6 @@ public class UserDTO {
     private String wish;
     private int status;
     private int mode=1;
-    private Date indate=new Date();
+    private Date indate;
     private Date deldate;
 }

@@ -4,16 +4,16 @@ server:
 # JPA
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/resumeEditor
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://svc.sel5.cloudtype.app:31227/resumeEditorDB
     username: root
     password: 1234
-  jpa:
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQLDialect
-    show-sql: true
-    hibernate:
-      ddl-auto: none
+jpa:
+  database: mysql
+  database-platform: org.hibernate.dialect.MySQLDialect
+  show-sql: true
+  hibernate:
+    ddl-auto: none
 #    properties:
 #      hibernate:
 #        format_sql: true
@@ -65,7 +65,6 @@ spring:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie
 
 openai:
-  secret-key: ${OPENAI_API_KEY}
   url:
     model: https://api.openai.com/v1/models
     model-list: https://api.openai.com/v1/models/

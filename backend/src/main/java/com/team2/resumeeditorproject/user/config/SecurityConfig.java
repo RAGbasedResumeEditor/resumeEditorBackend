@@ -99,9 +99,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth)->auth
                         // login, 루트, signup경로에 대해서는 모든 경로 허용
-                        .requestMatchers("/login","/","/signup","/user/login").permitAll()
-                        // USER권한을 가진 사용자만 접근 가능
-                        .requestMatchers("/user").hasRole("USER")
+                        .requestMatchers("/login","/","/signup","/user/login","/swagger-ui/*","/v3/api-docs/**").permitAll()
                         // ADMIN권한을 가진 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // access토큰이 만료된 상태로 접근을 하기 때문에 로그인자체가 불가능한 상태 이므로 모든 경로 허용
@@ -109,7 +107,7 @@ public class SecurityConfig {
                         // 그외 요청은 로그인 사용자만 접근 가능
                         .anyRequest().authenticated());
 
-        //필터 추가 (LoginFilter() 앞에 추가)
+        //필터 추가 (LoginFilter() 앞에 추가)ogin
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         //필터 추가 (LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요)

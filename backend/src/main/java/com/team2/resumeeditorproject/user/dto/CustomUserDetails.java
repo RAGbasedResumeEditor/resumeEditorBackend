@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
+//CustomUserDetailsService에 데이터를 넘겨주기 위한 클래스
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
@@ -38,21 +39,25 @@ public class CustomUserDetails implements UserDetails {
         return user.getUsername();
     }
 
+    // 계정 만료되었는지
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    // 계정 잠겨있지않은지
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    // 자격증명(비밀번호 등) 만료되지 않았는지
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    // 계정 활성화 되었는지
     @Override
     public boolean isEnabled() {
         return true;

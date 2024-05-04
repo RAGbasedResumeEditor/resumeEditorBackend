@@ -51,16 +51,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //토큰 생성(JWTUtil 에서 발급한 응답 값 호출)
         String access = jwtUtil.createJwt("access", username, role, 3600000L); //생명주기 1시간
-        String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L); //생명주기 24시간
+        String refresh = jwtUtil.createJwt("refresh", username, role, 1209600000L); //생명주기 2주
 
         //응답 설정
         response.setHeader("access", access);
-        response.addCookie(createCookie("refresh", refresh));
+        response.setHeader("refresh", refresh);
         response.setStatus(HttpStatus.OK.value()); //200
 
         try(PrintWriter out = response.getWriter()){
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("status", "success");
+            responseBody.put("status", "Success");
             responseBody.put("time", String.valueOf(new Date()));
             responseBody.put("response", "Authentication successful");
 
@@ -70,17 +70,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
              e.printStackTrace();
         }
     }
-
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60); //생명주기
-        //cookie.setSecure(true); //HttpS?통신을 진행할 경우 이 값을 넣어줌
-        //cookie.setPath("/");
-        cookie.setHttpOnly(true); //클라이언트단에서 자바스크립트로 해당 쿠키가 접근하지 못하도록 필수적으로 막아 두어야함
-
-        return cookie;
-    }
-
 
     @Override // 인증 실패 시
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {

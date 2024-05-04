@@ -32,16 +32,8 @@ public class ReissueController {
         //service단에서 구현하는것을 추천
 
         //get refresh token
-        String refresh = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-
-            // cookie에 refresh키값이 있다면
-            if (cookie.getName().equals("refresh")) {
-
-                refresh = cookie.getValue();
-            }
-        }
+        // 헤더에서 refresh키에 담긴 토큰을 꺼냄
+        String refresh = request.getHeader("refresh");
 
         //쿠키에 refresh키값이 없다면
         if (refresh == null) {
@@ -73,7 +65,7 @@ public class ReissueController {
         String role = jwtUtil.getRole(refresh);
 
         // 새로운 access토큰 발급
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
+        String newAccess = jwtUtil.createJwt("access", username, role, 3600000L); //생명주기 1시간
 
         //response
         response.setHeader("access", newAccess);

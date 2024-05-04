@@ -76,8 +76,9 @@ public class SecurityConfig {
                                 // 요청의 결과를 캐시할 수 있는 시간을 한시간 허용
                                 configuration.setMaxAge(3600L);
 
-                                //클라이언트에 노출할 헤더를 설정("Authorization" 헤더를 노출)
-                                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                                //클라이언트에 노출할 헤더를 설정
+                                configuration.setExposedHeaders(Collections.singletonList("access"));
+                                configuration.setExposedHeaders(Collections.singletonList("refresh"));
 
                                 return configuration;
                             }
@@ -107,7 +108,7 @@ public class SecurityConfig {
                         // 그외 요청은 로그인 사용자만 접근 가능
                         .anyRequest().authenticated());
 
-        //필터 추가 (LoginFilter() 앞에 추가)ogin
+        //필터 추가 (LoginFilter() 앞에 추가)
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         //필터 추가 (LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요)

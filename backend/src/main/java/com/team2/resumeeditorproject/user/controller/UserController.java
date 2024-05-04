@@ -47,7 +47,7 @@ public class UserController extends HttpServlet {
         }
 
     @PostMapping(value="/signup")
-    public ResponseEntity<Map<String,String>> signup(UserDTO userDto, HttpServletResponse res) throws IOException {
+    public ResponseEntity<Map<String,String>> signup(@RequestBody UserDTO userDto, HttpServletResponse res) throws IOException {
 
         //System.out.println("UserDto: "+userDto.toString());
 

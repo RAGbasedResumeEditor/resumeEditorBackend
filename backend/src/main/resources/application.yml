@@ -65,6 +65,7 @@ spring:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie
 
 openai:
+  secret-key: ${GPT_API_KEY}
   url:
     model: https://api.openai.com/v1/models
     model-list: https://api.openai.com/v1/models/

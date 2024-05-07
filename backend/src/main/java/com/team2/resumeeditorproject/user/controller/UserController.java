@@ -42,7 +42,7 @@ public class UserController extends HttpServlet {
     private final UserService userService;
 
     @PostMapping(value="/signup")
-    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
+    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto, HttpServletResponse res) throws IOException {
 
         //System.out.println("UserDto: "+userDto.toString());
         Map<String,Object> response=new HashMap<>();
@@ -102,4 +102,5 @@ public class UserController extends HttpServlet {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
             }
     }
+
 }

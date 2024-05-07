@@ -5,9 +5,9 @@ server:
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://svc.sel5.cloudtype.app:31227/resumeEditorDB
-    username: root
-    password: 1234
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/resumeEditorDB
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 jpa:
   database: mysql
   database-platform: org.hibernate.dialect.MySQLDialect
@@ -65,6 +65,7 @@ spring:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie
 
 openai:
+  secret-key: ${GPT_API_KEY}
   url:
     model: https://api.openai.com/v1/models
     model-list: https://api.openai.com/v1/models/

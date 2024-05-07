@@ -99,7 +99,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth)->auth
                         // login, 루트, signup경로에 대해서는 모든 경로 허용
-                        .requestMatchers("/login","/","/signup","/user/login").permitAll()
+                        .requestMatchers("/login","/","/signup","/signup/**","/user/login","/swagger-ui/*","/v3/api-docs/**").permitAll()
                         // USER권한을 가진 사용자만 접근 가능
                         .requestMatchers("/user").hasRole("USER")
                         // ADMIN권한을 가진 사용자만 접근 가능

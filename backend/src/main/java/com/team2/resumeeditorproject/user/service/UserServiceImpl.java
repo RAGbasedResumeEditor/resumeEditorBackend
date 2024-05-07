@@ -48,12 +48,10 @@ public class UserServiceImpl implements UserService{
     }
     @Override
     public Boolean checkEmailDuplicate(String email) {
-        System.out.println("email: "+email);
         return userRepository.existsByEmail(email);
     }
     @Override
-    public Boolean checkNicknameDuplicate(String nickname) {
-        System.out.println("Nickname: "+nickname);
-        return userRepository.existsByNickname(nickname);
+    public Boolean checkUsernameDuplicate(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

@@ -18,39 +18,37 @@ public class MailController {
 
     private final MailService mailService;
 
-    @PostMapping("/mailSend") // 사용자에게 이메일을 보낸다.
-    public ResponseEntity<Map<String, String>> mailSend(@RequestParam("email") String email){
-        //System.out.println("이메일 인증 요청이 들어왔습니다. 인증을 요청한 이메일은 "+email+"입니다.");
-        Map<String, String> response=new HashMap<>();
-        Map<String, String> errorResponse=new HashMap<>();
+    @PostMapping("/auth-code") // 사용자에게 이메일을 보낸다.
+    public ResponseEntity<Map<String, Object>> mailSend(@RequestParam("email") String email){
+        Map<String, Object> response=new HashMap<>();
+        Map<String, Object> errorResponse=new HashMap<>();
         try { // 이메일 전송 성공 시
             mailService.joinEmail(email);
             response.put("status","Success");
-            response.put("time", String.valueOf(new Date()));
+            response.put("time", new Date());
             response.put("response","인증코드 이메일 전송 성공");
             return ResponseEntity.ok(response);
         }catch(Exception e){ // 이메일 전송 실패 시
             errorResponse.put("status","Fail");
-            errorResponse.put("time",String.valueOf(new Date()));
+            errorResponse.put("time",new Date());
             errorResponse.put("response", "서버 오류입니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }//MailSend()
 
-    @PostMapping("/mailAuthCheck")
-    public ResponseEntity<Map<String, String>> authCheck(@RequestParam("email") String email, @RequestParam("authCode") String authCode){
+    @PostMapping("/auth-check")
+    public ResponseEntity<Map<String, Object>> authCheck(@RequestParam("email") String email, @RequestParam("authCode") String authCode){
         boolean checked=mailService.CheckAuthNum(email, authCode); // Redis 일치 여부 확인
-
-        Map<String, String> response=new HashMap<>();
-        Map<String, String> errorResponse=new HashMap<>();
+        Map<String, Object> response=new HashMap<>();
+        Map<String, Object> errorResponse=new HashMap<>();
         if(checked){
             response.put("status", "Success");
-            response.put("time", String.valueOf(new Date()));
+            response.put("time", new Date());
             response.put("response","회원가입 이메일 인증 성공");
             return ResponseEntity.ok(response);
         } else{
             errorResponse.put("status","Fail");
-            errorResponse.put("time",String.valueOf(new Date()));
+            errorResponse.put("time",new Date());
             errorResponse.put("response", "서버 오류입니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }

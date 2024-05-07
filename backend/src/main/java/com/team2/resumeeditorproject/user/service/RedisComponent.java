@@ -1,15 +1,15 @@
-package com.team2.resumeeditorproject.user.Util;
+package com.team2.resumeeditorproject.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class RedisUtil {
+public class RedisComponent {
     // Spring Data Redis 라이브러리를 사용하는데, Spring Data Redis에서도 접근방식은 2가지가 있다.
     // 1. Redis Repository 인터페이스를 생성하여 연결하는 방법
     // 2. Redis Template를 이용하는 방법

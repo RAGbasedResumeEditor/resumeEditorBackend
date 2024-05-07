@@ -47,65 +47,60 @@ public class UserController extends HttpServlet {
         }
 
     @PostMapping(value="/signup")
-    public ResponseEntity<Map<String,String>> signup(UserDTO userDto, HttpServletResponse res) throws IOException {
+    public ResponseEntity<Map<String,Object>> signup(UserDTO userDto, HttpServletResponse res) throws IOException {
 
-        //System.out.println("UserDto: "+userDto.toString());
-
-        Map<String,String> response=new HashMap<>();
-        Map<String,String> errorResponse=new HashMap<>();
+        Map<String,Object> response=new HashMap<>();
+        Map<String,Object> errorResponse=new HashMap<>();
 
         try{ //회원가입 성공 시
             Long result= userService.signup(userDto);
-            //System.out.println("signup result: "+result);
             response.put("status","Success"); //1. 상태(실패)
-            response.put("time", String.valueOf(new Date())); //2. 시간
+            response.put("time", new Date()); //2. 시간
             response.put("response","회원가입 성공"); //3. 메시지 내용(성공)
-            //res.sendRedirect("http://localhost:8088/login");
             return ResponseEntity.ok(response);
         }catch(Exception e){ // 회원가입 실패 시
             errorResponse.put("status","Fail"); //1. 상태(실패)
-            errorResponse.put("time",String.valueOf(new Date())); //2. 시간
+            errorResponse.put("time",new Date()); //2. 시간
             errorResponse.put("response", "서버 오류입니다."); //3. 메시지 내용(에러)
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }//signup()
 
-    @PostMapping("/signup/email/exists")
-    public ResponseEntity<Map<String,String>> checkEmailDuplicate(@RequestParam("email") String email){
-        Map<String,String> response=new HashMap<>();
-        Map<String,String> errorResponse=new HashMap<>();
+    @PostMapping("/signup/exists/email")
+    public ResponseEntity<Map<String,Object>> checkEmailDuplicate(@RequestParam("email") String email){
+        Map<String,Object> response=new HashMap<>();
+        Map<String,Object> errorResponse=new HashMap<>();
         try{
             boolean result= userService.checkEmailDuplicate(email);
             //System.out.println("email check result (중복 시 true): "+result);
             response.put("status","Success");
             response.put("result",result+"");
-            response.put("time", String.valueOf(new Date()));
+            response.put("time", new Date());
             response.put("response", "이메일 중복 여부 확인 성공");
             return ResponseEntity.ok(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");
-            errorResponse.put("time",String.valueOf(new Date()));
+            errorResponse.put("time",new Date());
             errorResponse.put("response", "서버 오류입니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
-    @PostMapping("/signup/nickname/exists")
-    public ResponseEntity<Map<String,String>> checkNicknameDuplicate(@RequestParam("nickname") String nickname){
-            Map<String,String> response=new HashMap<>();
-            Map<String,String> errorResponse=new HashMap<>();
+    @PostMapping("/signup/exists/username")
+    public ResponseEntity<Map<String,Object>> checkNicknameDuplicate(@RequestParam("username") String username){
+            Map<String,Object> response=new HashMap<>();
+            Map<String,Object> errorResponse=new HashMap<>();
             try{
-                boolean result=userService.checkNicknameDuplicate(nickname); // 중복 시 true
-                //System.out.println("nickname check result (중복 시 true): "+result);
+                boolean result=userService.checkUsernameDuplicate(username); // 중복 시 true
                 response.put("status","Success");
                 response.put("result",result+"");
-                response.put("time", String.valueOf(new Date()));
-                response.put("response", "닉네임 중복 여부 확인 성공");
+                response.put("time", new Date());
+                response.put("response", "Username 중복 여부 확인 성공");
                 return ResponseEntity.ok(response);
             }catch(Exception e){
                 errorResponse.put("status","Fail");
-                errorResponse.put("time",String.valueOf(new Date()));
+                errorResponse.put("time",new Date());
                 errorResponse.put("response", "서버 오류입니다.");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
             }

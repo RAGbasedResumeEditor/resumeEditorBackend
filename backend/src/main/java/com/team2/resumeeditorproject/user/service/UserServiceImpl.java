@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder; // 비밀번호 암호화 처리
 
     @Override
     public Long signup(UserDTO userDto)   { //DB 저장
@@ -30,30 +30,27 @@ public class UserServiceImpl implements UserService{
 
         //회원가입 진행
         User user=User.builder() // User Entity
-                .name(userDto.getName())
-                .nickname(userDto.getNickname())
                 .email(userEmail)
                 .username(userDto.getUsername())
                 .password(bCryptPasswordEncoder.encode(userPassword))
                 .role("ROLE_USER") // 바꿀 예정
-                .birthdate(userDto.getBirthdate())
+                .birthDate(userDto.getBirthDate())
                 .age(userDto.getAge())
                 .gender(userDto.getGender())
                 .occupation((userDto.getOccupation()))
                 .company(userDto.getCompany())
                 .wish(userDto.getWish())
                 .status(userDto.getStatus())
+                .mode(userDto.getMode())
                 .build();
         return userRepository.save(user).getuNum();
     }
     @Override
     public Boolean checkEmailDuplicate(String email) {
-        System.out.println("email: "+email);
         return userRepository.existsByEmail(email);
     }
     @Override
-    public Boolean checkNicknameDuplicate(String nickname) {
-        System.out.println("Nickname: "+nickname);
-        return userRepository.existsByNickname(nickname);
+    public Boolean checkUsernameDuplicate(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

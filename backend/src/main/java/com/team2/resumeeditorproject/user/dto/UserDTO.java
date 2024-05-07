@@ -14,16 +14,15 @@ public class UserDTO {
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*\\W)(?=\\S+$).{6,12}", message = "비밀번호는 8~12자 영문 소문자, 숫자, 특수문자를 사용하세요.")
     private String password;
     private String role;
-    private String name;
     private int age;
-    private String birthdate;
+    private String birthDate;
     private char gender;
-    private String nickname;
     private String company;
     private String occupation;
     private String wish;
     private int status;
-    private int mode=1;
-    private Date indate;
-    private Date deldate;
+    private int mode;
+    private Date inDate;
+    private Date delDate;
+
 }

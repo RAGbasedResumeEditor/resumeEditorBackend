@@ -91,25 +91,4 @@ public class UserController extends HttpServlet {
         }
     }
 
-    @PostMapping("/signup/nickname/exists")
-    public ResponseEntity<Map<String,String>> checkNicknameDuplicate(@RequestParam("nickname") String nickname){
-            Map<String,String> response=new HashMap<>();
-            Map<String,String> errorResponse=new HashMap<>();
-            try{
-                boolean result=userService.checkNicknameDuplicate(nickname); // 중복 시 true
-                //System.out.println("nickname check result (중복 시 true): "+result);
-                response.put("status","Success");
-                response.put("result",result+"");
-                response.put("time", String.valueOf(new Date()));
-                response.put("response", "닉네임 중복 여부 확인 성공");
-                return ResponseEntity.ok(response);
-            }catch(Exception e){
-                errorResponse.put("status","Fail");
-                errorResponse.put("time",String.valueOf(new Date()));
-                errorResponse.put("response", "서버 오류입니다.");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-            }
-
-    }
-
 }

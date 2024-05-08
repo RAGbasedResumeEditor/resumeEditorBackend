@@ -18,38 +18,34 @@ public class User {
     private String username;
     private String password;
     private String role;
-    private String name;
     private int age;
-    private String birthdate;
+    private String birthDate;
     private char gender;
-    private String nickname;
     private String company;
     private String occupation;
     private String wish;
     private int status;
     private int mode;
-    private Date indate;
-    private Date deldate;
+    private Date inDate;
+    private Date delDate;
 
     @Builder
-    public User(Long uNum, String email, String username, String password, String role,String name, int age, String birthdate, char gender, String nickname, String company, String occupation, String wish, int status, int mode, Date indate, Date deldate) {
+    public User(Long uNum, String email, String username, String password, String role, int age, String birthDate, char gender, String company, String occupation, String wish, int status, int mode, Date inDate, Date delDate) {
         this.uNum = uNum;
         this.email = email;
         this.username=username;
         this.password = password;
         this.role=role;
-        this.name = name;
         this.age = age;
-        this.birthdate=birthdate;
+        this.birthDate=birthDate;
         this.gender = gender;
-        this.nickname = nickname;
         this.company = company;
         this.occupation = occupation;
         this.wish = wish;
         this.status = status;
         this.mode = mode;
-        this.indate = indate;
-        this.deldate = deldate;
+        this.inDate = inDate;
+        this.delDate = delDate;
     }
 
     public Long getuNum() {
@@ -92,14 +88,6 @@ public class User {
         this.role = role;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getAge() {
         return age;
     }
@@ -108,12 +96,12 @@ public class User {
         this.age = age;
     }
 
-    public String getBirthdate() {
-        return birthdate;
+    public String getBirthdDte() {
+        return birthDate;
     }
 
-    public void setBirthdate(String birthdate) {
-        this.birthdate = birthdate;
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
     }
 
     public char getGender() {
@@ -122,14 +110,6 @@ public class User {
 
     public void setGender(char gender) {
         this.gender = gender;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     public String getCompany() {
@@ -172,19 +152,19 @@ public class User {
         this.mode = mode;
     }
 
-    public Date getIndate() {
-        return indate;
+    public Date getInDate() {
+        return inDate;
     }
 
-    public void setIndate(Date indate) {
-        this.indate = indate;
+    public void setInDate(Date inDate) {
+        this.inDate = inDate;
     }
 
-    public Date getDeldate() {
-        return deldate;
+    public Date getDelDate() {
+        return delDate;
     }
 
-    public void setDeldate(Date deldate) {
-        this.deldate = deldate;
+    public void setDelDate(Date delDate) {
+        this.delDate = delDate;
     }
 }

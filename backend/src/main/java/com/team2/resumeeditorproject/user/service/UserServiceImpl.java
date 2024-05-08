@@ -30,19 +30,18 @@ public class UserServiceImpl implements UserService{
 
         //회원가입 진행
         User user=User.builder() // User Entity
-                .name(userDto.getName())
-                .nickname(userDto.getNickname())
                 .email(userEmail)
                 .username(userDto.getUsername())
                 .password(bCryptPasswordEncoder.encode(userPassword))
                 .role("ROLE_USER") // 바꿀 예정
-                .birthdate(userDto.getBirthdate())
+                .birthDate(userDto.getBirthDate())
                 .age(userDto.getAge())
                 .gender(userDto.getGender())
                 .occupation((userDto.getOccupation()))
                 .company(userDto.getCompany())
                 .wish(userDto.getWish())
                 .status(userDto.getStatus())
+                .mode(userDto.getMode())
                 .build();
         return userRepository.save(user).getuNum();
     }
@@ -50,10 +49,5 @@ public class UserServiceImpl implements UserService{
     public Boolean checkEmailDuplicate(String email) {
         System.out.println("email: "+email);
         return userRepository.existsByEmail(email);
-    }
-    @Override
-    public Boolean checkNicknameDuplicate(String nickname) {
-        System.out.println("Nickname: "+nickname);
-        return userRepository.existsByNickname(nickname);
     }
 }

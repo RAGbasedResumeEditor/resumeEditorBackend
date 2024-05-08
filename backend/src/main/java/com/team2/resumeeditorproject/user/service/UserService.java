@@ -9,5 +9,4 @@ import java.util.Map;
 public interface UserService {
     Long signup(UserDTO userDto); // 회원가입
     Boolean checkEmailDuplicate(String email);
-    Boolean checkNicknameDuplicate(String nickname);
 }

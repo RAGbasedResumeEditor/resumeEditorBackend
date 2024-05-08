@@ -41,14 +41,15 @@ public class UserController extends HttpServlet {
 
     private final UserService userService;
 
-    @GetMapping(value = "/signup")
-    public String signupForm(UserDTO userDto){
-            return "signup";
-        }
-
     @PostMapping(value="/signup")
+<<<<<<< HEAD
     public ResponseEntity<Map<String,Object>> signup(UserDTO userDto, HttpServletResponse res) throws IOException {
 
+=======
+    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto, HttpServletResponse res) throws IOException {
+
+        //System.out.println("UserDto: "+userDto.toString());
+>>>>>>> 8b97b5ac7d556187da118a8fe88d7f4326108f33
         Map<String,Object> response=new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
 
@@ -88,7 +89,11 @@ public class UserController extends HttpServlet {
     }
 
     @PostMapping("/signup/exists/username")
+<<<<<<< HEAD
     public ResponseEntity<Map<String,Object>> checkNicknameDuplicate(@RequestParam("username") String username){
+=======
+    public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(@RequestParam("username") String username){
+>>>>>>> 8b97b5ac7d556187da118a8fe88d7f4326108f33
             Map<String,Object> response=new HashMap<>();
             Map<String,Object> errorResponse=new HashMap<>();
             try{
@@ -104,17 +109,5 @@ public class UserController extends HttpServlet {
                 errorResponse.put("response", "서버 오류입니다.");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
             }
-
     }
-
-    @GetMapping("/user/login")
-    public String loginForm(){
-        return "login";
-    }
-
-    @PostMapping("/user/login")
-    public String loginEnd(){
-        return "Home";
-    }
-
 }

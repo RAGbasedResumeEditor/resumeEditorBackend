@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
+<<<<<<< HEAD:backend/src/main/java/com/team2/resumeeditorproject/user/service/RedisComponent.java
+=======
+import org.springframework.stereotype.Service;
+>>>>>>> 8b97b5ac7d556187da118a8fe88d7f4326108f33:backend/src/main/java/com/team2/resumeeditorproject/user/Util/RedisComponent.java
 
 import java.time.Duration;
 

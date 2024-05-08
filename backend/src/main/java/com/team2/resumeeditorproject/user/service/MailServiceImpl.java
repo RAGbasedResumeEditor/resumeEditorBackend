@@ -3,6 +3,7 @@ package com.team2.resumeeditorproject.user.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.auth.AUTH;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,9 +15,10 @@ import java.util.UUID;
 public class MailServiceImpl implements MailService{ // 인증번호를 생성하고 이메일을 보내는 서비스
 
     private final JavaMailSender mailSender; // 메일을 보내기 위한 인터페이스
-    private final RedisComponent redisComp; // 인증코드 저장
+    private final RedisComponent redisComp;
     @Value("${spring.mail.username}")
     private String fromMail; // 송신할 이메일 주소
+    private String toMail; // 받을 이메일 주소
     private static String AUTHNUM;
 
     public boolean CheckAuthNum(String email,String AUTHNUM){
@@ -37,8 +39,9 @@ public class MailServiceImpl implements MailService{ // 인증번호를 생성�
 
     public String joinEmail(String email) { //메일을 어디서 어디로 보내고 인증 번호를 어떤 html 형식으로 보내는지 작성한다.
         String num = createUuid(); // 난수 생성
+        AUTHNUM=num;
         String setFrom = fromMail; // MailConfig에 설정한 이메일 주소
-        String toMail = email; // 인증번호 받을 이메일 주소
+        toMail = email; // 인증번호 받을 이메일 주소
         String title = "Resume Editor 회원 가입 인증 이메일입니다."; // 이메일 제목
         String content ="<h3>Resume Editor를 방문해주셔서 감사합니다.</h3>" + //html 형식으로 작성
                         "<hr><br>" +
@@ -50,9 +53,9 @@ public class MailServiceImpl implements MailService{ // 인증번호를 생성�
         return num;
     }
 
-    public void mailSend(String setFrom, String toMail, String title, String content) {//이메일을 전송하는 메서드
-        if(redisComp.existData(toMail)){ // key에 해당하는 value값 존재 확인. Redis에 해당 수신 메일이 있다면 삭제
-            redisComp.deleteData((toMail)); // key에 해당하는 value값 삭제.
+    public void mailSend(String setFrom, String toM, String title, String content) {//이메일을 전송하는 메서드
+        if(redisComp.existData(toM)){ // key에 해당하는 value값 존재 확인. Redis에 해당 수신 메일이 있다면 삭제
+            redisComp.deleteData((toM)); // key에 해당하는 value값 삭제.
         }
 
         MimeMessage message = mailSender.createMimeMessage();//JavaMailSender 객체를 사용해 MimeMessage 객체를 생성
@@ -60,13 +63,15 @@ public class MailServiceImpl implements MailService{ // 인증번호를 생성�
             MimeMessageHelper helper = new MimeMessageHelper(message,true,"utf-8");//이메일 메시지와 관련된 설정
                                                 // true를 전달해 multipart 형식의 메시지를 지원, "utf-8"을 전달하여 문자 인코딩을 설정
             helper.setFrom(setFrom);// 송신자 주소 설정
-            helper.setTo(toMail);// 수신자 주소 설정
+            helper.setTo(toM);// 수신자 주소 설정
             helper.setSubject(title);//이메일 제목을 설정
             helper.setText(content,true);//이메일의 내용 설정. 두 번째 매개 변수에 true를 전달해 html 설정.
             mailSender.send(message); // 인증 메일 전송
         } catch (MessagingException e) {//이메일 서버에 연결할 수 없거나, 잘못된 이메일 주소를 사용하거나, 인증 오류가 발생하는 등 오류 발생 => 이러한 경우 MessagingException 발생
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
-        redisComp.setDataExpire(toMail, AUTHNUM,60*5L); // Redis에 저장 (5분간 유효)
+        redisComp.setDataExpire(toM, AUTHNUM,60*5L); // Redis에 저장 (5분간 유효)
+
     }
 }

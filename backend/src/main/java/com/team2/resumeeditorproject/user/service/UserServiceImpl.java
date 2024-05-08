@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder; // 비밀번호 암호화 처리
 
     @Override
     public Long signup(UserDTO userDto)   { //DB 저장
@@ -47,7 +47,10 @@ public class UserServiceImpl implements UserService{
     }
     @Override
     public Boolean checkEmailDuplicate(String email) {
-        System.out.println("email: "+email);
         return userRepository.existsByEmail(email);
+    }
+    @Override
+    public Boolean checkUsernameDuplicate(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

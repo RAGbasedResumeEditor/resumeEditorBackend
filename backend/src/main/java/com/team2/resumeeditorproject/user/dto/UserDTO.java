@@ -24,5 +24,4 @@ public class UserDTO {
     private int mode;
     private Date inDate;
     private Date delDate;
-
 }

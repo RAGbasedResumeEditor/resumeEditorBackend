@@ -1,8 +1,10 @@
 package com.team2.resumeeditorproject.user.config;
 
+import com.team2.resumeeditorproject.user.Jwt.CustomLogoutFilter;
 import com.team2.resumeeditorproject.user.Jwt.JWTFilter;
 import com.team2.resumeeditorproject.user.Jwt.JWTUtil;
 import com.team2.resumeeditorproject.user.Jwt.LoginFilter;
+import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,9 +16,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -28,11 +32,13 @@ public class SecurityConfig {
     //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
+        this.refreshRepository = refreshRepository;
     }
     //AuthenticationManager Bean 등록
     @Bean
@@ -77,8 +83,7 @@ public class SecurityConfig {
                                 configuration.setMaxAge(3600L);
 
                                 //클라이언트에 노출할 헤더를 설정
-                                configuration.setExposedHeaders(Collections.singletonList("access"));
-                                configuration.setExposedHeaders(Collections.singletonList("refresh"));
+                                configuration.setExposedHeaders(Arrays.asList("access","refresh"));
 
                                 return configuration;
                             }
@@ -100,7 +105,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth)->auth
                         // login, 루트, signup경로에 대해서는 모든 경로 허용
-                        .requestMatchers("/login","/","/signup","/user/login","/swagger-ui/*","/v3/api-docs/**").permitAll()
+                        .requestMatchers("/login","/","/signup/*","/user/login","/reissue","/swagger-ui/*","/v3/api-docs/**").permitAll()
                         // ADMIN권한을 가진 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // access토큰이 만료된 상태로 접근을 하기 때문에 로그인자체가 불가능한 상태 이므로 모든 경로 허용
@@ -114,8 +119,10 @@ public class SecurityConfig {
         //필터 추가 (LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요)
         http
                 // LoginFilter에서 주입받은 authenticationManager를 꼭 주입해주어야 동작 가능
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+        //로그아웃 필터 추가
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         // 세션 설정
         // JWT를 통한 인증/인가를 위해서 세션을 STATELESS상태로 설정하는것이 중요하다.(세션을 상태를 가지지 않는(stateless) 방식으로 처리)
         http

@@ -1,7 +1,9 @@
 package com.team2.resumeeditorproject.user.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.service.UserService;
+import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StreamUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -28,6 +32,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +48,7 @@ public class UserController extends HttpServlet {
 
     @PostMapping(value="/signup")
 
-    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto, HttpServletResponse res) throws IOException {
+    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
 
         Map<String,Object> response=new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
@@ -84,17 +89,16 @@ public class UserController extends HttpServlet {
     }
 */
     @PostMapping("/signup/exists/username")
-
-    public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException{
+    public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
              UserDTO userDto=new UserDTO();
-        try{
-            ObjectMapper objectMapper=new ObjectMapper();
-            ServletInputStream inputStream=req.getInputStream();
-            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            userDto=objectMapper.readValue(messageBody, UserDTO.class);
-        }catch(IOException e){
-            throw new RuntimeException(e);
-        }
+            try{
+                ObjectMapper objectMapper=new ObjectMapper();
+                ServletInputStream inputStream=req.getInputStream();
+                String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+                userDto=objectMapper.readValue(messageBody, UserDTO.class);
+            }catch(IOException e){
+                throw new RuntimeException(e);
+            }
             String username=userDto.getUsername();
         
             Map<String,Object> response=new HashMap<>();

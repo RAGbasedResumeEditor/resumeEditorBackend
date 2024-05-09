@@ -68,7 +68,6 @@ public class MailServiceImpl implements MailService{ // 인증번호를 생성�
             helper.setText(content,true);//이메일의 내용 설정. 두 번째 매개 변수에 true를 전달해 html 설정.
             mailSender.send(message); // 인증 메일 전송
         } catch (MessagingException e) {//이메일 서버에 연결할 수 없거나, 잘못된 이메일 주소를 사용하거나, 인증 오류가 발생하는 등 오류 발생 => 이러한 경우 MessagingException 발생
-            System.out.println(e.getMessage());
             e.printStackTrace();
         }
         redisComp.setDataExpire(toM, AUTHNUM,60*5L); // Redis에 저장 (5분간 유효)

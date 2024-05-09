@@ -1,14 +1,9 @@
 package com.team2.resumeeditorproject.user.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.resumeeditorproject.user.domain.Refresh;
-import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
-import com.team2.resumeeditorproject.user.dto.UserDTO;
-import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,46 +13,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.util.StreamUtils;
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private RefreshRepository refreshRepository;
-
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository){
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil){
         this.authenticationManager=authenticationManager;
         this.jwtUtil=jwtUtil;
-        this.refreshRepository=refreshRepository;
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         //클라이언트 요청에서 username, password 호출
-
-        // form-data 방식
-//        String username=obtainUsername(request);
-//        String password=obtainPassword(request);
-
-        // application/json 방식
-        UserDTO userDTO = new UserDTO();
-        try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            ServletInputStream inputStream = request.getInputStream();
-            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-
-                userDTO = objectMapper.readValue(messageBody, UserDTO.class);
-
-        }catch(IOException e){
-            throw new RuntimeException(e);
-        }
-        String username = userDTO.getUsername();
-        String password = userDTO.getPassword();
+        String username=obtainUsername(request);
+        String password=obtainPassword(request);
 
         System.out.println("username: "+username);
         System.out.println("password: "+password);
@@ -81,9 +53,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String access = jwtUtil.createJwt("access", username, role, 3600000L); //생명주기 1시간
         String refresh = jwtUtil.createJwt("refresh", username, role, 1209600000L); //생명주기 2주
 
-        //Refresh 토큰 DB 저장
-        addRefreshEntity(username, refresh, 1209600000L); //생명주기 2주
-
         //응답 설정
         response.setHeader("access", access);
         response.setHeader("refresh", refresh);
@@ -92,7 +61,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         try(PrintWriter out = response.getWriter()){
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("status", "Success");
-            responseBody.put("time", new Date());
+            responseBody.put("time", String.valueOf(new Date()));
             responseBody.put("response", "Authentication successful");
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -104,21 +73,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override // 인증 실패 시
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        System.out.println("Authentication fail");
+        System.out.println("Login Fail");
         response.setStatus(401); // 로그인 실패 시 401 응답 코드 반환
-    }
-
-    // refresh토큰을 DB에 저장하여 관리하기 위한 메서드
-    private void addRefreshEntity(String usenrname, String refresh, Long expiredMs) {
-
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        Refresh refreshEntity = new Refresh();
-        refreshEntity.setUsername(usenrname);
-        refreshEntity.setRefresh(refresh);
-        refreshEntity.setExpiration(date.toString());
-
-        refreshRepository.save(refreshEntity);
-        //=>토큰을 생성하고 난 이후에 값 저장
     }
 }

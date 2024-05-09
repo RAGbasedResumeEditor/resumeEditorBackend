@@ -62,7 +62,7 @@ public class UserController extends HttpServlet {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }//signup()
-
+/*
     @PostMapping("/signup/exists/email")
     public ResponseEntity<Map<String,Object>> checkEmailDuplicate(@RequestParam("email") String email){
         Map<String,Object> response=new HashMap<>();
@@ -82,10 +82,21 @@ public class UserController extends HttpServlet {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
-
+*/
     @PostMapping("/signup/exists/username")
 
-    public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(@RequestParam("username") String username){
+    public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException{
+             UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+            String username=userDto.getUsername();
+        
             Map<String,Object> response=new HashMap<>();
             Map<String,Object> errorResponse=new HashMap<>();
             try{

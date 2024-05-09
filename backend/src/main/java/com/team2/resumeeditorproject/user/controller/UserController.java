@@ -42,14 +42,9 @@ public class UserController extends HttpServlet {
     private final UserService userService;
 
     @PostMapping(value="/signup")
-<<<<<<< HEAD
-    public ResponseEntity<Map<String,Object>> signup(UserDTO userDto, HttpServletResponse res) throws IOException {
 
-=======
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto, HttpServletResponse res) throws IOException {
 
-        //System.out.println("UserDto: "+userDto.toString());
->>>>>>> 8b97b5ac7d556187da118a8fe88d7f4326108f33
         Map<String,Object> response=new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
 
@@ -89,11 +84,8 @@ public class UserController extends HttpServlet {
     }
 
     @PostMapping("/signup/exists/username")
-<<<<<<< HEAD
-    public ResponseEntity<Map<String,Object>> checkNicknameDuplicate(@RequestParam("username") String username){
-=======
+
     public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(@RequestParam("username") String username){
->>>>>>> 8b97b5ac7d556187da118a8fe88d7f4326108f33
             Map<String,Object> response=new HashMap<>();
             Map<String,Object> errorResponse=new HashMap<>();
             try{

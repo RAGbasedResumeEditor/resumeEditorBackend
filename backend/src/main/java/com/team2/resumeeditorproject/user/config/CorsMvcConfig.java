@@ -14,7 +14,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class CorsMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
-        corsRegistry.addMapping("/**") // 모든 컨트롤러 경로에 대해서
-                .allowedOrigins("http:localhost:3000").allowedHeaders("*"); //3000번 주소에서 오는 요청 허용
+        corsRegistry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000", "https://resume-editor-frontend-indol.vercel.app")
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600); // 예를 들어, preflight 결과를 1시간 동안 캐시
     }
 }
+

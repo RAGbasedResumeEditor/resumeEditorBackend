@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-//   implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' //MongoDB
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' //MongoDB
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
@@ -46,7 +46,6 @@ dependencies {
 	implementation 'dev.langchain4j:langchain4j:0.26.1'
 	implementation 'dev.langchain4j:langchain4j-open-ai:0.26.1'
 	implementation 'dev.langchain4j:langchain4j-qdrant:0.26.1'
-
 	// dependencies added by Ajin
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'

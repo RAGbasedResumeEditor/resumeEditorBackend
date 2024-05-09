@@ -30,8 +30,8 @@ public class ChatController {
     @Autowired
     DataIngestionService dataIngestionService;
 
-    @PostMapping
     //@CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping
     public ChatResponse processMsg(@RequestBody ChatRequest chatRequest) {
         System.out.println(chatRequest.getUserMsg());
         var aiMessage = chatService.rag(chatRequest);

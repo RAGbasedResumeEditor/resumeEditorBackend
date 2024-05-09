@@ -15,6 +15,6 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry.addMapping("/**") // 모든 컨트롤러 경로에 대해서
-                .allowedOrigins("*"); //3000번 주소에서 오는 요청 허용
+                .allowedOrigins("http:localhost:3000").allowedHeaders("*"); //3000번 주소에서 오는 요청 허용
     }
 }

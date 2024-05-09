@@ -1,4 +1,4 @@
-package com.team2.resumeeditorproject.user.Util;
+package com.team2.resumeeditorproject.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;

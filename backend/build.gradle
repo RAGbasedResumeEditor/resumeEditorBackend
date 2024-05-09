@@ -42,6 +42,10 @@ dependencies {
 	implementation 'io.projectreactor:reactor-core'
 	//text compare용 diff-match-patch
 	implementation 'org.bitbucket.cowwoc:diff-match-patch:1.2'
+	//langchain4j
+	implementation 'dev.langchain4j:langchain4j:0.26.1'
+	implementation 'dev.langchain4j:langchain4j-open-ai:0.26.1'
+	implementation 'dev.langchain4j:langchain4j-qdrant:0.26.1'
 
 	// dependencies added by Ajin
 	// security

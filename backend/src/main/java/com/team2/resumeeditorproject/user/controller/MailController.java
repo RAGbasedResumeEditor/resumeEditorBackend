@@ -29,8 +29,17 @@ public class MailController {
     private final MailService mailService;
 
     @PostMapping("/auth-code") // 사용자에게 이메일을 보낸다.
-    public ResponseEntity<Map<String, Object>> mailSend(@RequestBody String email){
-        System.out.println("이메일 인증 요청이 들어왔습니다. 인증을 요청한 이메일은 "+email+"입니다.");
+    public ResponseEntity<Map<String, Object>> mailSend(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
+        UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        String email=userDto.getEmail();
         Map<String, Object> response=new HashMap<>();
         Map<String, Object> errorResponse=new HashMap<>();
         try { // 이메일 전송 성공 시

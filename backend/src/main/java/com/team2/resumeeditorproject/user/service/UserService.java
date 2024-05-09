@@ -18,6 +18,6 @@ import java.util.Map;
 
 public interface UserService {
     Long signup(UserDTO userDto); // 회원가입
-    Boolean checkEmailDuplicate(String email);
+    //Boolean checkEmailDuplicate(String email);
     Boolean checkUsernameDuplicate(String username);
 }

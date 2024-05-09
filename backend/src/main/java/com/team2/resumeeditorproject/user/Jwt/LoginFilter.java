@@ -6,17 +6,21 @@ import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
+import com.team2.resumeeditorproject.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
@@ -30,11 +34,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private RefreshRepository refreshRepository;
+    private UserRepository userRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository){
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository, UserRepository userRepository){
         this.authenticationManager=authenticationManager;
         this.jwtUtil=jwtUtil;
         this.refreshRepository=refreshRepository;
+        this.userRepository=userRepository;
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -74,9 +80,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
+        // 사용자 이름을 사용하여 사용자 정보를 조회하고 uNum 가져오기
+        User user = userRepository.findByUsername(username);
+        Long uNum = user.getUNum();
+
         //토큰 생성(JWTUtil 에서 발급한 응답 값 호출)
-        String access = jwtUtil.createJwt("access", username, role, 3600000L); //생명주기 1시간
-        String refresh = jwtUtil.createJwt("refresh", username, role, 1209600000L); //생명주기 2주
+        String access = jwtUtil.createJwt(uNum,"access", username, role, 3600000L); //생명주기 1시간
+        String refresh = jwtUtil.createJwt(uNum,"refresh", username, role, 1209600000L); //생명주기 2주
 
         //Refresh 토큰 DB 저장
         addRefreshEntity(username, refresh, 1209600000L); //생명주기 2주

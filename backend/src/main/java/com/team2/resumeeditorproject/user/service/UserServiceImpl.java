@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -43,7 +46,7 @@ public class UserServiceImpl implements UserService{
                 .status(userDto.getStatus())
                 .mode(userDto.getMode())
                 .build();
-        return userRepository.save(user).getuNum();
+        return userRepository.save(user).getUNum();
     }
     @Override
     public Boolean checkEmailDuplicate(String email) {

@@ -6,7 +6,7 @@ import lombok.*;
  *
  * @author : 김상휘
  * @fileName : ChatRequestMsgDto
- * @since : 1/18/24
+ * @since : 4/25/24
  */
 @Getter
 @ToString

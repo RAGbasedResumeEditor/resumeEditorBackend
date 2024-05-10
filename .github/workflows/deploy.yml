@@ -25,13 +25,6 @@ jobs:
             app: java@17
             options:
               ports: "8088"
-              env:
-                - name: DB_URL
-                  value: jdbc:mysql://127.0.0.1:3306/resumeEditor
-                - name: DB_USER_NAME
-                  value: root
-                - name: DB_PASSWORD
-                  value: "1234"
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git

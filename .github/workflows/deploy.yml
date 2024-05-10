@@ -26,13 +26,26 @@ jobs:
             options:
               ports: "8088"
               env:
-                - name: DB_URL
-                  value: jdbc:mysql://127.0.0.1:3306/resumeEditor
-                - name: DB_USER_NAME
-                  value: root
+                - name: DB_USERNAME
+                  secret: db_username
                 - name: DB_PASSWORD
-                  value: "1234"
+                  secret: db_password
+                - name: DB_HOST
+                  secret: db_host
+                - name: DB_PORT
+                  secret: db_port
+                - name: GPT_API_KEY
+                  secret: gpt_api_key
+                - name: REDIS_HOST
+                  secret: redis_host
+                - name: REDIS_PORT
+                  secret: redis_port
+                - name: QDRANT_GRPC_HOST
+                  secret: qdrant_grpc_host
+                - name : QDRANT_API_KEY
+                  secret: qdrant_api_key
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git
                 ref: ${{ github.ref }}
+                path: /backend

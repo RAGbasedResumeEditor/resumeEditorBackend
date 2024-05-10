@@ -19,6 +19,6 @@ import java.sql.Date;
 public class ResumeDTO {
     private Long r_num;
     private String content;
-    private Date wdate;
+    private Date w_date;
     private Long u_num;
 }

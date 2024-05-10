@@ -4,21 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * resumeBoardDTO
- *
- * @author : 안은비
- * @fileName : ResumeBoardDTO
- * @since : 04/30/24
- */
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResumeBoardDTO {
+public class RatingDTO {
     private Long RNum;
+    private Long UNum;
     private float rating;
-    private int rating_count;
-    private int read_num;
-    private String title;
 }

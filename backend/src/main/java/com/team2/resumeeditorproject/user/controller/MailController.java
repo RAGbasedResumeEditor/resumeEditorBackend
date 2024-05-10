@@ -29,7 +29,7 @@ public class MailController {
     private final MailService mailService;
 
     @PostMapping("/auth-code") // 사용자에게 이메일을 보낸다.
-    public ResponseEntity<Map<String, Object>> mailSend(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
+    public ResponseEntity<Map<String, Object>> mailSend(HttpServletRequest req) throws AuthenticationException {
         UserDTO userDto=new UserDTO();
         try{
             ObjectMapper objectMapper=new ObjectMapper();
@@ -81,7 +81,7 @@ public class MailController {
             response.put("response","회원가입 이메일 인증 성공");
             return ResponseEntity.ok(response);
         }else if(!checked){
-            response.put("status", "Success");
+            response.put("status", "Fail");
             response.put("time", new Date());
             response.put("response","회원가입 이메일 인증 성공 실패. 입력하신 이메일 주소 혹은 인증코드를 확인해주세요.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

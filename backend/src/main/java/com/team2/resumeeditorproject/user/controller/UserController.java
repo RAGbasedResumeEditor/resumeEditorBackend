@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserController extends HttpServlet {
 
     private final UserService userService;

@@ -21,7 +21,7 @@ public class UserDTO {
     private String occupation;
     private String wish;
     private int status;
-    private int mode;
+    private int mode=1;
     private Date inDate;
     private Date delDate;
     private String authCode;

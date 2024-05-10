@@ -46,6 +46,7 @@ public class UserController extends HttpServlet {
 
     private final UserService userService;
 
+    //회원가입
     @PostMapping(value="/signup")
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
         Map<String,Object> response=new HashMap<>();
@@ -66,7 +67,7 @@ public class UserController extends HttpServlet {
     }//signup()
 
     @PostMapping("/signup/exists/username")
-    public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
+    public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(HttpServletRequest req) throws AuthenticationException {
              UserDTO userDto=new UserDTO();
             try{
                 ObjectMapper objectMapper=new ObjectMapper();
@@ -95,24 +96,88 @@ public class UserController extends HttpServlet {
             }
     }
     /*
-    @PostMapping("/signup/exists/email")
-    public ResponseEntity<Map<String,Object>> checkEmailDuplicate(@RequestParam("email") String email){
+      @PostMapping("/signup/exists/email")
+      public ResponseEntity<Map<String,Object>> checkEmailDuplicate(@RequestParam("email") String email){
+          Map<String,Object> response=new HashMap<>();
+          Map<String,Object> errorResponse=new HashMap<>();
+          try{
+              boolean result= userService.checkEmailDuplicate(email);
+              //System.out.println("email check result (중복 시 true): "+result);
+              response.put("status","Success");
+              response.put("result",result+"");
+              response.put("time", new Date());
+              response.put("response", "이메일 중복 여부 확인 성공");
+              return ResponseEntity.ok(response);
+          }catch(Exception e){
+              errorResponse.put("status","Fail");
+              errorResponse.put("time",new Date());
+              errorResponse.put("response", "서버 오류입니다.");
+              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+          }
+      }
+  */
+
+    //회원탈퇴
+    @PostMapping("/user/withdraw")
+    public ResponseEntity<Map<String, Object>> withdraw(HttpServletRequest req) throws AuthenticationException{
+        UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+
+        Long uNum=userDto.getUNum();
+
         Map<String,Object> response=new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
-        try{
-            boolean result= userService.checkEmailDuplicate(email);
-            //System.out.println("email check result (중복 시 true): "+result);
-            response.put("status","Success");
-            response.put("result",result+"");
-            response.put("time", new Date());
-            response.put("response", "이메일 중복 여부 확인 성공");
-            return ResponseEntity.ok(response);
-        }catch(Exception e){
+
+        //유효성 검사
+        if(userDto.getUsername()==null){
             errorResponse.put("status","Fail");
             errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
+            errorResponse.put("response", "존재하지 않는 회원입니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+        //탈퇴처리
+        userService.withdraw(uNum);
+        response.put("status","Success");
+        response.put("time", new Date());
+        response.put("response", "회원탈퇴 완료.");
+        return ResponseEntity.ok(response);
     }
-*/
+
+    //회원정보 수정
+    @PostMapping("/user/edit")
+    public ResponseEntity<Map<String, Object>> edit(HttpServletRequest req) throws AuthenticationException{
+        UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        Map<String,Object> response=new HashMap<>();
+        Map<String,Object> errorResponse=new HashMap<>();
+
+        //유효성 검사
+        if(userDto.getUsername()==null){
+            errorResponse.put("status","Fail");
+            errorResponse.put("time",new Date());
+            errorResponse.put("response", "존재하지 않는 회원입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+
+        //수정 처리
+        userService.userUpdate(userDto);
+        response.put("status","Success");
+        response.put("time", new Date());
+        response.put("response", "회원정보 수정 완료.");
+        return ResponseEntity.ok(response);
+    }
 }

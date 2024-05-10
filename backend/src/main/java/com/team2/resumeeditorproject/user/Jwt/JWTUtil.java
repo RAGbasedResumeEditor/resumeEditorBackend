@@ -31,8 +31,8 @@ public class JWTUtil { // ver 0.12.3
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
-    public String getUNum(String token){
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("uNum", String.class);
+    public Long getUNum(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("uNum", Long.class);
     }
     // 토큰을 생성할 메서드
     public String createJwt(Long uNum, String category,String username, String role, Long expiredMs){

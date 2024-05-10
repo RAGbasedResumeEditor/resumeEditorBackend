@@ -58,8 +58,7 @@ public class ResumeEditController {
             ResumeDTO resumeDTO = new ResumeDTO();
             resumeDTO.setR_num(resumeEditId);
             resumeDTO.setContent(content);
-            resumeDTO.setU_num(3L);
-
+            resumeDTO.setU_num(resumeEditDTO.getU_num());
             resumeDTO = resumeService.insertResume(resumeDTO);
             Long resumeId = resumeDTO.getR_num();
 
@@ -70,8 +69,9 @@ public class ResumeEditController {
                 ResumeBoardDTO resumeBoardDTO = new ResumeBoardDTO();
                 String title = resumeEditDTO.getCompany() + " " + resumeEditDTO.getOccupation();
                 resumeBoardDTO.setTitle(title);
-                resumeBoardDTO.setR_num(resumeId);
+                resumeBoardDTO.setRNum(resumeId);
                 resumeBoardDTO.setRating(0);
+                resumeBoardDTO.setRating_count(0);
                 resumeBoardDTO.setRead_num(0);
                 resumeBoardService.insertResumeBoard(resumeBoardDTO);
                 resMsg += ", resume_board table insert success";

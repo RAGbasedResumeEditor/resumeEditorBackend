@@ -19,11 +19,13 @@ import java.sql.Date;
 @Table(name="resume_board")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Data
 public class ResumeBoard {
     @Id
-    private Long r_num;
+    @Column(nullable = false, name = "r_num")
+    private Long RNum;
+//    private Long r_num;
     private float rating;
+    private int rating_count;
     private int read_num;
     private String title;
   //  @OneToOne(fetch = FetchType.LAZY)

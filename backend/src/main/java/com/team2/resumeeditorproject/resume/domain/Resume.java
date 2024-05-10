@@ -23,7 +23,7 @@ public class Resume {
     @Id
     private Long r_num;
     private String content;
-    private Date wdate;
+    private Date w_date;
     private Long u_num;
 
     @OneToOne(fetch = FetchType.LAZY)

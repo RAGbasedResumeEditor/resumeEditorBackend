@@ -1,0 +1,73 @@
+server:
+  port: 8088
+
+# JPA
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/resumeEditorDB
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+jpa:
+  database: mysql
+  database-platform: org.hibernate.dialect.MySQLDialect
+  show-sql: true
+  hibernate:
+    ddl-auto: none
+#    properties:
+#      hibernate:
+#        format_sql: true
+
+
+#spring:
+#  application:
+#    name: resumeEditor
+#  data:
+#    mongodb:
+#      database: resumeEditor
+#      uri: mongodb+srv://blatherr:5guwmOptKmNjPHZv@resumeeditor.etlwzt4.mongodb.net/?retryWrites=true&w=majority&appName=resumeEditor
+##      host: localhost
+##      port: 27017
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+--- # Page Reload
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  devtools:
+    livereload:
+      enabled: true
+    remote:
+      restart:
+        enabled: true
+--- # Redis
+spring:
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+--- # SMTP
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_ADDRESS}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.enable: false
+--- # jwt
+spring:
+  jwt:
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie
+
+openai:
+  secret-key: ${GPT_API_KEY}
+  url:
+    model: https://api.openai.com/v1/models
+    model-list: https://api.openai.com/v1/models/
+    legacy-prompt: https://api.openai.com/v1/completions
+    prompt: https://api.openai.com/v1/chat/completions

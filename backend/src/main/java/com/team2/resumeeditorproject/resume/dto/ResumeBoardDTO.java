@@ -16,8 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumeBoardDTO {
-    private Long r_num;
+    private Long RNum;
     private float rating;
+    private int rating_count;
     private int read_num;
     private String title;
 }

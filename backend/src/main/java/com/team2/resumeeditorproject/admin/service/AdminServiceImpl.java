@@ -1,8 +1,8 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.team2.resumeeditorproject.admin.repository.AdminRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
+import com.team2.resumeeditorproject.admin.repository.AdminUserReposotory;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
@@ -13,23 +13,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService{
 //관리자 페이지 통계 데이터 처리해주는 클래스
-/* 1. 1)유저 정보에 관한 통계 => userCnt()
-        현재 종사 직군(occupation) 비율, 유저 희망(wish) 직군 비율
-      2)자소서 목록(resume_board)에 관한 통계 => resumeList()
-        회사별 직군별 재직상태별 희망직군별 평균 평점 순위,  회사별 직군별 재직상태별 희망직군별  자소서 조회수 순위(TOP 10)
+/* 1. 1) 유저 정보에 관한 통계 => userCnt()
+      2) 자소서 목록(resume_board)에 관한 통계 => resumeList()
       3) 자소서 첨삭 이용 통계
         채용 시즌(날짜) 별 첨삭 횟수, 신입/경력 별 첨삭 횟수, 후기 별점 신입/경력별, 직군별, 연령별, 프로/라이트별 비율.
    2. resume crud (resume_board table)
  */
-
-    private final AdminRepository adminRepository;
+    private final AdminUserReposotory adminRepository;
     private final AdminResumeEditRepository adResEditRepository;
     private final AdminResumeBoardRepository adResBoardRepository;
 
@@ -40,17 +36,29 @@ public class AdminServiceImpl implements AdminService{
         //총 회원수
         List<User> users=adminRepository.findAll();
         int cnt=users.size();
+        int userCnt=users.size();
         //System.out.println(new Date()+" UserCount: "+cnt);
 
         //성비
         List<User> female = adminRepository.findByGender('F');
         List<User> male = adminRepository.findByGender('M');
-        int userCnt=users.size();
         int femaleCnt=female.size();
         int maleCnt=male.size();
         String str1 = String.format("%.2f", ((double)femaleCnt/(double)userCnt)*100);
         String str2 = String.format("%.2f", ((double)maleCnt/(double)userCnt)*100);
         //System.out.println("여성 회원비: "+str1+" 남성 회원비: "+str2);
+
+        //occupation
+        List<User> occp=adminRepository.findByOccupation("개발자");
+        int devCnt=occp.size();
+        String str4 = String.format("%.2f", ((double)devCnt/(double)userCnt)*100);
+        //System.out.println("개발자 비율: "+str4);
+
+        //wish
+        List<User> wishes=adminRepository.findByWish("개발자");
+        int devWishCnt=wishes.size();
+        String str3 = String.format("%.2f", ((double)devWishCnt/(double)userCnt)*100);
+        //System.out.println("개발자 희망 유저 비율: "+str3);
 
         //연령대
         List<User> twenties= adminRepository.findByAgeBetween(20, 29);
@@ -75,21 +83,44 @@ public class AdminServiceImpl implements AdminService{
         //System.out.println("라이트 유저 비율: "+ratio3+" 프로 유저 비율: "+ratio4);
     }
 
+    //@Scheduled(cron = "0 30 6,23 * * *")
     @Scheduled(fixedDelay = 2000)
     @Override
     public void resumeList(){
-        //회사별 평균 평점 TOP5 resumeBoard resumeEdit rnum으로 조인해서 company에 해당하는 rating가져와야 한다.
+        //회사별 평균 평점, 자소서 조회수
         List<ResumeEdit> lg=adResEditRepository.findByCompany("LG"); // 회사가 LG인 ResumeEdit 엔티티를 찾는다.
-        List<Long> rNum=new ArrayList<>();
-        float ratings=0;
+        List<Long> C_rNum=new ArrayList<>();
+        List<Float> C_rates=new ArrayList<>();
+        List<Integer> C_views=new ArrayList<>();
             for(int i=0;i<lg.size();i++){
-                rNum.add(lg.get(i).getR_num());
-                System.out.println(rNum.get(i));
+                     C_rNum.add(lg.get(i).getR_num());
             }
-          /* for(int i=0;i<rNum.size();i++){
-                ratings+=adResBoardRepository.findById(rNum.get(i)).get().getRating();
-            } //찾은 rnum값을 가진 엔티티를 ResumeBoard에서 찾는다. 그 엔티티의 rating값을 꺼내서 합을 구해준다.
-            ratings/=rNum.size();
-        System.out.println("평균 평점: "+ratings);*/
+           for(int i=0;i<C_rNum.size();i++){//찾은 rnum값을 가진 엔티티를 ResumeBoard에서 찾는다. 그 엔티티의 rating, read_num값을 꺼내서 리스트에 저장한다.
+                Long rn= C_rNum.get(i);
+                if(adResBoardRepository.findById(rn).isPresent()){
+                    C_rates.add(adResBoardRepository.findById(rn).get().getRating());
+                    C_views.add(adResBoardRepository.findById(rn).get().getRead_num());
+                }
+            }
+        //System.out.println("개발자 자소서 평점: "+C_rates.toString());
+        //System.out.println("LG 자소서 조회수: "+C_views.toString());
+
+        //직군별 평균 평점,자소서 조회수 순위
+        List<ResumeEdit> dev=adResEditRepository.findByOccupation("개발자");
+        List<Long> O_rNum=new ArrayList<>();
+        List<Float> O_rates=new ArrayList<>();
+        List<Integer> O_views=new ArrayList<>();
+            for(int i=0;i<dev.size();i++){
+                O_rNum.add(dev.get(i).getR_num());
+            }
+            for(int i=0;i<O_rNum.size();i++){
+                Long rn= O_rNum.get(i);
+                if(adResBoardRepository.findById(rn).isPresent()){
+                    O_rates.add(adResBoardRepository.findById(rn).get().getRating());
+                    O_views.add(adResBoardRepository.findById(rn).get().getRead_num());
+                }
+            }
+        //System.out.println("개발자 자소서 평점: "+O_rates.toString());
+        //System.out.println("개발자 자소서 조회수: "+O_views.toString());
     }
 }

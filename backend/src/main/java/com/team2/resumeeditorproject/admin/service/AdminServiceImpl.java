@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.user.domain.User;
-import com.team2.resumeeditorproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class AdminServiceImpl implements AdminService{
 //N년차 비율, 현재 종사 직군 비율, 유저 희망 직군 비율, 프로/라이트 모드 비율(+각 모드의 재직 상태 비율)
 //resume crud (resume_board table)
 
-    private final UserRepository userRepository;
+    private final AdminUserRepository userRepository;
 
     @Scheduled(fixedDelay = 2000)
     @Override

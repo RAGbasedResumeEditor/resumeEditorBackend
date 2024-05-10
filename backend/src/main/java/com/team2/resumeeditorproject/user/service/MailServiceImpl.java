@@ -61,7 +61,7 @@ public class MailServiceImpl implements MailService{ // 인증번호를 생성�
         MimeMessage message = mailSender.createMimeMessage();//JavaMailSender 객체를 사용해 MimeMessage 객체를 생성
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message,true,"utf-8");//이메일 메시지와 관련된 설정
-                                                // true를 전달해 multipart 형식의 메시지를 지원, "utf-8"을 전달하여 문자 인코딩을 설정
+            // true를 전달해 multipart 형식의 메시지를 지원, "utf-8"을 전달하여 문자 인코딩을 설정
             helper.setFrom(setFrom);// 송신자 주소 설정
             helper.setTo(toM);// 수신자 주소 설정
             helper.setSubject(title);//이메일 제목을 설정

@@ -75,7 +75,7 @@ public class SecurityConfig {
                             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                                 CorsConfiguration configuration = new CorsConfiguration();
                                 // 프론트에서 보낼 3000번대 포트 허용
-                                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://resume-editor-frontend-indol.vercel.app/"));
+                                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://resume-editor-frontend-indol.vercel.app"));
                                 // GET, POST 등 모든 메서드 허용
                                 configuration.setAllowedMethods(Collections.singletonList("*"));
                                 // 쿠키, HTTP 인증 등을 사용하는 요청을 허용
@@ -108,7 +108,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth)->auth
                         // login, 루트, signup경로에 대해서는 모든 경로 허용
-                        .requestMatchers("/login","/","/signup/*","/user/login","/reissue","/swagger-ui/*","/v3/api-docs/**").permitAll()
+                        .requestMatchers("/login","/","/signup","/signup/exists/**","/user/login","/reissue","/swagger-ui/*","/v3/api-docs/**").permitAll()
                         // ADMIN권한을 가진 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // access토큰이 만료된 상태로 접근을 하기 때문에 로그인자체가 불가능한 상태 이므로 모든 경로 허용

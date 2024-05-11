@@ -2,11 +2,8 @@ package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminUserReposotory;
-import com.team2.resumeeditorproject.resume.domain.Resume;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
-import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,7 +22,7 @@ public class AdminServiceImpl implements AdminService{
         채용 시즌(날짜) 별 첨삭 횟수, 신입/경력 별 첨삭 횟수, 후기 별점 신입/경력별, 직군별, 연령별, 프로/라이트별 비율.
    2. resume crud (resume_board table)
  */
-    private final AdminUserReposotory adminRepository;
+    private final AdminUserRepository adminRepository;
     private final AdminResumeEditRepository adResEditRepository;
     private final AdminResumeBoardRepository adResBoardRepository;
 

@@ -24,8 +24,10 @@ public interface UserService {
     //Boolean checkEmailDuplicate(String email);
     Boolean checkUsernameDuplicate(String username);
     //회원탈퇴
-    void withdraw(Long uNum);
+    void deleteUser(Long uNum);
+    //회원 비밀번호 수정
+    void updateUserPw(UserDTO userDto);
     //회원정보 수정
     @Transactional
-    void userUpdate(UserDTO userDto);
+    void updateUser(UserDTO userDto);
 }

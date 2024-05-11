@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AdminUserReposotory extends JpaRepository<User, Long> {
+public interface AdminUserRepository extends JpaRepository<User, Long> {
     List<User> findByGender(char gender);
     List<User> findByAgeBetween(int startAge, int endAge);
     List<User> findByStatus(int status);

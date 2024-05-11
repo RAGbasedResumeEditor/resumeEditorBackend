@@ -116,7 +116,6 @@ public class UserController extends HttpServlet {
           }
       }
   */
-
     //회원탈퇴
     @PostMapping("/user/withdraw")
     public ResponseEntity<Map<String, Object>> withdraw(HttpServletRequest req) throws AuthenticationException{
@@ -131,25 +130,50 @@ public class UserController extends HttpServlet {
         }
 
         Long uNum=userDto.getUNum();
-
         Map<String,Object> response=new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
 
         //유효성 검사
-        if(userDto.getUsername()==null){
+        if(userDto.getUNum()==null){
             errorResponse.put("status","Fail");
             errorResponse.put("time",new Date());
             errorResponse.put("response", "존재하지 않는 회원입니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
         //탈퇴처리
-        userService.withdraw(uNum);
+        userService.deleteUser(uNum);
         response.put("status","Success");
         response.put("time", new Date());
         response.put("response", "회원탈퇴 완료.");
         return ResponseEntity.ok(response);
     }
-
+    //회원 비밀번호 수정
+    @PostMapping("/user/edit/password")
+    public ResponseEntity<Map<String,Object>> pwEdit(HttpServletRequest req) throws AuthenticationException{
+        UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        Map<String,Object> response=new HashMap<>();
+        Map<String,Object> errorResponse=new HashMap<>();
+        //유효성 검사
+        if(userDto.getUNum()==null){
+            errorResponse.put("status","Fail");
+            errorResponse.put("time",new Date());
+            errorResponse.put("response", "존재하지 않는 회원입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+        userService.updateUser(userDto);
+        response.put("status","Success");
+        response.put("time", new Date());
+        response.put("response", "비밀번호 수정 완료.");
+        return ResponseEntity.ok(response);
+    }
     //회원정보 수정
     @PostMapping("/user/edit")
     public ResponseEntity<Map<String, Object>> edit(HttpServletRequest req) throws AuthenticationException{
@@ -166,15 +190,14 @@ public class UserController extends HttpServlet {
         Map<String,Object> errorResponse=new HashMap<>();
 
         //유효성 검사
-        if(userDto.getUsername()==null){
+        if(userDto.getUNum()==null){
             errorResponse.put("status","Fail");
             errorResponse.put("time",new Date());
             errorResponse.put("response", "존재하지 않는 회원입니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-
         //수정 처리
-        userService.userUpdate(userDto);
+        userService.updateUser(userDto);
         response.put("status","Success");
         response.put("time", new Date());
         response.put("response", "회원정보 수정 완료.");

@@ -5,10 +5,13 @@ import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
+import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,24 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public List<ResumeBoard> getAllResume(){
          return adResBoardRepository.findAll();
+    }
+
+    @Override
+    public void deleteResume(ResumeBoardDTO rbDto){
+        if(rbDto.getRNum()==null){
+            return;
+        }
+        adResBoardRepository.deleteById(rbDto.getRNum());
+    }
+
+    @Override
+    @Transactional
+    public void updateResume(ResumeBoardDTO rbDto) {
+        ResumeBoard rb=adResBoardRepository.findById(rbDto.getRNum()).orElseThrow(()->{
+            return new IllegalArgumentException("해당 자소서가 존재하지 않습니다.");
+        });
+        rb.setTitle(rbDto.getTitle());
+        adResBoardRepository.save(rb);
     }
 
     //@Scheduled(cron = "0 30 6,23 * * *") // 모든 요일 06:30AM, 11:30PM에 실행.

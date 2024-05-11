@@ -3,6 +3,7 @@ package com.team2.resumeeditorproject.admin.service;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,11 @@ public class AdminServiceImpl implements AdminService{
     private final AdminUserRepository adminRepository;
     private final AdminResumeEditRepository adResEditRepository;
     private final AdminResumeBoardRepository adResBoardRepository;
+
+    @Override
+    public List<ResumeBoard> getAllResume(){
+         return adResBoardRepository.findAll();
+    }
 
     //@Scheduled(cron = "0 30 6,23 * * *") // 모든 요일 06:30AM, 11:30PM에 실행.
     @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)

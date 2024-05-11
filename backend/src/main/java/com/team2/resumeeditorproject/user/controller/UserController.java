@@ -117,7 +117,7 @@ public class UserController extends HttpServlet {
       }
   */
     //회원탈퇴
-    @PostMapping("/user/withdraw")
+    @PostMapping("/user/delete")
     public ResponseEntity<Map<String, Object>> withdraw(HttpServletRequest req) throws AuthenticationException{
         UserDTO userDto=new UserDTO();
         try{

@@ -108,7 +108,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth)->auth
                         // login, 루트, signup경로에 대해서는 모든 경로 허용
-                        .requestMatchers("/login","/","/signup","/signup/exists/**","/user/**","/reissue","/swagger-ui/*","/v3/api-docs/**").permitAll()
+                        .requestMatchers("/login","/","/signup","/signup/exists/**","/user/**","/admin/**","/reissue","/swagger-ui/*","/v3/api-docs/**").permitAll()
                         // ADMIN권한을 가진 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // access토큰이 만료된 상태로 접근을 하기 때문에 로그인자체가 불가능한 상태 이므로 모든 경로 허용

@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface AdminUserRepository extends JpaRepository<User, Long> {
+
     // ROLE_USER 조회
     @Query("SELECT u FROM User u WHERE u.role = :role")
     List<User> findByRole(@Param("role") String role);

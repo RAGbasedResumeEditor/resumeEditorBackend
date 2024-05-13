@@ -1,25 +1,17 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
-import com.team2.resumeeditorproject.admin.service.AdminService;
-import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.admin.service.ResumeManagementService;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
-import com.team2.resumeeditorproject.user.dto.UserDTO;
-import jakarta.servlet.ServletInputStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
@@ -27,12 +19,12 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ResumeManagementController {
 
-    private final AdminService adminService;
+    private final ResumeManagementService rmService;
 
     //자소서 목록 가져오기
     @GetMapping("/resume/list")
     public ResponseEntity<Map<String, Object>> resumeList(){
-        List<ResumeBoard> resumeList=adminService.getAllResume();
+        List<ResumeBoard> resumeList=rmService.getAllResume();
 
         Map<String,Object> errorResponse=new HashMap<>();
         if(resumeList.isEmpty()){
@@ -54,7 +46,6 @@ public class ResumeManagementController {
 
             resumeDtoList.add(rbDto);
         }
-
         Map<String, Object> response = new HashMap<>();
         response.put("status", "Success");
         response.put("time", new Date());
@@ -65,22 +56,29 @@ public class ResumeManagementController {
     }
 
     //자소서 삭제
-    @GetMapping("/resume/delete")
+    @PostMapping("/resume/delete")
     public ResponseEntity<Map<String, Object>> deleteResume(@RequestBody ResumeBoardDTO rbDto){
-        Map<String,Object> errorResponse=new HashMap<>();
+        Map<String,Object> errorResponse1=new HashMap<>();
+        Map<String,Object> errorResponse2=new HashMap<>();
         if(rbDto.getRNum()==null){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "저장한 자소서가 없습니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            errorResponse1.put("status","Fail");
+            errorResponse1.put("time",new Date());
+            errorResponse1.put("response", "존재하지 않는 자소서입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse1);
         }
-        adminService.deleteResume(rbDto);
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "Success");
-        response.put("time", new Date());
-        response.put("response", rbDto.getRNum()+"번 자소서 삭제 성공");
-
-        return ResponseEntity.ok().body(response);
+        try {
+            rmService.deleteResume(rbDto);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "Success");
+            response.put("time", new Date());
+            response.put("response", rbDto.getRNum() + "번 자소서 삭제 성공");
+            return ResponseEntity.ok().body(response);
+        }catch(Exception e){
+            errorResponse1.put("status","Fail");
+            errorResponse1.put("time",new Date());
+            errorResponse1.put("response", "서버 오류입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse2);
+        }
     }
 
     //자소서 수정
@@ -88,19 +86,27 @@ public class ResumeManagementController {
     public ResponseEntity<Map<String, Object>> updateResume(@RequestBody ResumeBoardDTO rbDto){
 
         Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
+        Map<String,Object> errorResponse1=new HashMap<>();
+        Map<String,Object> errorResponse2=new HashMap<>();
         //유효성 검사
         if(rbDto.getRNum()==null){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "존재하지 않는 자소서입니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            errorResponse1.put("status","Fail");
+            errorResponse1.put("time",new Date());
+            errorResponse1.put("response", "존재하지 않는 자소서입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse1);
         }
         //수정 처리
-        adminService.updateResume(rbDto);
-        response.put("status","Success");
-        response.put("time", new Date());
-        response.put("response", rbDto.getRNum()+"번 자소서 수정 완료.");
-        return ResponseEntity.ok(response);
+        try{
+            rmService.updateResume(rbDto);
+            response.put("status","Success");
+            response.put("time", new Date());
+            response.put("response", rbDto.getRNum()+"번 자소서 수정 완료.");
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            errorResponse1.put("status","Fail");
+            errorResponse1.put("time",new Date());
+            errorResponse1.put("response", "서버 오류입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse2);
+        }
     }
 }

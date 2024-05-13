@@ -21,4 +21,8 @@ public class ResumeBoardDTO {
     private int rating_count;
     private int read_num;
     private String title;
+
+    //for admin
+    private int page;
+    private int size;
 }

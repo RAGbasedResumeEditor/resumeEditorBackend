@@ -11,7 +11,7 @@ import java.util.Map;
 public interface AdminService {
 
     int userCnt();
-    List<String> genderCnt();
+    Map<String, String> genderCnt();
     String occupCnt(String occupation);
     String wishCnt(String wish);
     Map<String, Integer> ageCnt();

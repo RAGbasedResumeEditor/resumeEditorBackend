@@ -47,10 +47,10 @@ public class AdminController {
         Map<String, Object> response = new HashMap<>();
         Map<String, Object> errorResponse=new HashMap<>();
         try {
-            List<String> genderCnt=adminService.genderCnt();
+            Map<String, String> genderCnt=adminService.genderCnt();
             response.put("status", "Success");
             response.put("time", new Date());
-            response.put("response", "여성은 "+genderCnt.get(0)+"%, 남성은 "+genderCnt.get(1)+"% 입니다.");
+            response.put("response", genderCnt);
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");

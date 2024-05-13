@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     @Scheduled(cron = "0 0 12 * * *") // 매일 오후 12시에 메서드 동작
     public void deleteUserEnd(){
-        userRepository.deleteByDelDateAtLessThanEqual((LocalDateTime.now().minusDays(30)));
+        userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
     }
 
     //회원 비밀번호 수정

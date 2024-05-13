@@ -37,7 +37,7 @@ public class AdminServiceImpl implements AdminService{
 
     @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
-    public List<String> genderCnt() {  //성비
+    public Map<String, String> genderCnt() {  //성비
         List<User> users = adminRepository.findAll();
         int userCnt = users.size();
         List<User> female = adminRepository.findByGender('F');
@@ -46,9 +46,9 @@ public class AdminServiceImpl implements AdminService{
         int maleCnt = male.size();
         String str1 = String.format("%.2f", ((double) femaleCnt / (double) userCnt) * 100);
         String str2 = String.format("%.2f", ((double) maleCnt / (double) userCnt) * 100);
-        List<String> result=new ArrayList<>();
-        result.add(str1);
-        result.add(str2);
+        Map<String, String> result=new HashMap<>();
+        result.put("여성",str1);
+        result.put("남성",str2);
         return result;
     }
 

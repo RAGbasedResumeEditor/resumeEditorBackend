@@ -20,7 +20,7 @@ public class UserDTO {
     private String occupation;
     private String wish;
     private int status;
-    private int mode=1;
+    private int mode;
     private Date inDate;
     private Date delDate;
     private String authCode;

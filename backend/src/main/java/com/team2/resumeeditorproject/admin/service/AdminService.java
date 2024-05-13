@@ -12,8 +12,8 @@ public interface AdminService {
 
     int userCnt();
     List<String> genderCnt();
-    String occupCnt();
-    void wishCnt();
+    String occupCnt(String occupation);
+    String wishCnt(String wish);
     Map<String, Integer> ageCnt();
     Map<String, String> statusCnt();
     Map<String, String> modeCnt();

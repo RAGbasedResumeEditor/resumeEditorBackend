@@ -52,27 +52,26 @@ public class AdminServiceImpl implements AdminService{
         return result;
     }
 
-    @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
-    public String occupCnt() {  //occupation
+    public String occupCnt(String occupation) {  //occupation
         List<User> users = adminRepository.findAll();
         int userCnt = users.size();
-        List<User> occp = adminRepository.findByOccupation("개발자");
+        List<User> occp = adminRepository.findByOccupation(occupation);
         int devCnt = occp.size();
         String str = String.format("%.2f", ((double) devCnt / (double) userCnt) * 100);
         return str;
     }
 
-    @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
-    public void wishCnt() {  //wish
+    public String wishCnt(String wish) {  //wish
         List<User> users = adminRepository.findAll();
         int userCnt = users.size();
-        List<User> wishes = adminRepository.findByWish("개발자");
+        List<User> wishes = adminRepository.findByWish(wish);
         int devWishCnt = wishes.size();
-        String str3 = String.format("%.2f", ((double) devWishCnt / (double) userCnt) * 100);
-        //System.out.println("개발자 희망 유저 비율: "+str3);
+        String str = String.format("%.2f", ((double) devWishCnt / (double) userCnt) * 100);
+        return str;
     }
+
     @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
     public Map<String, Integer> ageCnt() {  //연령대

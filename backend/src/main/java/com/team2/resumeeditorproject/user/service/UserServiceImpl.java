@@ -5,9 +5,12 @@ import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -56,10 +59,18 @@ public class UserServiceImpl implements UserService{
         return userRepository.existsByUsername(username);
     }
 
-    //회원탈퇴
+    //회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
     public void deleteUser(Long uNum){
         userRepository.deleteById(uNum);
+    }
+
+    //30일 지나면 테이블에서 해당 회원 삭제
+    @Override
+    @Transactional
+    @Scheduled(cron = "0 0 12 * * *") // 매일 오후 12시에 메서드 동작
+    public void deleteUserEnd(){
+        userRepository.deleteByDelDateAtLessThanEqual((LocalDateTime.now().minusDays(30)));
     }
 
     //회원 비밀번호 수정
@@ -79,15 +90,13 @@ public class UserServiceImpl implements UserService{
         User user=userRepository.findById(userDto.getUNum()).orElseThrow(()->{
             return new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
         });
-        //System.out.println("User: "+user.getUsername());
-        //System.out.println("changed username: "+userDto.getUsername());
-        //System.out.println("Mode: "+userDto.getMode());
         user.setGender(userDto.getGender());
         user.setBirthDate(userDto.getBirthDate());
         user.setStatus(userDto.getStatus());
         user.setCompany(userDto.getCompany());
         user.setOccupation(userDto.getOccupation());
         user.setWish(userDto.getWish());
+        user.setMode(userDto.getMode());
         userRepository.save(user);
     }
 }

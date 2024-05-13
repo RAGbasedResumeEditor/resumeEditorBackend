@@ -1,13 +1,18 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.service.AdminService;
+import com.team2.resumeeditorproject.user.dto.UserDTO;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,11 +61,23 @@ public class AdminController {
     }
 
     @GetMapping("/stat/user/occupation")
-    public ResponseEntity<Map<String,Object>> getUserOccupation(@RequestBody String occupation){
+    public ResponseEntity<Map<String,Object>> getUserOccupation(HttpServletRequest req){
+        UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        String occupation=userDto.getOccupation();
+
         Map<String, Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
         try {
-            String occupCnt=adminService.occupCnt();
+            System.out.println(occupation);
+            String occupCnt=adminService.occupCnt(occupation);
             response.put("status", "Success");
             response.put("time", new Date());
             response.put("response", occupation+" "+occupCnt+"%");
@@ -82,6 +99,35 @@ public class AdminController {
             response.put("status", "Success");
             response.put("time", new Date());
             response.put("response", ageCnt);
+            return ResponseEntity.ok().body(response);
+        }catch(Exception e){
+            errorResponse.put("status","Fail");
+            errorResponse.put("time",new Date());
+            errorResponse.put("response", "서버 오류입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    @GetMapping("/stat/user/wish")
+    public ResponseEntity<Map<String,Object>> getUserWish(HttpServletRequest req){
+        UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        String wish=userDto.getWish();
+
+        Map<String,Object> response = new HashMap<>();
+        Map<String,Object> errorResponse=new HashMap<>();
+        try {
+            String wishCnt=adminService.wishCnt(wish);
+            response.put("status", "Success");
+            response.put("time", new Date());
+            response.put("response", wish+" "+wishCnt+"%");
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");

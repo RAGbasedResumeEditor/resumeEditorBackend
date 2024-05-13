@@ -1,10 +1,8 @@
 package com.team2.resumeeditorproject.user.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.Setter;
-
 import java.util.Date;
 
 @Data

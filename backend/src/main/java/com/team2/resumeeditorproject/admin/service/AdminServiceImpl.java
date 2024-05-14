@@ -16,8 +16,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class AdminServiceImpl implements AdminService{
-//관리자 페이지 통계 데이터 처리해주는 클래스
+public class AdminServiceImpl implements AdminService{ //관리자 페이지 통계 데이터 처리해주는 클래스
 /*
       3) 자소서 첨삭 이용 통계
         채용 시즌(날짜) 별 첨삭 횟수, 신입/경력 별 첨삭 횟수, 후기 별점 신입/경력별, 직군별, 연령별, 프로/라이트별 비율.
@@ -66,12 +65,12 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public  Map<String, Object> wishCnt(String wish) {  //wish
+    public  Map<String, Object> wishCnt(String wish) {
         List<User> users = adminRepository.findAll();
         int userCnt = users.size();
         List<User> wishes = adminRepository.findByWish(wish);
-        int devWishCnt = wishes.size();
-        String str = String.format("%.2f", ((double) devWishCnt / (double) userCnt) * 100);
+        int WishCnt = wishes.size();
+        String str = String.format("%.2f", ((double) WishCnt / (double) userCnt) * 100);
         Map<String, Object> wishCnt=new HashMap<>();
         wishCnt.put(wish,str+"%");
         return wishCnt;
@@ -80,19 +79,11 @@ public class AdminServiceImpl implements AdminService{
     @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
     public Map<String, Integer> ageCnt() {  //연령대
-        List<User> users = adminRepository.findAll();
-        int userCnt = users.size();
         Map<String, Integer> userAge=new HashMap<>();
-        List<User> twenties = adminRepository.findByAgeBetween(20, 29);
-        List<User> thirties = adminRepository.findByAgeBetween(30, 39);
-        List<User> fourties = adminRepository.findByAgeBetween(40, 49);
-        List<User> fifties = adminRepository.findByAgeBetween(50, 59);
-        List<User> overSixty = adminRepository.findByAgeBetween(60, 99);
-        userAge.put("20대",twenties.size());
-        userAge.put("30대",thirties.size());
-        userAge.put("40대",fourties.size());
-        userAge.put("50대",fifties.size());
-        userAge.put("60대 이상", overSixty.size());
+        for(int age=20;age<=50;age+=10){
+            userAge.put(age+"대", adminRepository.findByAgeBetween(age, age+9).size());
+        }
+        userAge.put("60대 이상", adminRepository.findByAgeBetween(60, 99).size());
         return userAge;
     }
 
@@ -113,14 +104,14 @@ public class AdminServiceImpl implements AdminService{
 
     @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
-    public Map<String, String> modeCnt() {    //프로 라이트 모드 비율
+    public Map<String, Object> modeCnt() {    //프로 라이트 모드 비율
         List<User> users = adminRepository.findAll();
         int userCnt = users.size();
         List<User> lightUser=adminRepository.findByMode(1); // 라이트 모드 유저
         List<User> proUser=adminRepository.findByMode(2); // 프로 모드 유저
         String ratio1 = String.format("%.2f", ((double)lightUser.size()/(double)userCnt)*100);
         String ratio2 = String.format("%.2f", ((double)proUser.size()/(double)userCnt)*100);
-        Map<String, String> modeCnt=new HashMap<>();
+        Map<String, Object> modeCnt=new HashMap<>();
         modeCnt.put("프로 유저 비율",ratio1);
         modeCnt.put("라이트 유저 비율",ratio2);
         return modeCnt;

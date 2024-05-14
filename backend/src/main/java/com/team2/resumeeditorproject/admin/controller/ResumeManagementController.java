@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.service.ResumeManagementService;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
-import com.team2.resumeeditorproject.user.dto.UserDTO;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -54,11 +53,7 @@ public class ResumeManagementController {
             resumeDtoList.add(rbDto);
         }
         Map<String, Object> response = new HashMap<>();
-        response.put("status", "Success");
-        response.put("time", new Date());
-        response.put("response", "자소서 목록 가져오기 성공");
-        response.put("result", resumeDtoList);
-
+        response.put("자소서 게시글 목록", resumeDtoList);
         return ResponseEntity.ok().body(response);
     }
 
@@ -164,4 +159,6 @@ public class ResumeManagementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+
 }

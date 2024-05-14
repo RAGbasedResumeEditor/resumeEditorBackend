@@ -79,7 +79,7 @@ public class AdminController {
     }
 
     @GetMapping("/user/wish/{wish}")
-    public ResponseEntity<Map<String,Object>> getUserWish(@RequestParam("wish") String wish){
+    public ResponseEntity<Map<String,Object>> getUserWish(@PathVariable("wish") String wish){
 
         try {
             Map<String,Object> response=adminService.wishCnt(wish);
@@ -122,7 +122,7 @@ public class AdminController {
     }
 
     @GetMapping("/resume/company/{company}")
-    public ResponseEntity<Map<String,Object>> getResumeStatByCompany(@RequestParam("company") String company){
+    public ResponseEntity<Map<String,Object>> getResumeStatByCompany(@PathVariable("company") String company){
         try {
             Map<String, Object> response=adminService.CompResumeCnt(company);
             return ResponseEntity.ok().body(response);
@@ -136,7 +136,7 @@ public class AdminController {
     }
 
     @GetMapping("/resume/occupation/{occupation}")
-    public ResponseEntity<Map<String,Object>> getResumeStatByOccupation(@RequestParam("occupation") String occupation){
+    public ResponseEntity<Map<String,Object>> getResumeStatByOccupation(@PathVariable("occupation") String occupation){
         try {
             Map<String, Object> response=adminService.OccupResumeCnt(occupation);
             return ResponseEntity.ok().body(response);

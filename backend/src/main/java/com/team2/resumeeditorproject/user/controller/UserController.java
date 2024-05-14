@@ -51,16 +51,22 @@ public class UserController extends HttpServlet {
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
         Map<String,Object> response=new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
-        try{ //회원가입 성공 시
+        try{ //회원가입 처리
+            if(userService.checkUsernameDuplicate(userDto.getUsername())){
+                errorResponse.put("status","Fail");
+                errorResponse.put("time",new Date());
+                errorResponse.put("response", "이미 존재하는 유저입니다.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            }
             Long result= userService.signup(userDto);
-            response.put("status","Success"); //1. 상태(실패)
-            response.put("time", new Date()); //2. 시간
-            response.put("response","회원가입 성공"); //3. 메시지 내용(성공)
+            response.put("status","Success");
+            response.put("time", new Date());
+            response.put("response","회원가입 성공");
             return ResponseEntity.ok(response);
         }catch(Exception e){ // 회원가입 실패 시
-            errorResponse.put("status","Fail"); //1. 상태(실패)
-            errorResponse.put("time",new Date()); //2. 시간
-            errorResponse.put("response", "서버 오류입니다."); //3. 메시지 내용(에러)
+            errorResponse.put("status","Fail");
+            errorResponse.put("time",new Date());
+            errorResponse.put("response", "서버 오류입니다.");
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
@@ -95,27 +101,23 @@ public class UserController extends HttpServlet {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
             }
     }
-    /*
-      @PostMapping("/signup/exists/email")
-      public ResponseEntity<Map<String,Object>> checkEmailDuplicate(@RequestParam("email") String email){
-          Map<String,Object> response=new HashMap<>();
-          Map<String,Object> errorResponse=new HashMap<>();
-          try{
-              boolean result= userService.checkEmailDuplicate(email);
-              //System.out.println("email check result (중복 시 true): "+result);
-              response.put("status","Success");
-              response.put("result",result+"");
-              response.put("time", new Date());
-              response.put("response", "이메일 중복 여부 확인 성공");
-              return ResponseEntity.ok(response);
-          }catch(Exception e){
-              errorResponse.put("status","Fail");
-              errorResponse.put("time",new Date());
-              errorResponse.put("response", "서버 오류입니다.");
-              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-          }
-      }
-  */
+
+    @PostMapping("/signup/exists/email")
+    public ResponseEntity<Map<String,Object>> checkEmailDuplicate(@RequestBody UserDTO userDto){
+        Map<String,Object> response=new HashMap<>();
+        Map<String,Object> errorResponse=new HashMap<>();
+        try{
+            boolean result= userService.checkEmailDuplicate(userDto.getEmail());
+            response.put("isEmailExists",result);
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            errorResponse.put("status","Fail");
+            errorResponse.put("time",new Date());
+            errorResponse.put("response", "서버 오류입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
     //회원탈퇴
     @PostMapping("/user/delete")
     public ResponseEntity<Map<String, Object>> withdraw(HttpServletRequest req) throws AuthenticationException{
@@ -133,49 +135,28 @@ public class UserController extends HttpServlet {
         Map<String,Object> response=new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
 
-        //유효성 검사
-        if(userDto.getUNum()==null){
+        try { //탈퇴처리
+            if(!userService.checkUserExist(uNum)){
+                errorResponse.put("status","Fail");
+                errorResponse.put("time",new Date());
+                errorResponse.put("response", "존재하지 않는 회원입니다.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            }
+            userService.deleteUser(uNum);
+            response.put("status", "Success");
+            response.put("time", new Date());
+            response.put("response", "회원탈퇴 완료.");
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
             errorResponse.put("status","Fail");
             errorResponse.put("time",new Date());
-            errorResponse.put("response", "존재하지 않는 회원입니다.");
+            errorResponse.put("response", "서버 오류입니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-        //탈퇴처리
-        userService.deleteUser(uNum);
-        response.put("status","Success");
-        response.put("time", new Date());
-        response.put("response", "회원탈퇴 완료.");
-        return ResponseEntity.ok(response);
     }
-    //회원 비밀번호 수정
-    @PostMapping("/user/edit/password")
-    public ResponseEntity<Map<String,Object>> pwEdit(HttpServletRequest req) throws AuthenticationException{
-        UserDTO userDto=new UserDTO();
-        try{
-            ObjectMapper objectMapper=new ObjectMapper();
-            ServletInputStream inputStream=req.getInputStream();
-            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            userDto=objectMapper.readValue(messageBody, UserDTO.class);
-        }catch(IOException e){
-            throw new RuntimeException(e);
-        }
-        Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
-        //유효성 검사
-        if(userDto.getUNum()==null){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "존재하지 않는 회원입니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-        userService.updateUser(userDto);
-        response.put("status","Success");
-        response.put("time", new Date());
-        response.put("response", "비밀번호 수정 완료.");
-        return ResponseEntity.ok(response);
-    }
+
     //회원정보 수정
-    @PostMapping("/user/edit")
+    @PostMapping("/user/update")
     public ResponseEntity<Map<String, Object>> edit(HttpServletRequest req) throws AuthenticationException{
         UserDTO userDto=new UserDTO();
         try{
@@ -189,18 +170,24 @@ public class UserController extends HttpServlet {
         Map<String,Object> response=new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
 
-        //유효성 검사
-        if(userDto.getUNum()==null){
+        //수정 처리
+        try {
+            if(!userService.checkUserExist(userDto.getUNum())){
+                errorResponse.put("status","Fail");
+                errorResponse.put("time",new Date());
+                errorResponse.put("response", "존재하지 않는 회원입니다.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            }
+            userService.updateUser(userDto);
+            response.put("status", "Success");
+            response.put("time", new Date());
+            response.put("response", "회원정보 수정 완료.");
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
             errorResponse.put("status","Fail");
             errorResponse.put("time",new Date());
-            errorResponse.put("response", "존재하지 않는 회원입니다.");
+            errorResponse.put("response", "서버 오류입니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-        //수정 처리
-        userService.updateUser(userDto);
-        response.put("status","Success");
-        response.put("time", new Date());
-        response.put("response", "회원정보 수정 완료.");
-        return ResponseEntity.ok(response);
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,22 +23,12 @@ public class UserServiceImpl implements UserService{
 
     //회원가입
     @Override
-    public Long signup(UserDTO userDto)   { //DB 저장
-
-        String userEmail=userDto.getEmail();
-        String userPassword=userDto.getPassword();
-
-        //중복 검사
-        Boolean isExists=userRepository.existsByEmail(userEmail);
-        if(isExists){
-            return -1L; //회원가입 실패
-        }
-
+    public Long signup(UserDTO userDto)   {
         //회원가입 진행
         User user=User.builder() // User Entity
-                .email(userEmail)
+                .email(userDto.getEmail())
                 .username(userDto.getUsername())
-                .password(bCryptPasswordEncoder.encode(userPassword))
+                .password(bCryptPasswordEncoder.encode(userDto.getPassword()))
                 .role("ROLE_USER") // 바꿀 예정
                 .birthDate(userDto.getBirthDate())
                 .age(userDto.getAge())
@@ -50,10 +41,10 @@ public class UserServiceImpl implements UserService{
                 .build();
         return userRepository.save(user).getUNum();
     }
-    /*@Override
+    @Override
     public Boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
-    }*/
+    }
     @Override
     public Boolean checkUsernameDuplicate(String username) {
         return userRepository.existsByUsername(username);
@@ -64,7 +55,8 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public int updateUserMode(long u_num) {
         return userRepository.updateUserMode(u_num);
-      
+    }
+
     //회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
     public void deleteUser(Long uNum){
@@ -79,16 +71,16 @@ public class UserServiceImpl implements UserService{
         userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
     }
 
-    //회원 비밀번호 수정
     @Override
-    @Transactional
-    public void updateUserPw(UserDTO userDto){
-        User user=userRepository.findById(userDto.getUNum()).orElseThrow(()->{
-            return new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
-        });
-        user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        userRepository.save(user);
+    public Boolean checkUserExist(Long uNum){
+        Optional<User> user=userRepository.findById(uNum);
+        if(user.isPresent()){
+            return true;
+        }else{
+            return false;
+        }
     }
+
     //회원정보 수정
     @Override
     @Transactional
@@ -96,13 +88,14 @@ public class UserServiceImpl implements UserService{
         User user=userRepository.findById(userDto.getUNum()).orElseThrow(()->{
             return new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
         });
+
+        user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         user.setGender(userDto.getGender());
         user.setBirthDate(userDto.getBirthDate());
         user.setStatus(userDto.getStatus());
         user.setCompany(userDto.getCompany());
         user.setOccupation(userDto.getOccupation());
         user.setWish(userDto.getWish());
-        user.setMode(userDto.getMode());
         userRepository.save(user);
     }
 }

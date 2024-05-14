@@ -19,17 +19,17 @@ public interface UserService {
     Long signup(UserDTO userDto);
     //Boolean checkEmailDuplicate(String email);
     Boolean checkUsernameDuplicate(String username);
-
+    Boolean checkEmailDuplicate(String email);
     /* eunbi */
     int updateUserMode(long u_num);
+
 
     //회원탈퇴
     void deleteUser(Long uNum);
     @Transactional
     @Scheduled(cron = "0 0 12 * * *") // 매일 오후 12시에 메서드 동작
     void deleteUserEnd();
-    //회원 비밀번호 수정
-    void updateUserPw(UserDTO userDto);
+    Boolean checkUserExist(Long uNum);
     //회원정보 수정
     @Transactional
     void updateUser(UserDTO userDto);

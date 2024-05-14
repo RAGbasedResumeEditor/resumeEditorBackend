@@ -10,14 +10,14 @@ import java.util.Map;
 //통계 관련 service
 public interface AdminService {
 
-    int userCnt();
-    Map<String, String> genderCnt();
-    String occupCnt(String occupation);
-    String wishCnt(String wish);
+    Map<String, Object> userCnt();
+    Map<String, Object> genderCnt();
+    Map<String, Object> occupCnt(String occupation);
+    Map<String, Object> wishCnt(String wish);
     Map<String, Integer> ageCnt();
-    Map<String, String> statusCnt();
+    Map<String, Object> statusCnt();
     Map<String, String> modeCnt();
 
-    void CompResumeCnt();
-    void OccupResumeCnt();
+    Map<String, Object> CompResumeCnt(String company);
+    Map<String, Object> OccupResumeCnt(String occupation);
 }

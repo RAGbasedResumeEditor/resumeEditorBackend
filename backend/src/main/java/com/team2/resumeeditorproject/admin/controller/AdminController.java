@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -25,14 +24,10 @@ public class AdminController {
 
     @GetMapping("/stat/user/count")
     public ResponseEntity<Map<String,Object>> getUserCnt(){
-        Map<String, Object> response = new HashMap<>();
+        Map<String,Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
-        Integer userCnt=null;
         try {
-            userCnt=adminService.userCnt();
-            response.put("status", "Success");
-            response.put("time", new Date());
-            response.put("response", "총 유저는 "+userCnt+"명입니다.");
+            response=adminService.userCnt();
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");
@@ -44,13 +39,9 @@ public class AdminController {
 
     @GetMapping("/stat/user/gender")
     public ResponseEntity<Map<String,Object>> getUserGender(){
-        Map<String, Object> response = new HashMap<>();
         Map<String, Object> errorResponse=new HashMap<>();
         try {
-            Map<String, String> genderCnt=adminService.genderCnt();
-            response.put("status", "Success");
-            response.put("time", new Date());
-            response.put("response", genderCnt);
+            Map<String, Object> response=adminService.genderCnt();
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");
@@ -73,14 +64,10 @@ public class AdminController {
         }
         String occupation=userDto.getOccupation();
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String,Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
         try {
-            System.out.println(occupation);
-            String occupCnt=adminService.occupCnt(occupation);
-            response.put("status", "Success");
-            response.put("time", new Date());
-            response.put("response", occupation+" "+occupCnt+"%");
+            response=adminService.occupCnt(occupation);
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");
@@ -124,10 +111,7 @@ public class AdminController {
         Map<String,Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
         try {
-            String wishCnt=adminService.wishCnt(wish);
-            response.put("status", "Success");
-            response.put("time", new Date());
-            response.put("response", wish+" "+wishCnt+"%");
+            response=adminService.wishCnt(wish);
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");
@@ -142,10 +126,7 @@ public class AdminController {
         Map<String,Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
         try {
-            Map<String, String> statusCnt=adminService.statusCnt();
-            response.put("status", "Success");
-            response.put("time", new Date());
-            response.put("response", statusCnt);
+            response=adminService.statusCnt();
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");
@@ -164,6 +145,56 @@ public class AdminController {
             response.put("status", "Success");
             response.put("time", new Date());
             response.put("response", modeCnt);
+            return ResponseEntity.ok().body(response);
+        }catch(Exception e){
+            errorResponse.put("status","Fail");
+            errorResponse.put("time",new Date());
+            errorResponse.put("response", "서버 오류입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    @GetMapping("stat/resume/company")
+    public ResponseEntity<Map<String,Object>> getResumeStatByCompany(HttpServletRequest req){
+        UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        String company=userDto.getCompany();
+        Map<String,Object> errorResponse=new HashMap<>();
+
+        try {
+            Map<String, Object> response=adminService.CompResumeCnt(company);
+            return ResponseEntity.ok().body(response);
+        }catch(Exception e){
+            errorResponse.put("status","Fail");
+            errorResponse.put("time",new Date());
+            errorResponse.put("response", "서버 오류입니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    @GetMapping("stat/resume/occupation")
+    public ResponseEntity<Map<String,Object>> getResumeStatByOccupation(HttpServletRequest req){
+        UserDTO userDto=new UserDTO();
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            ServletInputStream inputStream=req.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            userDto=objectMapper.readValue(messageBody, UserDTO.class);
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        String occupation=userDto.getOccupation();
+        Map<String,Object> errorResponse=new HashMap<>();
+
+        try {
+            Map<String, Object> response=adminService.OccupResumeCnt(occupation);
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
             errorResponse.put("status","Fail");

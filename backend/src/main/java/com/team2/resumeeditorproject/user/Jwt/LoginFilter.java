@@ -33,8 +33,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private RefreshRepository refreshRepository;
-    private UserRepository userRepository;
+    private final RefreshRepository refreshRepository;
+    private final UserRepository userRepository;
 
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository, UserRepository userRepository){
         this.authenticationManager=authenticationManager;
@@ -69,9 +69,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         return authenticationManager.authenticate(authToken);
     }
+
     @Override // 인증 성공 시
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
-        //Access/Refresh 토큰 발급-----------------------------------
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException{
+        //Access/Refresh 토큰 발급
         //유저 정보(username, role) 꺼내오기
         String username = authentication.getName();
 
@@ -82,6 +83,26 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 사용자 이름을 사용하여 사용자 정보를 조회하고 uNum 가져오기
         User user = userRepository.findByUsername(username);
+
+        Date delDate = user.getDelDate();
+        if(delDate != null){
+            // 탈퇴 회원인 경우 로그인 실패 처리
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("status", "Fail");
+            responseBody.put("time", new Date());
+            responseBody.put("response", "User has been deleted");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            try (PrintWriter out = response.getWriter()) {
+                objectMapper.writeValue(out, responseBody);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return;
+        }
+
         Long uNum = user.getUNum();
 
         //토큰 생성(JWTUtil 에서 발급한 응답 값 호출)
@@ -112,16 +133,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override // 인증 실패 시
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         System.out.println("Authentication fail");
-        response.setStatus(401); // 로그인 실패 시 401 응답 코드 반환
+        response.setStatus(401);
     }
 
     // refresh토큰을 DB에 저장하여 관리하기 위한 메서드
-    private void addRefreshEntity(String usenrname, String refresh, Long expiredMs) {
+    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
         Refresh refreshEntity = new Refresh();
-        refreshEntity.setUsername(usenrname);
+        refreshEntity.setUsername(username);
         refreshEntity.setRefresh(refresh);
         refreshEntity.setExpiration(date.toString());
 

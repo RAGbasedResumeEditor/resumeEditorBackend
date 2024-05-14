@@ -26,26 +26,24 @@ jobs:
             options:
               ports: "8088"
               env:
-                - name: DB_URL
-                  value: db_url
                 - name: DB_USERNAME
-                  value: db_username
+                  secret: db_username
                 - name: DB_PASSWORD
-                  value: db_password
+                  secret: db_password
                 - name: DB_HOST
-                  value: db_host
+                  secret: db_host
                 - name: DB_PORT
-                  value: db_port
+                  secret: db_port
                 - name: GPT_API_KEY
-                  value: gpt_api_key
+                  secret: gpt_api_key
                 - name: REDIS_HOST
-                  value: redis_host
+                  secret: redis_host
                 - name: REDIS_PORT
-                  value: redis_port
+                  secret: redis_port
                 - name: QDRANT_GRPC_HOST
-                  value: qdrant_grpc_host
+                  secret: qdrant_grpc_host
                 - name : QDRANT_API_KEY
-                  value: qdrant_api_key
+                  secret: qdrant_api_key
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git

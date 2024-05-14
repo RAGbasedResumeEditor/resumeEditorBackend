@@ -1,9 +1,8 @@
 package com.team2.resumeeditorproject.user.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-
+import lombok.Setter;
 import java.util.Date;
 
 @Data
@@ -25,4 +24,9 @@ public class UserDTO {
     private Date inDate;
     private Date delDate;
     private String authCode;
+
+    // 첨삭횟수 설정 메서드
+    @Setter
+    private int resumeEditCount; // 첨삭횟수 필드 추가
+
 }

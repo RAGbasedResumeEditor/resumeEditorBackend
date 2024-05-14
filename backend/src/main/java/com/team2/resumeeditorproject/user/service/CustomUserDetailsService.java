@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-// DB연결하여 회원 조회하기 위한 클래스
+// DB 연결하여 회원 조회하기 위한 클래스
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 

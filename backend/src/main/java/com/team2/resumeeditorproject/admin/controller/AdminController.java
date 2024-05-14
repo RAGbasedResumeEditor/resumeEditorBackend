@@ -20,12 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/stat")
 @RequiredArgsConstructor
 public class AdminController {
+
     private final AdminService adminService;
 
-    @GetMapping("/stat/user/count")
+    @GetMapping("/user")
     public ResponseEntity<Map<String,Object>> getUserCnt(){
         Map<String,Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
@@ -36,11 +37,11 @@ public class AdminController {
             errorResponse.put("status","Fail");
             errorResponse.put("time",new Date());
             errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
 
-    @GetMapping("/stat/user/gender")
+    @GetMapping("/user/gender")
     public ResponseEntity<Map<String,Object>> getUserGender(){
         Map<String, Object> errorResponse=new HashMap<>();
         try {
@@ -54,7 +55,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/stat/user/occupation")
+    @GetMapping("/user/occupation")
     public ResponseEntity<Map<String,Object>> getUserOccupation(HttpServletRequest req){
         UserDTO userDto=new UserDTO();
         try{
@@ -80,14 +81,12 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/stat/user/age")
+    @GetMapping("/user/age")
     public ResponseEntity<Map<String,Object>> getUserAge(){
         Map<String,Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
         try {
             Map<String, Integer> ageCnt=adminService.ageCnt();
-            response.put("status", "Success");
-            response.put("time", new Date());
             response.put("response", ageCnt);
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
@@ -98,7 +97,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/stat/user/wish")
+    @GetMapping("/user/wish")
     public ResponseEntity<Map<String,Object>> getUserWish(HttpServletRequest req){
         UserDTO userDto=new UserDTO();
         try{
@@ -124,7 +123,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/stat/user/status")
+    @GetMapping("/user/status")
     public ResponseEntity<Map<String,Object>> getUserStatus(){
         Map<String,Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
@@ -139,14 +138,12 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/stat/user/mode")
+    @GetMapping("/user/mode")
     public ResponseEntity<Map<String,Object>> getUserMode(){
         Map<String,Object> response = new HashMap<>();
         Map<String,Object> errorResponse=new HashMap<>();
         try {
             Map<String, String> modeCnt=adminService.modeCnt();
-            response.put("status", "Success");
-            response.put("time", new Date());
             response.put("response", modeCnt);
             return ResponseEntity.ok().body(response);
         }catch(Exception e){
@@ -157,7 +154,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("stat/resume/company")
+    @GetMapping("/resume/company")
     public ResponseEntity<Map<String,Object>> getResumeStatByCompany(HttpServletRequest req){
         UserDTO userDto=new UserDTO();
         try{
@@ -182,7 +179,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("stat/resume/occupation")
+    @GetMapping("/resume/occupation")
     public ResponseEntity<Map<String,Object>> getResumeStatByOccupation(HttpServletRequest req){
         UserDTO userDto=new UserDTO();
         try{

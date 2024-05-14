@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -55,5 +56,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public Boolean checkUsernameDuplicate(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    /* eunbi */
+    @Override
+    @Transactional
+    public int updateUserMode(long u_num) {
+        return userRepository.updateUserMode(u_num);
     }
 }

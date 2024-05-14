@@ -8,6 +8,7 @@ import com.team2.resumeeditorproject.resume.repository.RatingRepository;
 import com.team2.resumeeditorproject.resume.service.RatingService;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
+import com.team2.resumeeditorproject.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,10 +42,13 @@ public class ResumeBoardController {
     @Autowired
     private RatingRepository ratingRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     /* 게시글 목록 */
     @GetMapping("/list")
     public ResponseEntity<Map<String, Object>> getAllResumeBoards(@RequestParam("page") int page) {
-        int size = 3; // 한 페이지에 보여줄 게시글 수
+        int size = 5; // 한 페이지에 보여줄 게시글 수
 
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
@@ -66,16 +70,20 @@ public class ResumeBoardController {
                 formattedResult.put("rating_count", resumeBoard.getRating_count());
                 formattedResult.put("read_num", resumeBoard.getRead_num());
 
-                // 두 번째 요소는 Resume의 title
+                // 두 번째 요소는 Resume_board의 title
                 String title = (String) result[1];
                 formattedResult.put("title", title);
 
-                // 세 번째 요소는 Resume의 w_date
-                Date w_date = (Date) result[2];
+                // 세 번째 요소는 Resume의 content
+                String content = (String) result[2];
+                formattedResult.put("content", content);
+
+                // 네 번째 요소는 Resume의 w_date
+                Date w_date = (Date) result[3];
                 formattedResult.put("w_date", w_date);
 
-                // 네 번째 요소는 num - 정렬된 글번호
-                Long num = (Long) result[3];
+                // 다섯 번째 요소는 num - 정렬된 글번호
+                Long num = (Long) result[4];
                 formattedResult.put("num", num);
 
                 formattedResults.add(formattedResult);
@@ -136,13 +144,13 @@ public class ResumeBoardController {
             long u_num = (long) resultArray[3];
             responseData.put("u_num", u_num);
 
-            response.put("response", responseData);
-            response.put("time", today);
-            response.put("status", "Success");
+            // 다섯번째 요소는 username
+            String username = userRepository.findUsernameByUNum(u_num);
+            responseData.put("username", username);
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
-            response.put("response", "server error" + e.getMessage());
+            response.put("response", "server error");
             response.put("time", today);
             response.put("status", "Fail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -150,15 +158,20 @@ public class ResumeBoardController {
     }
 
     /* 게시글 검색 */
-    @GetMapping("/list/search") // 이거도 페이징 처리 해야함!!
-    public ResponseEntity<Map<String, Object>> search(@RequestParam("search_title") String searchTitle) {
+    @GetMapping("/list/search")
+    public ResponseEntity<Map<String, Object>> search(@RequestParam("keyword") String keyword, @RequestParam("page") int page) {
+        int size = 5; // 한 페이지에 보여줄 게시글 수
+
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
-            List<Object[]> results = resumeBoardService.searchBoard(searchTitle);
+            // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Object[]> resultsPage = resumeBoardService.searchBoard(keyword, pageable);
+
             List<Map<String, Object>> formattedResults = new ArrayList<>();
 
-            for (Object[] result : results) {
+            for (Object[] result : resultsPage.getContent()) {
                 Map<String, Object> formattedResult = new HashMap<>();
 
                 // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
@@ -169,18 +182,23 @@ public class ResumeBoardController {
                 formattedResult.put("read_num", resumeBoard.getRead_num());
                 formattedResult.put("title", resumeBoard.getTitle());
 
-                // 두 번째 요소는 Resume의 w_date
-                Date w_date = (Date) result[1];
+                // 두 번째 요소는 Resume의 content
+                String content = (String) result[1];
+                formattedResult.put("content", content);
+
+                // 세 번째 요소는 Resume의 w_date
+                Date w_date = (Date) result[2];
                 formattedResult.put("w_date", w_date);
 
-                // 세 번째 요소는 num
-                Long num = (Long) result[2];
+                // 네 번째 요소는 num
+                Long num = (Long) result[3];
                 formattedResult.put("num", num);
                 formattedResults.add(formattedResult);
             }
             response.put("response", formattedResults);
             response.put("time", today);
             response.put("status", "Success");
+            response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.put("response", "server error : search Fail");
@@ -236,10 +254,7 @@ public class ResumeBoardController {
             result.put("rating", afterRating);
             result.put("rating_count", rbDto.getRating_count());
 
-            response.put("response", result); // 업데이트 된 평균 별점/별점수 반환
-            response.put("time", today);
-            response.put("status", "Success");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.OK); // 업데이트 된 평균 별점/별점수 반환
         }catch (Exception e) {
             response.put("response", "server error : rating Fail " + e.getMessage());
             response.put("time", today);

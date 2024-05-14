@@ -20,4 +20,7 @@ public interface UserService {
     Long signup(UserDTO userDto); // 회원가입
     Boolean checkEmailDuplicate(String email);
     Boolean checkUsernameDuplicate(String username);
+
+    /* eunbi */
+    int updateUserMode(long u_num);
 }

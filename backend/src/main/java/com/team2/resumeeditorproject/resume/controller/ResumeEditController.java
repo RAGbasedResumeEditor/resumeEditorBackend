@@ -10,6 +10,7 @@ import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
 import com.team2.resumeeditorproject.resume.service.ResumeService;
+import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,9 @@ public class ResumeEditController {
     @Autowired
     private ResumeBoardService resumeBoardService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> insertResumeEdit(@RequestBody Map<String, Object> requestBody) {
         Map<String, String> response = new HashMap<>();
@@ -64,7 +68,7 @@ public class ResumeEditController {
 
             String resMsg = "resumeEdit/resume table insert success";
 
-            // mode가 pro(2)인 경우, resume_board 테이블에 저장
+            // mode가 pro(2)인 경우, resume_board 테이블에 저장하고 user mode 2로 변경
             if(mode==2) {
                 ResumeBoardDTO resumeBoardDTO = new ResumeBoardDTO();
                 String title = resumeEditDTO.getCompany() + " " + resumeEditDTO.getOccupation();
@@ -74,6 +78,9 @@ public class ResumeEditController {
                 resumeBoardDTO.setRating_count(0);
                 resumeBoardDTO.setRead_num(0);
                 resumeBoardService.insertResumeBoard(resumeBoardDTO);
+
+                int userModeUpdate = userService.updateUserMode(resumeEditDTO.getU_num());
+
                 resMsg += ", resume_board table insert success";
             }
 

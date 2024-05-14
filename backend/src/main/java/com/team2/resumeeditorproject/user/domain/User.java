@@ -2,6 +2,9 @@ package com.team2.resumeeditorproject.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.hibernate.sql.ast.Clause;
 
 import java.util.Date;
 
@@ -9,6 +12,8 @@ import java.util.Date;
 @Getter
 @Entity
 @Table(name="User")
+@SQLDelete(sql = "UPDATE user SET del_date = current_timestamp WHERE u_num = ?") // soft delete
+@Where(clause="del_date is null")
 @NoArgsConstructor
 public class User {
     @Id

@@ -19,7 +19,7 @@ import java.util.List;
  * @since : 04/30/24
  */
 public interface ResumeBoardRepository extends JpaRepository<ResumeBoard, Long> {
-    @Query("SELECT rb, rb.title, r.w_date, row_number() over(order by rb.RNum asc) as num\n" +
+    @Query("SELECT rb, rb.title, r.content, r.w_date, row_number() over(order by rb.RNum asc) as num\n" +
             "FROM ResumeBoard rb JOIN Resume r ON rb.RNum = r.r_num\n" +
             "order by num desc")
     Page<Object[]> findAllResumeBoards(Pageable pageable);
@@ -30,11 +30,11 @@ public interface ResumeBoardRepository extends JpaRepository<ResumeBoard, Long> 
             "WHERE rb.RNum = :r_num")
     Object findResumeBoard(@Param("r_num") Long r_num);
 
-    @Query("SELECT rb, r.w_date, row_number() over(order by rb.RNum asc) as num\n" +
-            "FROM ResumeBoard rb JOIN Resume r ON rb.RNum = r.r_num\n" +
-            "WHERE rb.title LIKE %:title%\n" +
+    @Query("SELECT rb, r.content, r.w_date, row_number() over(order by rb.RNum asc) as num " +
+            "FROM ResumeBoard rb JOIN Resume r ON rb.RNum = r.r_num " +
+            "WHERE rb.title LIKE %:keyword% OR r.content LIKE %:keyword% " +
             "ORDER BY num DESC")
-    List<Object[]> findSearchBoard(@Param("title") String title);
+    Page<Object[]> findSearchBoard(@Param("keyword") String keyword, Pageable pageable);
 
     ResumeBoard findByRNum(Long r_num);
 

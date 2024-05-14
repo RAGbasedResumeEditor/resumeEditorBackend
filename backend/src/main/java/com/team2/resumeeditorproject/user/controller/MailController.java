@@ -81,9 +81,9 @@ public class MailController {
             response.put("response","회원가입 이메일 인증 성공");
             return ResponseEntity.ok(response);
         }else if(!checked){
-            response.put("status", "Fail");
-            response.put("time", new Date());
-            response.put("response","회원가입 이메일 인증 성공 실패. 입력하신 이메일 주소 혹은 인증코드를 확인해주세요.");
+            errorResponse.put("status", "Fail");
+            errorResponse.put("time", new Date());
+            errorResponse.put("response","회원가입 이메일 인증 실패. 입력하신 이메일 주소 혹은 인증코드를 확인해주세요.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }else{
             errorResponse.put("status","Fail");

@@ -40,7 +40,6 @@ public class UserManagementController {
 
         for(User user : userList){
             long uNum = user.getUNum();
-
             int resumeEditCount = adminResumeEditRepository.countByRNum(uNum);
 
             UserDTO userDTO = new UserDTO();

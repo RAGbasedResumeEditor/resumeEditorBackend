@@ -26,6 +26,16 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
 
     // 회원 탈퇴
     void deleteByDelDateLessThanEqual(LocalDateTime localDateTime);
+
+    // ROLE_USER 조회
+    @Query("SELECT u FROM User u WHERE u.role = :role")
+    List<User> findByRole(@Param("role") String role);
+    List<User> findByGender(char gender);
+    List<User> findByAgeBetween(int startAge, int endAge);
+    List<User> findByStatus(int status);
+    List<User> findByMode(int mode);
+    List<User> findByWish(String wish);
+    List<User> findByOccupation(String occupation);
 }
 
 

@@ -20,7 +20,7 @@ public interface ResumeBoardService {
 
     Object getResumeBoard(long r_num);
 
-    List<Object[]> searchBoard(String title);
+    Page<Object[]> searchBoard(String keyword, Pageable pageable);
 
     ResumeBoardDTO getResumeBoardForRating(Long r_num);
 

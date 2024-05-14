@@ -49,8 +49,8 @@ public class ResumeBoardServiceImpl implements ResumeBoardService{
     }
 
     @Override
-    public List<Object[]> searchBoard(String title) {
-        return resumeBoardRepository.findSearchBoard(title);
+    public Page<Object[]> searchBoard(String keyword, Pageable pageable) {
+        return resumeBoardRepository.findSearchBoard(keyword, pageable);
     }
 
     @Override

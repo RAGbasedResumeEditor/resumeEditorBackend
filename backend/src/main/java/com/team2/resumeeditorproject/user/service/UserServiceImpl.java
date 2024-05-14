@@ -41,10 +41,10 @@ public class UserServiceImpl implements UserService{
                 .build();
         return userRepository.save(user).getUNum();
     }
-    /*@Override
+    @Override
     public Boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
-    }*/
+    }
     @Override
     public Boolean checkUsernameDuplicate(String username) {
         return userRepository.existsByUsername(username);

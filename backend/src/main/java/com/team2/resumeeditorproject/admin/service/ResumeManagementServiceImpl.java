@@ -1,11 +1,12 @@
 package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
-import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +20,12 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
 
     private final AdminResumeBoardRepository adResBoardRepository;
 
+
     @Override
-    public List<ResumeBoard> getAllResume(){
-        return adResBoardRepository.findAll();
+    public Page<ResumeBoard> getResumeBoards(int page) {
+        Pageable pageable=PageRequest.of(page, 10);
+        Page<ResumeBoard> pageResult=adResBoardRepository.findAll(pageable);
+        return pageResult;
     }
 
     @Override

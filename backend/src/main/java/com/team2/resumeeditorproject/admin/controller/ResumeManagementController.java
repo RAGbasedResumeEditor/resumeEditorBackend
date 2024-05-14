@@ -7,6 +7,7 @@ import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,8 +30,8 @@ public class ResumeManagementController {
 
     //자소서 목록 가져오기
     @GetMapping("/resume/list")
-    public ResponseEntity<Map<String, Object>> resumeList(){
-        List<ResumeBoard> resumeList=rmService.getAllResume();
+    public ResponseEntity<Map<String, Object>> getAllresumeBoard(@RequestBody ResumeBoardDTO rbDto){
+        Page<ResumeBoard> resumeList=rmService.getResumeBoards(rbDto.getPage());
 
         Map<String,Object> errorResponse=new HashMap<>();
         if(resumeList.isEmpty()){
@@ -41,16 +42,15 @@ public class ResumeManagementController {
         }
 
         List<ResumeBoardDTO> resumeDtoList=new ArrayList<>();
-
         for(ResumeBoard rb:resumeList){
-            ResumeBoardDTO rbDto=new ResumeBoardDTO();
-            rbDto.setRating(rb.getRating());
-            rbDto.setTitle(rb.getTitle());
-            rbDto.setRNum(rb.getRNum());
-            rbDto.setRead_num(rb.getRead_num());
-            rbDto.setRating_count(rb.getRating_count());
+            ResumeBoardDTO rbDto2=new ResumeBoardDTO();
+            rbDto2.setRating(rb.getRating());
+            rbDto2.setTitle(rb.getTitle());
+            rbDto2.setRNum(rb.getRNum());
+            rbDto2.setRead_num(rb.getRead_num());
+            rbDto2.setRating_count(rb.getRating_count());
 
-            resumeDtoList.add(rbDto);
+            resumeDtoList.add(rbDto2);
         }
         Map<String, Object> response = new HashMap<>();
         response.put("resumeList", resumeDtoList);
@@ -154,6 +154,4 @@ public class ResumeManagementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
-
-
 }

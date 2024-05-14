@@ -59,6 +59,12 @@ public class UserServiceImpl implements UserService{
         return userRepository.existsByUsername(username);
     }
 
+    /* eunbi */
+    @Override
+    @Transactional
+    public int updateUserMode(long u_num) {
+        return userRepository.updateUserMode(u_num);
+      
     //회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
     public void deleteUser(Long uNum){

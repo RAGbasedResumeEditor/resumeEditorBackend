@@ -11,4 +11,6 @@ public interface ResumeManagementService {
     void updateResume(ResumeBoardDTO rbDto);
     List<ResumeBoard> searchByTitle(String title, int page, int size);
     List<ResumeBoard> searchByRating(Float rating, int page, int size);
+
+    Boolean checkResumeExists(Long rNum);
 }

@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
+import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +58,15 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
 
         PageRequest pageRequest=PageRequest.of(page-1, size, Sort.by("RNum").descending());
         return adResBoardRepository.findByRatingBetween(rating, rating+0.99f);
+    }
+
+    @Override
+    public Boolean checkResumeExists(Long rNum) {
+        Optional<ResumeBoard> rb=adResBoardRepository.findById(rNum);
+        if(rb.isPresent()){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

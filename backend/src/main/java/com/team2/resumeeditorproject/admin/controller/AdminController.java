@@ -5,13 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
 @Controller
 @RequestMapping("/admin/stat")
@@ -21,131 +20,46 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping("/user")
-    public ResponseEntity<Map<String,Object>> getUserCnt(){
+    public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name="group", required = true) String group,
+                                                         @RequestParam(name="occupation", required = false) String occupation,
+                                                         @RequestParam(name="wish", required = false) String wish){
         try {
-            Map<String,Object> response=adminService.userCnt();
-            return ResponseEntity.ok().body(response);
+            if(group.equals("count")){
+                return createResponse(adminService.userCnt());
+            }else if(group.equals("gender")){
+                return createResponse(adminService.genderCnt());
+            }else if(group.equals("age")){
+                return createResponse(adminService.ageCnt());
+            }else if(group.equals("status")){
+                return createResponse(adminService.statusCnt());
+            }else if(group.equals("mode")){
+                return createResponse(adminService.modeCnt());
+            }else if(group.equals("occupation")){
+                return createResponse(adminService.occupCnt(occupation));
+            }else if(group.equals("wish")){
+                return createResponse(adminService.wishCnt(wish));
+            } else{
+                return createBadReqResponse("잘못된 요청입니다.");
+            }
         }catch(Exception e){
-            Map<String,Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return createServerErrResponse();
         }
     }
 
-    @GetMapping("/user/gender")
-    public ResponseEntity<Map<String,Object>> getUserGender(){
+    @GetMapping("/resume")
+    public ResponseEntity<Map<String,Object>> getResumeStatByCompany(@RequestParam(name="group", required = true, defaultValue = "company") String group,
+                                                                     @RequestParam(name="company", required = false) String company,
+                                                                     @RequestParam(name="occupation", required=false) String occupation){
         try {
-            Map<String, Object> response=adminService.genderCnt();
-            return ResponseEntity.ok().body(response);
+            if(group.equals("company")){
+                return createResponse(adminService.CompResumeCnt(company));
+            }else if(group.equals("occupation")){
+                return createResponse(adminService.OccupResumeCnt(occupation));
+            }else{
+                return createBadReqResponse("잘못된 요청입니다.");
+            }
         }catch(Exception e){
-            Map<String, Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
-    }
-
-    @GetMapping("/user/occupation/{occupation}")
-    public ResponseEntity<Map<String,Object>> getUserOccupation(@PathVariable("occupation") String occupation){
-        try {
-            Map<String,Object> response=adminService.occupCnt(occupation);
-            return ResponseEntity.ok().body(response);
-        }catch(Exception e){
-            Map<String,Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
-    }
-
-    @GetMapping("/user/age")
-    public ResponseEntity<Map<String,Object>> getUserAge(){
-        try {
-            Map<String,Object> response = new HashMap<>();
-            Map<String, Integer> ageCnt=adminService.ageCnt();
-            response.put("response", ageCnt);
-            return ResponseEntity.ok().body(response);
-        }catch(Exception e){
-            Map<String,Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
-    }
-
-    @GetMapping("/user/wish/{wish}")
-    public ResponseEntity<Map<String,Object>> getUserWish(@PathVariable("wish") String wish){
-
-        try {
-            Map<String,Object> response=adminService.wishCnt(wish);
-            return ResponseEntity.ok().body(response);
-        }catch(Exception e){
-            Map<String,Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
-    }
-
-    @GetMapping("/user/status")
-    public ResponseEntity<Map<String,Object>> getUserStatus(){
-        try {
-            Map<String,Object> response=adminService.statusCnt();
-            return ResponseEntity.ok().body(response);
-        }catch(Exception e){
-            Map<String,Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
-    }
-
-    @GetMapping("/user/mode")
-    public ResponseEntity<Map<String,Object>> getUserMode(){
-        try {
-            Map<String, Object> modeCnt=adminService.modeCnt();
-            return ResponseEntity.ok().body(modeCnt);
-        }catch(Exception e){
-            Map<String,Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
-    }
-
-    @GetMapping("/resume/company/{company}")
-    public ResponseEntity<Map<String,Object>> getResumeStatByCompany(@PathVariable("company") String company){
-        try {
-            Map<String, Object> response=adminService.CompResumeCnt(company);
-            return ResponseEntity.ok().body(response);
-        }catch(Exception e){
-            Map<String,Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
-    }
-
-    @GetMapping("/resume/occupation/{occupation}")
-    public ResponseEntity<Map<String,Object>> getResumeStatByOccupation(@PathVariable("occupation") String occupation){
-        try {
-            Map<String, Object> response=adminService.OccupResumeCnt(occupation);
-            return ResponseEntity.ok().body(response);
-        }catch(Exception e){
-            Map<String,Object> errorResponse=new HashMap<>();
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return createServerErrResponse();
         }
     }
 }

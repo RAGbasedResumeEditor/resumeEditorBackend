@@ -99,7 +99,6 @@ public class UserManagementController {
         }else{
              userList = userManagementService.getAllUsersByRolePaged(role, pageable);
         }
-
         return createResponse(userList);
     }
 

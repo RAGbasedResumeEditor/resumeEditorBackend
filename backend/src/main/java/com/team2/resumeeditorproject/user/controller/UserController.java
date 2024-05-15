@@ -9,9 +9,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,30 +23,17 @@ public class UserController extends HttpServlet {
     //회원가입
     @PostMapping(value="/signup")
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
-        Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
         try{
             if(userService.checkUsernameDuplicate(userDto.getUsername())){
-                errorResponse.put("status","Fail");
-                errorResponse.put("time",new Date());
-                errorResponse.put("response", "이미 존재하는 username 입니다.");
-                return ResponseEntity.badRequest().body(errorResponse);
+                return createBadReqResponse("이미 존재하는 username 입니다.");
             }
             if(userService.checkEmailDuplicate(userDto.getEmail())){
-                errorResponse.put("status","Fail");
-                errorResponse.put("time",new Date());
-                errorResponse.put("response", "이미 존재하는 email 입니다.");
-                return ResponseEntity.badRequest().body(errorResponse);
+                return createBadReqResponse("이미 존재하는 email 입니다.");
             }
             userService.signup(userDto);//회원가입 처리
-            response.put("status","Success");
-            response.put("response","회원가입 성공");
-            return ResponseEntity.ok(response);
+            return createResponse("회원가입 성공");
         }catch(Exception e){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return createServerErrResponse();
         }
     }//signup()
 /*
@@ -102,57 +90,33 @@ public class UserController extends HttpServlet {
         Map<String,Object> errorResponse=new HashMap<>();
         Long unum=userDto.getUNum();
         if(unum==null){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "삭제할 unum을 입력해주세요.");
-            return ResponseEntity.badRequest().body(errorResponse);
+            return createBadReqResponse("삭제할 unum을 입력해주세요.");
         }
         try {
             if(!userService.checkUserExist(unum)){
-                errorResponse.put("status","Fail");
-                errorResponse.put("time",new Date());
-                errorResponse.put("response", unum+"번 유저는 존재하지 않는 회원입니다.");
-                return ResponseEntity.badRequest().body(errorResponse);
+                return createBadReqResponse(unum+"번 유저는 존재하지 않는 회원입니다.");
             }
             userService.deleteUser(unum);//탈퇴처리
-            response.put("status","Success");
-            response.put("response", unum+"번 회원 탈퇴 완료.");
-            return ResponseEntity.ok(response);
+            return createResponse( unum+"번 회원 탈퇴 완료.");
         }catch(Exception e){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return createServerErrResponse();
         }
     }
 
     //회원정보 수정
     @PostMapping("/user/update")
     public ResponseEntity<Map<String, Object>> edit(@RequestBody UserDTO userDto) throws AuthenticationException{
-        Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
         try {
             if(!userService.checkUserExist(userDto.getUNum())){
-                errorResponse.put("status","Fail");
-                errorResponse.put("time",new Date());
-                errorResponse.put("response", userDto.getUNum()+"번 유저는 존재하지 않는 회원입니다.");
-                return ResponseEntity.badRequest().body(errorResponse);
+                return createBadReqResponse(userDto.getUNum()+"번 유저는 존재하지 않는 회원입니다.");
             }
             if(userDto.getUNum()==null||userDto.getPassword()==null||userDto.getBirthDate()==null){
-                errorResponse.put("status","Fail");
-                errorResponse.put("time",new Date());
-                errorResponse.put("response", "비밀번호와 생년월일은 반드시 입력해야합니다.");
-                return ResponseEntity.badRequest().body(errorResponse);
+                return createBadReqResponse("비밀번호와 생년월일은 반드시 입력해야합니다.");
             }
             userService.updateUser(userDto);//수정 처리
-            response.put("status", "Success");
-            response.put("response", userDto.getUNum()+"번 회원 수정 완료.");
-            return ResponseEntity.ok(response);
+            return createResponse(userDto.getUNum()+"번 회원 수정 완료.");
         }catch(Exception e){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return createServerErrResponse();
         }
     }
 }

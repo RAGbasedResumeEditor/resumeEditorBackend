@@ -25,11 +25,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public Long signup(UserDTO userDto)   {
         //회원가입 진행
-        User user=User.builder() // User Entity
+        User user=User.builder()
                 .email(userDto.getEmail())
                 .username(userDto.getUsername())
                 .password(bCryptPasswordEncoder.encode(userDto.getPassword()))
-                .role("ROLE_USER") // 바꿀 예정
+                .role("ROLE_USER")
                 .birthDate(userDto.getBirthDate())
                 .age(userDto.getAge())
                 .gender(userDto.getGender())
@@ -49,20 +49,17 @@ public class UserServiceImpl implements UserService{
     public Boolean checkUsernameDuplicate(String username) {
         return userRepository.existsByUsername(username);
     }
-
     /* eunbi */
     @Override
     @Transactional
     public int updateUserMode(long u_num) {
         return userRepository.updateUserMode(u_num);
     }
-
     //회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
     public void deleteUser(Long uNum){
         userRepository.deleteById(uNum);
     }
-
     //30일 지나면 테이블에서 해당 회원 삭제
     @Override
     @Transactional
@@ -70,7 +67,6 @@ public class UserServiceImpl implements UserService{
     public void deleteUserEnd(){
         userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
     }
-
     @Override
     public Boolean checkUserExist(Long uNum){
         Optional<User> user=userRepository.findById(uNum);
@@ -80,18 +76,15 @@ public class UserServiceImpl implements UserService{
             return false;
         }
     }
-
     //회원정보 수정
     @Override
     @Transactional
     public void updateUser(UserDTO userDto) {
-        User user=userRepository.findById(userDto.getUNum()).orElseThrow(()->{
-            return new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
-        });
-
+        User user=userRepository.findById(userDto.getUNum()).orElseThrow(()->{return null;});
         user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         user.setGender(userDto.getGender());
         user.setBirthDate(userDto.getBirthDate());
+        user.setAge(userDto.getAge());
         user.setStatus(userDto.getStatus());
         user.setCompany(userDto.getCompany());
         user.setOccupation(userDto.getOccupation());

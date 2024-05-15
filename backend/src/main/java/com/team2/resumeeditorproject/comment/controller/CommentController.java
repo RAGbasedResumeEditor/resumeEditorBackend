@@ -19,8 +19,8 @@ public class CommentController {
     private CommentService commentService;
 
     /* 댓글 작성하기 */
-    @PostMapping("/{num}/comment")
-    public ResponseEntity<Map<String, Object>> writeComment(@PathVariable("num") Long num, @RequestBody CommentDTO commentDTO){
+    @PostMapping("/comment")
+    public ResponseEntity<Map<String, Object>> writeComment(@RequestBody CommentDTO commentDTO){
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try{
@@ -113,7 +113,7 @@ public class CommentController {
             response.put("status", "Success");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e) {
-            response.put("response", "server error : comment list get Fail");
+            response.put("response", "server error : comment list get Fail " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

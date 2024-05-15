@@ -1,24 +1,17 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.service.ResumeManagementService;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -27,64 +20,54 @@ public class ResumeManagementController {
 
     private final ResumeManagementService rmService;
 
-    //자소서 목록 가져오기
-    @GetMapping("/resume/list")
-    public ResponseEntity<Map<String, Object>> resumeList(){
-        List<ResumeBoard> resumeList=rmService.getAllResume();
-
-        Map<String,Object> errorResponse=new HashMap<>();
-        if(resumeList.isEmpty()){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "자소서가 존재하지 않습니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-
-        List<ResumeBoardDTO> resumeDtoList=new ArrayList<>();
-
-        for(ResumeBoard rb:resumeList){
-            ResumeBoardDTO rbDto=new ResumeBoardDTO();
+    public static List<ResumeBoardDTO> createRbList(Page<ResumeBoard> rbList) {
+        List<ResumeBoardDTO> rbDtoList = new ArrayList<>();
+        for (ResumeBoard rb : rbList) {
+            ResumeBoardDTO rbDto = new ResumeBoardDTO();
             rbDto.setRating(rb.getRating());
             rbDto.setTitle(rb.getTitle());
             rbDto.setRNum(rb.getRNum());
             rbDto.setRead_num(rb.getRead_num());
             rbDto.setRating_count(rb.getRating_count());
-
-            resumeDtoList.add(rbDto);
+            rbDtoList.add(rbDto);
         }
-        Map<String, Object> response = new HashMap<>();
-        response.put("resumeList", resumeDtoList);
-        return ResponseEntity.ok().body(response);
+        return rbDtoList;
+    }
+
+    //자소서 목록 가져오기
+    @GetMapping("/resume/list")
+    public ResponseEntity<Map<String, Object>> getAllResumeBoard(@RequestParam("page") int page){
+        Page<ResumeBoard> rbList=rmService.getResumeBoards(page);
+        int totalPage=rbList.getTotalPages();
+
+        if(page>totalPage) {
+            page=totalPage;
+            rbList=rmService.getResumeBoards(page);
+        }
+
+        if(rbList.isEmpty()){
+            return createBadReqResponse("자소서가 존재하지 않습니다.");
+        }
+
+        return createPagedResponse(totalPage,createRbList(rbList));
     }
 
     //자소서 삭제
-    @PostMapping("/resume/delete")
-    public ResponseEntity<Map<String, Object>> deleteResume(@RequestBody ResumeBoardDTO rbDto){
-        Map<String,Object> errorResponse1=new HashMap<>();
-        Map<String,Object> errorResponse2=new HashMap<>();
+    @PostMapping("/resume/delete/{rNum}")
+    public ResponseEntity<Map<String, Object>> deleteResume(@PathVariable("rNum") long rNum){
         try {
-            if(!rmService.checkResumeExists(rbDto.getRNum())){
-                errorResponse1.put("status","Fail");
-                errorResponse1.put("time",new Date());
-                errorResponse1.put("response", "존재하지 않는 자소서입니다.");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse1);
+            if(!rmService.checkResumeExists(rNum)){
+                return createBadReqResponse("존재하지 않는 자소서입니다.");
             }
-            rmService.deleteResume(rbDto);
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", "Success");
-            response.put("time", new Date());
-            response.put("response", rbDto.getRNum() + "번 자소서 삭제 성공");
-            return ResponseEntity.ok().body(response);
+            rmService.deleteResume(rNum);
+            return createResponse(rNum+"번 자소서 삭제 성공");
         }catch(Exception e){
-            errorResponse2.put("status","Fail");
-            errorResponse2.put("time",new Date());
-            errorResponse2.put("response", "서버 오류입니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse2);
+            return createServerErrResponse();
         }
     }
-
+/*
     //자소서 수정
-    @PostMapping("resume/update")
+    @PostMapping("/resume/update")
     public ResponseEntity<Map<String, Object>> updateResume(@RequestBody ResumeBoardDTO rbDto){
 
         Map<String,Object> response=new HashMap<>();
@@ -110,50 +93,50 @@ public class ResumeManagementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse2);
         }
     }
-
+*/
     //자소서 검색
-    @GetMapping("/resume/list/title")
-    public ResponseEntity<Map<String, Object>> searchTitle(@RequestBody ResumeBoardDTO rbDto){
-        Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
+    @GetMapping("/resume/search/title")
+    public ResponseEntity<Map<String, Object>> searchTitle(@RequestParam("title") String title, @RequestParam("page") int page){
         try{
-            List<ResumeBoard> rbList=rmService.searchByTitle(rbDto.getTitle(), 1, 10);
-            response.put("response", rbList);
-            return ResponseEntity.ok(response);
+            Page<ResumeBoard> rbList=rmService.searchByTitle(title, page);
+
+            int totalPage=rbList.getTotalPages();
+
+            if(page>totalPage) {
+                page=totalPage;
+                rbList=rmService.searchByTitle(title, page);
+            }
+
+            if(rbList.isEmpty()){
+                return createBadReqResponse("자소서가 존재하지 않습니다.");
+            }
+
+            return createPagedResponse(totalPage,createRbList(rbList));
         }catch(Exception e){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return createServerErrResponse();
         }
     }
 
-    @GetMapping("/resume/list/rating")
-    public ResponseEntity<Map<String, Object>> searchRating(HttpServletRequest req){
-        ResumeBoardDTO rbDto=new ResumeBoardDTO();
-        try{
-            ObjectMapper objectMapper=new ObjectMapper();
-            ServletInputStream inputStream=req.getInputStream();
-            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            rbDto=objectMapper.readValue(messageBody, ResumeBoardDTO.class);
-        }catch(IOException e){
-            throw new RuntimeException(e);
-        }
-        Float rating=rbDto.getRating();
-
-        Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
+    @GetMapping("/resume/search/rating")
+    public ResponseEntity<Map<String, Object>> searchRating(@RequestParam("rating")Float rating, @RequestParam("page") int page){
         try {
-            List<ResumeBoard> rbList = rmService.searchByRating(rating, 1, 10);
-            response.put("response", rbList);
-            return ResponseEntity.ok(response);
+            Page<ResumeBoard> rbList = rmService.searchByRating(rating, page);
+
+            int totalPage=rbList.getTotalPages();
+
+            if(page>totalPage) {
+                page=totalPage;
+                rbList=rmService.searchByRating(rating, page);
+            }
+
+            if(rbList.isEmpty()){
+                return createBadReqResponse("자소서가 존재하지 않습니다.");
+            }
+
+            return createPagedResponse(totalPage, createRbList(rbList));
+
         }catch(Exception e){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return createServerErrResponse();
         }
     }
-
-
 }

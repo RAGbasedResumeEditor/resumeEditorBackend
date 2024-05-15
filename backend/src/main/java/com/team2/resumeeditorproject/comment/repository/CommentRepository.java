@@ -12,9 +12,9 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT c, u.username, row_number() over(order by c.CNum asc) as num\n" +
             "FROM Comment c JOIN User u ON c.UNum = u.uNum\n" +
-            "WHERE c.deleted_at IS NULL " +
+            "WHERE c.deleted_at IS NULL AND c.RNum = :r_num " +
             "order by num desc")
-    List<Object[]> getComments(Long r_num);
+    List<Object[]> getComments(@Param("r_num") Long r_num);
 
     @Modifying
     @Query("UPDATE Comment SET deleted_at = CURRENT_TIMESTAMP WHERE CNum = :c_num")

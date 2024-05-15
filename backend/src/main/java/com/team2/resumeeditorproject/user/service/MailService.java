@@ -1,10 +1,8 @@
 package com.team2.resumeeditorproject.user.service;
 
 public interface MailService {
-
-    boolean CheckAuthNum(String email,String authNum);
+    boolean checkAuthNum(String email,String authNum);
     String createUuid();
-    String joinEmail(String email);
-    void mailSend(String setFrom, String toMail, String title, String content);
-
+    void sendEmail(String email);
+    void sendEmailEnd(String setFrom, String toMail, String title, String content);
 }

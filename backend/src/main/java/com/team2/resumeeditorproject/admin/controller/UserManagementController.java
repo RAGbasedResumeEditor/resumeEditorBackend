@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
@@ -12,13 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 @Controller
@@ -101,7 +97,6 @@ public class UserManagementController {
         }else{
              userList = userManagementService.getAllUsersByRolePaged(role, pageable);
         }
-
         return createResponse(userList);
     }
 

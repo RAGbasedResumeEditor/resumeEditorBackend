@@ -3,11 +3,12 @@ package com.team2.resumeeditorproject.admin.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminUserReposotory;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
+import com.team2.resumeeditorproject.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,19 +22,14 @@ import java.io.PrintWriter;
 import java.util.*;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/admin/user")
 public class UserManagementController {
 
     private final UserManagementService userManagementService;
     private final AdminResumeEditRepository adminResumeEditRepository;
     private final RefreshRepository refreshRepository;
-
-    public UserManagementController(UserManagementService userManagementService, AdminResumeEditRepository adminResumeEditRepository,
-                                    RefreshRepository refreshRepository){
-        this.userManagementService = userManagementService;
-        this.adminResumeEditRepository = adminResumeEditRepository;
-        this.refreshRepository = refreshRepository;
-    }
+    private final UserRepository userRepository;
 
     private ResponseEntity<Map<String, Object>> createResponse(Page<User> userList){
         List<UserDTO> userDTOList = new ArrayList<>();
@@ -117,8 +113,10 @@ public class UserManagementController {
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
             userManagementService.updateUserDeleteDate(uNum);
 
-            // Refresh 토큰 정보 삭제
-            refreshRepository.deleteRefreshByUsernameWithDelDate();
+            // 해당 사용자의 refresh 토큰 정보 삭제
+            User deletedUser = userRepository.findById(uNum)
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
+            refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
 
             response.put("response", "User deleted successfully");
             response.put("time", new Date());

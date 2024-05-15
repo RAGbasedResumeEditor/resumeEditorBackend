@@ -21,6 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
@@ -83,26 +84,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 사용자 이름을 사용하여 사용자 정보를 조회하고 uNum 가져오기
         User user = userRepository.findByUsername(username);
-
-        Date delDate = user.getDelDate();
-        if(delDate != null){
-            // 탈퇴 회원인 경우 로그인 실패 처리
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("status", "Fail");
-            responseBody.put("time", new Date());
-            responseBody.put("response", "User has been deleted");
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            try (PrintWriter out = response.getWriter()) {
-                objectMapper.writeValue(out, responseBody);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return;
-        }
-
         Long uNum = user.getUNum();
 
         //토큰 생성(JWTUtil 에서 발급한 응답 값 호출)
@@ -134,6 +115,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         System.out.println("Authentication fail");
         response.setStatus(401);
+        try(PrintWriter out = response.getWriter()){
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("status", "Fail");
+            responseBody.put("time", new Date());
+            responseBody.put("response", "Authentication fail : non-existent username or already deleted user");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(out, responseBody);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     // refresh토큰을 DB에 저장하여 관리하기 위한 메서드

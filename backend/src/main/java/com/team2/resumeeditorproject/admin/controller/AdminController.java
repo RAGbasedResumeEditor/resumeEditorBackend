@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
     private final AdminService adminService;
@@ -154,7 +157,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("stat/resume/company")
+    @GetMapping("/stat/resume/company")
     public ResponseEntity<Map<String,Object>> getResumeStatByCompany(HttpServletRequest req){
         UserDTO userDto=new UserDTO();
         try{
@@ -179,7 +182,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("stat/resume/occupation")
+    @GetMapping("/stat/resume/occupation")
     public ResponseEntity<Map<String,Object>> getResumeStatByOccupation(HttpServletRequest req){
         UserDTO userDto=new UserDTO();
         try{

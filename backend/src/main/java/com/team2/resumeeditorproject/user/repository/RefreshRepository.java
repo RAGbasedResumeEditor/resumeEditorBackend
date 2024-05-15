@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface RefreshRepository extends JpaRepository<Refresh, Long> {
     Boolean existsByRefresh(String refresh);
@@ -15,6 +16,6 @@ public interface RefreshRepository extends JpaRepository<Refresh, Long> {
     // user테이블에 del_date가 있다면 refresh 테이블에서 해당 회원 정보 삭제
     @Transactional
     @Modifying
-    @Query("DELETE FROM Refresh WHERE username IN (SELECT u.username FROM User u WHERE u.delDate IS NOT NULL)")
-    void deleteRefreshByUsernameWithDelDate();
+    @Query("DELETE FROM Refresh WHERE username = :username")
+    void deleteRefreshByUsername(@Param("username") String username);
 }

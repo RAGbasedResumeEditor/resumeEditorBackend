@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping(value="/signup")
@@ -22,18 +24,11 @@ public class MailController {
     @PostMapping("/auth-code") // 사용자에게 이메일을 보낸다.
     public ResponseEntity<Map<String, Object>> mailSend(@RequestBody UserDTO userDto) throws AuthenticationException {
         String email=userDto.getEmail();
-        Map<String, Object> response=new HashMap<>();
-        Map<String, Object> errorResponse=new HashMap<>();
         try {
             mailService.sendEmail(email);
-            response.put("status","Success");
-            response.put("response","인증 코드 전송 성공");
-            return ResponseEntity.ok(response);
+            return createResponse("인증 코드 전송 성공");
         }catch(Exception e){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return createServerErrResponse();
         }
     }
 
@@ -45,26 +40,14 @@ public class MailController {
 
         boolean checked=mailService.checkAuthNum(email, authCode); // Redis 일치 여부 확인
 
-        Map<String, Object> response=new HashMap<>();
-        Map<String, Object> errorResponse=new HashMap<>();
-
         try {
             if (checked) {
-                response.put("status", "Success");
-                response.put("response", "인증 성공");
-                return ResponseEntity.ok(response);
-            } else if (!checked) {
-                errorResponse.put("status", "Fail");
-                errorResponse.put("time", new Date());
-                errorResponse.put("response", "인증 실패. 입력한 이메일 주소 혹은 인증 코드를 확인해주세요.");
-                return ResponseEntity.badRequest().body(errorResponse);
+                return createResponse("인증 성공");
+            } else {
+                return createBadReqResponse("인증 실패. 입력한 이메일 주소 혹은 인증 코드를 확인해주세요.");
             }
         }catch(Exception e){
-            errorResponse.put("status", "Fail");
-            errorResponse.put("time", new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return createServerErrResponse();
         }
-        return null;
     }
 }

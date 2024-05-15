@@ -64,6 +64,7 @@ dependencies {
 	implementation 'com.sun.mail:jakarta.mail:2.0.1' // jakarta mail
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' //spring security
 	testImplementation 'org.springframework.security:spring-security-test' // spring security
+	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // social login
 
 	// dependencies added by Eunbi
 	implementation 'com.fasterxml.jackson.core:jackson-databind'

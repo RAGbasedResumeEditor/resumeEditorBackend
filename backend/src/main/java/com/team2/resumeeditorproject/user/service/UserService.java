@@ -22,8 +22,6 @@ public interface UserService {
     Boolean checkEmailDuplicate(String email);
     /* eunbi */
     int updateUserMode(long u_num);
-
-
     //회원탈퇴
     void deleteUser(Long uNum);
     @Transactional

@@ -36,13 +36,13 @@ public class ResumeManagementController {
 
     //자소서 목록 가져오기
     @GetMapping("/board/list")
-    public ResponseEntity<Map<String, Object>> getAllResumeBoard(@RequestParam(name="page", defaultValue = "1") int page){
+    public ResponseEntity<Map<String, Object>> getAllResumeBoard(@RequestParam(name="page", defaultValue = "0") int page){
        try {
            Page<ResumeBoard> rbList = rmService.getResumeBoards(page);
            int totalPage = rbList.getTotalPages();
 
-           if (page > totalPage) {
-               page = totalPage;
+           if (page > totalPage-1) {
+               page = totalPage-1;
                rbList = rmService.getResumeBoards(page);
            }
 
@@ -102,30 +102,32 @@ public class ResumeManagementController {
     public ResponseEntity<Map<String, Object>> searchTitle(@RequestParam(name="group", defaultValue = "title") String group,
                                                            @RequestParam(name="title", required = false) String title,
                                                            @RequestParam(value ="rating", required = false, defaultValue = "3") Float rating,
-                                                           @RequestParam(name="page", defaultValue = "1") int page){
+                                                           @RequestParam(name="page", defaultValue = "0") int page){
         Page<ResumeBoard> rbList =null;
         int totalPage=0;
 
         try{
             if(group.equals("title")) {
                 rbList = rmService.searchByTitle(title, page);
-                if(rbList.isEmpty()){
-                    return createBadReqResponse("자소서가 존재하지 않습니다.");
-                }
                 totalPage=rbList.getTotalPages();
-                if(page>totalPage) {
-                    page=totalPage;
+                if(page>totalPage-1) {
+                    page=totalPage-1;
                     rbList=rmService.searchByTitle(title, page);
                 }
-            }else if(group.equals("rating")){
-                rbList = rmService.searchByRating(rating, page);
                 if(rbList.isEmpty()){
                     return createBadReqResponse("자소서가 존재하지 않습니다.");
                 }
+                 }else if(group.equals("rating")){
+                rbList = rmService.searchByRating(rating, page);
                 totalPage=rbList.getTotalPages();
-                if(page>totalPage) {
-                    page=totalPage;
+
+                if(page>totalPage-1) {
+                    page=totalPage-1;
                     rbList=rmService.searchByRating(rating, page);
+                }
+
+                if(rbList.isEmpty()){
+                    return createBadReqResponse("자소서가 존재하지 않습니다.");
                 }
             }//else if
             return createPagedResponse(totalPage,createRbList(rbList));

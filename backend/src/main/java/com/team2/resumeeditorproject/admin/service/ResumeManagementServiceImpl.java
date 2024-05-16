@@ -21,7 +21,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
 
     @Override
     public Page<ResumeBoard> getResumeBoards(int page) {
-        Pageable pageable=PageRequest.of(page-1, 10, Sort.by("RNum").descending());
+        Pageable pageable=PageRequest.of(page, 10, Sort.by("RNum").descending());
         Page<ResumeBoard> pageResult=adResBoardRepository.findAll(pageable);
         return pageResult;
     }
@@ -49,7 +49,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
     @Override
     public Page<ResumeBoard> searchByTitle(String title, int page){
         if(title==null) title="없는 페이지";
-        Pageable pageable=PageRequest.of(page-1, 10, Sort.by("RNum").descending());
+        Pageable pageable=PageRequest.of(page, 10, Sort.by("RNum").descending());
         Page<ResumeBoard> pageResult=adResBoardRepository.findByTitleContaining(title, pageable);
         return pageResult;
     }
@@ -57,7 +57,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
     @Override
     public Page<ResumeBoard> searchByRating(Float rating, int page){
         if(rating>5) rating=5f;
-        Pageable pageable=PageRequest.of(page-1, 10, Sort.by("RNum").descending());
+        Pageable pageable=PageRequest.of(page, 10, Sort.by("RNum").descending());
         Page<ResumeBoard> pageResult=adResBoardRepository.findByRatingBetween(rating, rating+0.99f, pageable);
         return pageResult;
     }

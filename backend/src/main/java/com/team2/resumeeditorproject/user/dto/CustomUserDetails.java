@@ -64,4 +64,8 @@ public class CustomUserDetails implements UserDetails {
         // del_date가 null이 아니면 계정이 비활성화된 상태로 간주하고 false 반환
         return user.getDelDate() == null;
     }
+
+    public Long getUNum(){
+        return user.getUNum();
+    }
 }

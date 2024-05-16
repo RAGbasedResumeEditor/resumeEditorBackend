@@ -57,8 +57,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Optional<User> showUser(Long u_num) {
-        return userRepository.findById(u_num);
+    public User showUser(String username) {
+        return userRepository.findByUsername(username);
     }
 
     //회원탈퇴 (del_date 필드에 날짜 추가)

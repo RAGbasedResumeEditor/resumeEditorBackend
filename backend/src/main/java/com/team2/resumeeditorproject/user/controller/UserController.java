@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.domain.User;
+import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
@@ -9,12 +10,13 @@ import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
@@ -86,33 +88,35 @@ public class UserController extends HttpServlet {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }*/
-    //회원조회 (PK로)
+
+    //회원조회
     @PostMapping("/user/search")
-    public ResponseEntity<Map<String, Object>> showUser(@RequestBody UserDTO userDto){
-        Long unum=userDto.getUNum();
-        if(unum==null){
-            return createBadReqResponse("조회할 unum을 입력해주세요.");
-        }
+    public ResponseEntity<Map<String, Object>> showUser(){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails=(CustomUserDetails) authentication.getPrincipal();
+        System.out.println(userDetails.getUsername());
+
+        String username=userDetails.getUsername();
         try{
-            if(!userService.checkUserExist(unum)){
-                return createBadReqResponse(unum+"번 유저는 존재하지 않는 회원입니다.");
+            if(!userService.checkUsernameDuplicate(username)){
+                return createBadReqResponse(username+" 유저는 존재하지 않는 회원입니다.");
             }
-            Optional<User> tempUser=userService.showUser(unum);
+            User tempUser=userService.showUser(username);
             UserDTO user=new UserDTO();
-                user.setUNum(tempUser.get().getUNum());
-                user.setEmail(tempUser.get().getEmail());
-                user.setUsername((tempUser.get().getUsername()));
-                user.setRole(tempUser.get().getRole());
-                user.setAge(tempUser.get().getAge());
-                user.setBirthDate(tempUser.get().getBirthDate());
-                user.setGender(tempUser.get().getGender());
-                user.setCompany(tempUser.get().getCompany());
-                user.setOccupation(tempUser.get().getOccupation());
-                user.setWish(tempUser.get().getWish());
-                user.setStatus(tempUser.get().getStatus());
-                user.setMode(tempUser.get().getMode());
-                user.setInDate(tempUser.get().getInDate());
-                user.setDelDate(tempUser.get().getDelDate());
+                user.setUNum(tempUser.getUNum());
+                user.setEmail(tempUser.getEmail());
+                user.setUsername((tempUser.getUsername()));
+                user.setRole(tempUser.getRole());
+                user.setAge(tempUser.getAge());
+                user.setBirthDate(tempUser.getBirthDate());
+                user.setGender(tempUser.getGender());
+                user.setCompany(tempUser.getCompany());
+                user.setOccupation(tempUser.getOccupation());
+                user.setWish(tempUser.getWish());
+                user.setStatus(tempUser.getStatus());
+                user.setMode(tempUser.getMode());
+                user.setInDate(tempUser.getInDate());
+                user.setDelDate(tempUser.getDelDate());
             return createResponse(user);
         }catch(Exception e){
             return createServerErrResponse();

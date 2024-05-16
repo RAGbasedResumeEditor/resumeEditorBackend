@@ -46,7 +46,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/resume")
+    @GetMapping("/board")
     public ResponseEntity<Map<String,Object>> getResumeStatByCompany(@RequestParam(name="group", defaultValue = "company") String group,
                                                                      @RequestParam(name="company", required = false) String company,
                                                                      @RequestParam(name="occupation", required=false) String occupation){

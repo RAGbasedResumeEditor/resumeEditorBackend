@@ -42,8 +42,12 @@ jobs:
                   secret: redis_port
                 - name: QDRANT_GRPC_HOST
                   secret: qdrant_grpc_host
-                - name : QDRANT_API_KEY
+                - name: QDRANT_API_KEY
                   secret: qdrant_api_key
+                - name: EMAIL_ADDRESS
+                  secret: email_address
+                - name: EMAIL_PASSWORD
+                  secret: email_password
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git

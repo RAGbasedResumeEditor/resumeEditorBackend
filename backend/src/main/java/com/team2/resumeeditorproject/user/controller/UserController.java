@@ -1,6 +1,10 @@
 package com.team2.resumeeditorproject.user.controller;
 
+import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
+import com.team2.resumeeditorproject.user.repository.RefreshRepository;
+import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +23,9 @@ import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 public class UserController extends HttpServlet {
 
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final RefreshRepository refreshRepository;
+    private final UserManagementService userManagementService;
 
     //회원가입
     @PostMapping(value="/signup")
@@ -96,7 +103,14 @@ public class UserController extends HttpServlet {
             if(!userService.checkUserExist(unum)){
                 return createBadReqResponse(unum+"번 유저는 존재하지 않는 회원입니다.");
             }
-            userService.deleteUser(unum);//탈퇴처리
+            // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
+            userManagementService.updateUserDeleteDate(unum);
+
+            // 해당 사용자의 refresh 토큰 정보 삭제
+            User deletedUser = userRepository.findById(unum)
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + unum));
+            refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());;
+
             return createResponse( unum+"번 회원 탈퇴 완료.");
         }catch(Exception e){
             return createServerErrResponse();

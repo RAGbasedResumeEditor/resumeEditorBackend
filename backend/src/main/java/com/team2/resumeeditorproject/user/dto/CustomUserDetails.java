@@ -60,6 +60,8 @@ public class CustomUserDetails implements UserDetails {
     // 계정 활성화 되었는지
     @Override
     public boolean isEnabled() {
-        return true;
+        // del_date가 null이면 계정이 활성화된 상태로 간주하고 true 반환
+        // del_date가 null이 아니면 계정이 비활성화된 상태로 간주하고 false 반환
+        return user.getDelDate() == null;
     }
 }

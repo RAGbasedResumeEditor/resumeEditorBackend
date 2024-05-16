@@ -29,6 +29,14 @@ public class UserController extends HttpServlet {
     private final RefreshRepository refreshRepository;
     private final UserManagementService userManagementService;
 
+
+    public static String getUsername(){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails=(CustomUserDetails) authentication.getPrincipal();
+
+        return userDetails.getUsername();
+    }
+
     //회원가입
     @PostMapping(value="/signup")
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
@@ -92,15 +100,10 @@ public class UserController extends HttpServlet {
     //회원조회
     @PostMapping("/user/search")
     public ResponseEntity<Map<String, Object>> showUser(){
-        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails=(CustomUserDetails) authentication.getPrincipal();
-        System.out.println(userDetails.getUsername());
 
-        String username=userDetails.getUsername();
+        String username=getUsername();
+
         try{
-            if(!userService.checkUsernameDuplicate(username)){
-                return createBadReqResponse(username+" 유저는 존재하지 않는 회원입니다.");
-            }
             User tempUser=userService.showUser(username);
             UserDTO user=new UserDTO();
                 user.setUNum(tempUser.getUNum());
@@ -125,24 +128,21 @@ public class UserController extends HttpServlet {
 
     //회원탈퇴
     @PostMapping("/user/delete")
-    public ResponseEntity<Map<String, Object>> deleteUser(@RequestBody UserDTO userDto) throws AuthenticationException{
-        Long unum=userDto.getUNum();
-        if(unum==null){
-            return createBadReqResponse("삭제할 unum을 입력해주세요.");
-        }
+    public ResponseEntity<Map<String, Object>> deleteUser() throws AuthenticationException{
+
+        String username=getUsername();
+        Long uNum=userService.showUser(username).getUNum();
+
         try {
-            if(!userService.checkUserExist(unum)){
-                return createBadReqResponse(unum+"번 유저는 존재하지 않는 회원입니다.");
-            }
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
-            userManagementService.updateUserDeleteDate(unum);
+            userManagementService.updateUserDeleteDate(uNum);
 
             // 해당 사용자의 refresh 토큰 정보 삭제
-            User deletedUser = userRepository.findById(unum)
-                    .orElseThrow(() -> new RuntimeException("User not found with id: " + unum));
+            User deletedUser = userRepository.findById(uNum)
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
             refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());;
 
-            return createResponse( unum+"번 회원 탈퇴 완료.");
+            return createResponse( uNum+"번 회원 탈퇴 완료.");
         }catch(Exception e){
             return createServerErrResponse();
         }
@@ -151,15 +151,22 @@ public class UserController extends HttpServlet {
     //회원정보 수정
     @PostMapping("/user/update")
     public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDto) throws AuthenticationException{
+        String username=getUsername();
+        User tempUser=userService.showUser(username);
+        Long uNum=tempUser.getUNum();
+
+        userDto.setUNum(uNum);
+
+        if(userDto.getBirthDate()==null){
+            userDto.setBirthDate(tempUser.getBirthDate());
+        }
+
         try {
-            if(!userService.checkUserExist(userDto.getUNum())){
-                return createBadReqResponse(userDto.getUNum()+"번 유저는 존재하지 않는 회원입니다.");
-            }
-            if(userDto.getUNum()==null||userDto.getPassword()==null||userDto.getBirthDate()==null){
-                return createBadReqResponse("비밀번호와 생년월일은 반드시 입력해야합니다.");
+            if(userDto.getPassword()==null){
+                return createBadReqResponse("비밀번호는 반드시 입력해야합니다.");
             }
             userService.updateUser(userDto);//수정 처리
-            return createResponse(userDto.getUNum()+"번 회원 수정 완료.");
+            return createResponse(uNum+"번 회원 수정 완료.");
         }catch(Exception e){
             return createServerErrResponse();
         }

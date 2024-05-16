@@ -181,4 +181,31 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         result.put("가장 낮은 "+occupation+" 자소서 조회수",viewsByOccup.get(cnt-1));
         return result;
     }
+
+    private long countResumeEdits(List<User> userList) {
+        long totalResumeEdits = 0;
+        for (User user : userList) {
+            totalResumeEdits += adResEditRepository.countByUNum(user.getUNum());
+        }
+        return totalResumeEdits;
+    }
+
+    /* 신입/경력 별 첨삭 횟수 */
+    @Override
+    public Map<String, Long> resumeEditCntByStatus() {
+        Map<String, Long> result = new HashMap<>();
+
+        // 상태가 1인 사용자들을 조회
+        List<User> newUserList = adminRepository.findByStatus(1);
+        long newWorkerCnt = countResumeEdits(newUserList);
+
+        // 상태가 2인 사용자들을 조회
+        List<User> experiencedUserList = adminRepository.findByStatus(2);
+        long experiencedWorkerCnt = countResumeEdits(experiencedUserList);
+
+        result.put("신입 첨삭 횟수", newWorkerCnt);
+        result.put("경력 첨삭 횟수", experiencedWorkerCnt);
+
+        return result;
+    }
 }

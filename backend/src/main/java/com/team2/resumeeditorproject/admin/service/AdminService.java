@@ -15,4 +15,6 @@ public interface AdminService {
 
     Map<String, Object> CompResumeCnt(String company);
     Map<String, Object> OccupResumeCnt(String occupation);
+
+    Map<String, Long> resumeEditCntByStatus();
 }

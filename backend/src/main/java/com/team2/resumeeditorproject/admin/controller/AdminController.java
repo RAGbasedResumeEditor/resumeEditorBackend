@@ -62,4 +62,14 @@ public class AdminController {
             return createServerErrResponse();
         }
     }
+
+    /* 신입/경력 별 첨삭 횟수 */
+    @GetMapping("/resumeEdit/status")
+    public ResponseEntity<Map<String, Object>> getResumeEditCountByStatus() {
+        try{
+            return createResponse(adminService.resumeEditCntByStatus());
+        }catch(Exception e){
+            return createBadReqResponse("잘못된 요청입니다");
+        }
+    }
 }

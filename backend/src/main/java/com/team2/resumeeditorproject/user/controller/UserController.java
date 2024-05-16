@@ -9,7 +9,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;

@@ -8,8 +8,9 @@ import org.hibernate.sql.ast.Clause;
 
 import java.util.Date;
 
-@Setter // Entity에서는 @Data 사용하지 않음 -> DB와 밀접한 관계가 있으므로
+//@Where(clause="del_date is null")
 @Getter
+@Setter
 @Entity
 @Table(name="User")
 @SQLDelete(sql = "UPDATE user SET del_date = current_timestamp WHERE u_num = ?") // soft delete

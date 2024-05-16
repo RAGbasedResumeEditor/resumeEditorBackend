@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.service.MailService;
+import com.team2.resumeeditorproject.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -20,11 +21,15 @@ import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 public class MailController {
 
     private final MailService mailService;
+    private final UserService userService;
 
     @PostMapping("/auth-code") // 사용자에게 이메일을 보낸다.
     public ResponseEntity<Map<String, Object>> mailSend(@RequestBody UserDTO userDto) throws AuthenticationException {
         String email=userDto.getEmail();
         try {
+            if(userService.checkEmailDuplicate(userDto.getEmail())){
+                return createBadReqResponse("이미 존재하는 email 입니다.");
+            }
             mailService.sendEmail(email);
             return createResponse("인증 코드 전송 성공");
         }catch(Exception e){

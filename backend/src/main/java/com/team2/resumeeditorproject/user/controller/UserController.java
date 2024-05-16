@@ -13,8 +13,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
@@ -33,9 +33,6 @@ public class UserController extends HttpServlet {
         try{
             if(userService.checkUsernameDuplicate(userDto.getUsername())){
                 return createBadReqResponse("이미 존재하는 username 입니다.");
-            }
-            if(userService.checkEmailDuplicate(userDto.getEmail())){
-                return createBadReqResponse("이미 존재하는 email 입니다.");
             }
             userService.signup(userDto);//회원가입 처리
             return createResponse("회원가입 성공");
@@ -89,12 +86,42 @@ public class UserController extends HttpServlet {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }*/
+    //회원조회 (PK로)
+    @PostMapping("/user/search")
+    public ResponseEntity<Map<String, Object>> showUser(@RequestBody UserDTO userDto){
+        Long unum=userDto.getUNum();
+        if(unum==null){
+            return createBadReqResponse("조회할 unum을 입력해주세요.");
+        }
+        try{
+            if(!userService.checkUserExist(unum)){
+                return createBadReqResponse(unum+"번 유저는 존재하지 않는 회원입니다.");
+            }
+            Optional<User> tempUser=userService.showUser(unum);
+            UserDTO user=new UserDTO();
+            user.setEmail(tempUser.get().getEmail());
+            user.setUsername((tempUser.get().getUsername()));
+            user.setRole(tempUser.get().getRole());
+            user.setAge(tempUser.get().getAge());
+            user.setBirthDate(tempUser.get().getBirthDate());
+            user.setGender(tempUser.get().getGender());
+            user.setCompany(tempUser.get().getCompany());
+            user.setOccupation(tempUser.get().getOccupation());
+            user.setWish(tempUser.get().getWish());
+            user.setStatus(tempUser.get().getStatus());
+            user.setMode(tempUser.get().getMode());
+            user.setInDate(tempUser.get().getInDate());
+            user.setDelDate(tempUser.get().getDelDate());
+            user.setUNum(tempUser.get().getUNum());
+            return createResponse(user);
+        }catch(Exception e){
+            return createServerErrResponse();
+        }
+    }
 
     //회원탈퇴
     @PostMapping("/user/delete")
     public ResponseEntity<Map<String, Object>> deleteUser(@RequestBody UserDTO userDto) throws AuthenticationException{
-        Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
         Long unum=userDto.getUNum();
         if(unum==null){
             return createBadReqResponse("삭제할 unum을 입력해주세요.");
@@ -119,7 +146,7 @@ public class UserController extends HttpServlet {
 
     //회원정보 수정
     @PostMapping("/user/update")
-    public ResponseEntity<Map<String, Object>> edit(@RequestBody UserDTO userDto) throws AuthenticationException{
+    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDto) throws AuthenticationException{
         try {
             if(!userService.checkUserExist(userDto.getUNum())){
                 return createBadReqResponse(userDto.getUNum()+"번 유저는 존재하지 않는 회원입니다.");

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Optional;
+
 public interface UserService {
     // 회원가입
     Long signup(UserDTO userDto);
@@ -22,6 +24,7 @@ public interface UserService {
     Boolean checkEmailDuplicate(String email);
     /* eunbi */
     int updateUserMode(long u_num);
+    Optional<User> showUser(Long u_num);
     //회원탈퇴
     void deleteUser(Long uNum);
     @Transactional

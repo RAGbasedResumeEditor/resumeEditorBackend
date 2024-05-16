@@ -26,5 +26,4 @@ public class UserDTO {
     // 첨삭횟수 설정 메서드
     @Setter
     private int resumeEditCount; // 첨삭횟수 필드 추가
-
 }

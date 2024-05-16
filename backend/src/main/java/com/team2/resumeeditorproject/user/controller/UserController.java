@@ -91,13 +91,27 @@ public class UserController extends HttpServlet {
             if(!userService.checkUserExist(unum)){
                 return createBadReqResponse(unum+"번 유저는 존재하지 않는 회원입니다.");
             }
-            Optional<User> user=userService.showUser(unum);
+            Optional<User> tempUser=userService.showUser(unum);
+            UserDTO user=new UserDTO();
+            user.setEmail(tempUser.get().getEmail());
+            user.setUsername((tempUser.get().getUsername()));
+            user.setRole(tempUser.get().getRole());
+            user.setAge(tempUser.get().getAge());
+            user.setBirthDate(tempUser.get().getBirthDate());
+            user.setGender(tempUser.get().getGender());
+            user.setCompany(tempUser.get().getCompany());
+            user.setOccupation(tempUser.get().getOccupation());
+            user.setWish(tempUser.get().getWish());
+            user.setStatus(tempUser.get().getStatus());
+            user.setMode(tempUser.get().getMode());
+            user.setInDate(tempUser.get().getInDate());
+            user.setDelDate(tempUser.get().getDelDate());
+            user.setUNum(tempUser.get().getUNum());
             return createResponse(user);
         }catch(Exception e){
             return createServerErrResponse();
         }
     }
-
 
     //회원탈퇴
     @PostMapping("/user/delete")

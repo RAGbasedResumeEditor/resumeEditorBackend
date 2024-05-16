@@ -27,9 +27,6 @@ public class UserController extends HttpServlet {
             if(userService.checkUsernameDuplicate(userDto.getUsername())){
                 return createBadReqResponse("이미 존재하는 username 입니다.");
             }
-            if(userService.checkEmailDuplicate(userDto.getEmail())){
-                return createBadReqResponse("이미 존재하는 email 입니다.");
-            }
             userService.signup(userDto);//회원가입 처리
             return createResponse("회원가입 성공");
         }catch(Exception e){
@@ -86,8 +83,6 @@ public class UserController extends HttpServlet {
     //회원탈퇴
     @PostMapping("/user/delete")
     public ResponseEntity<Map<String, Object>> deleteUser(@RequestBody UserDTO userDto) throws AuthenticationException{
-        Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
         Long unum=userDto.getUNum();
         if(unum==null){
             return createBadReqResponse("삭제할 unum을 입력해주세요.");

@@ -35,7 +35,7 @@ public class ResumeManagementController {
     }
 
     //자소서 목록 가져오기
-    @GetMapping("/resume/list")
+    @GetMapping("/board/list")
     public ResponseEntity<Map<String, Object>> getAllResumeBoard(@RequestParam("page") int page){
         Page<ResumeBoard> rbList=rmService.getResumeBoards(page);
         int totalPage=rbList.getTotalPages();
@@ -53,7 +53,7 @@ public class ResumeManagementController {
     }
 
     //자소서 삭제
-    @PostMapping("/resume/delete/{rNum}")
+    @PostMapping("/board/list/delete/{rNum}")
     public ResponseEntity<Map<String, Object>> deleteResume(@PathVariable("rNum") long rNum){
         try {
             if(!rmService.checkResumeExists(rNum)){
@@ -95,16 +95,28 @@ public class ResumeManagementController {
     }
 */
     //자소서 검색
-    @GetMapping("/resume/search/title")
-    public ResponseEntity<Map<String, Object>> searchTitle(@RequestParam("title") String title, @RequestParam("page") int page){
+    @GetMapping("/board/list/search")
+    public ResponseEntity<Map<String, Object>> searchTitle(@RequestParam(name="group") String group,
+                                                           @RequestParam(name="title", required = false) String title,
+                                                           @RequestParam(value = "rating", required = false) Float rating,
+                                                           @RequestParam("page") int page){
+        Page<ResumeBoard> rbList =null;
+        int totalPage=0;
         try{
-            Page<ResumeBoard> rbList=rmService.searchByTitle(title, page);
-
-            int totalPage=rbList.getTotalPages();
-
-            if(page>totalPage) {
-                page=totalPage;
-                rbList=rmService.searchByTitle(title, page);
+            if(group.equals("title")) {
+                rbList = rmService.searchByTitle(title, page);
+                totalPage=rbList.getTotalPages();
+                if(page>totalPage) {
+                    page=totalPage;
+                    rbList=rmService.searchByTitle(title, page);
+                }
+            }else if(group.equals("rating")){
+                rbList = rmService.searchByRating(rating, page);
+                totalPage=rbList.getTotalPages();
+                if(page>totalPage) {
+                    page=totalPage;
+                    rbList=rmService.searchByRating(rating, page);
+                }
             }
 
             if(rbList.isEmpty()){
@@ -112,29 +124,6 @@ public class ResumeManagementController {
             }
 
             return createPagedResponse(totalPage,createRbList(rbList));
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
-    }
-
-    @GetMapping("/resume/search/rating")
-    public ResponseEntity<Map<String, Object>> searchRating(@RequestParam("rating")Float rating, @RequestParam("page") int page){
-        try {
-            Page<ResumeBoard> rbList = rmService.searchByRating(rating, page);
-
-            int totalPage=rbList.getTotalPages();
-
-            if(page>totalPage) {
-                page=totalPage;
-                rbList=rmService.searchByRating(rating, page);
-            }
-
-            if(rbList.isEmpty()){
-                return createBadReqResponse("자소서가 존재하지 않습니다.");
-            }
-
-            return createPagedResponse(totalPage, createRbList(rbList));
-
         }catch(Exception e){
             return createServerErrResponse();
         }

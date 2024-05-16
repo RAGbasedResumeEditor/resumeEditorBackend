@@ -93,20 +93,20 @@ public class UserController extends HttpServlet {
             }
             Optional<User> tempUser=userService.showUser(unum);
             UserDTO user=new UserDTO();
-            user.setEmail(tempUser.get().getEmail());
-            user.setUsername((tempUser.get().getUsername()));
-            user.setRole(tempUser.get().getRole());
-            user.setAge(tempUser.get().getAge());
-            user.setBirthDate(tempUser.get().getBirthDate());
-            user.setGender(tempUser.get().getGender());
-            user.setCompany(tempUser.get().getCompany());
-            user.setOccupation(tempUser.get().getOccupation());
-            user.setWish(tempUser.get().getWish());
-            user.setStatus(tempUser.get().getStatus());
-            user.setMode(tempUser.get().getMode());
-            user.setInDate(tempUser.get().getInDate());
-            user.setDelDate(tempUser.get().getDelDate());
-            user.setUNum(tempUser.get().getUNum());
+                user.setUNum(tempUser.get().getUNum());
+                user.setEmail(tempUser.get().getEmail());
+                user.setUsername((tempUser.get().getUsername()));
+                user.setRole(tempUser.get().getRole());
+                user.setAge(tempUser.get().getAge());
+                user.setBirthDate(tempUser.get().getBirthDate());
+                user.setGender(tempUser.get().getGender());
+                user.setCompany(tempUser.get().getCompany());
+                user.setOccupation(tempUser.get().getOccupation());
+                user.setWish(tempUser.get().getWish());
+                user.setStatus(tempUser.get().getStatus());
+                user.setMode(tempUser.get().getMode());
+                user.setInDate(tempUser.get().getInDate());
+                user.setDelDate(tempUser.get().getDelDate());
             return createResponse(user);
         }catch(Exception e){
             return createServerErrResponse();

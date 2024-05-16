@@ -56,7 +56,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
 
     @Override
     public Page<ResumeBoard> searchByRating(Float rating, int page){
-        if(rating==0) rating=100f;
+        if(rating>5) rating=5f;
         Pageable pageable=PageRequest.of(page-1, 10, Sort.by("RNum").descending());
         Page<ResumeBoard> pageResult=adResBoardRepository.findByRatingBetween(rating, rating+0.99f, pageable);
         return pageResult;

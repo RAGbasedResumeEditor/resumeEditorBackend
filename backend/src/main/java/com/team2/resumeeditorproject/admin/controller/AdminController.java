@@ -20,7 +20,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping("/user")
-    public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name="group", required = true) String group,
+    public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name="group", defaultValue = "occupation") String group,
                                                          @RequestParam(name="occupation", required = false) String occupation,
                                                          @RequestParam(name="wish", required = false) String wish){
         try {
@@ -47,7 +47,7 @@ public class AdminController {
     }
 
     @GetMapping("/resume")
-    public ResponseEntity<Map<String,Object>> getResumeStatByCompany(@RequestParam(name="group", required = true, defaultValue = "company") String group,
+    public ResponseEntity<Map<String,Object>> getResumeStatByCompany(@RequestParam(name="group", defaultValue = "company") String group,
                                                                      @RequestParam(name="company", required = false) String company,
                                                                      @RequestParam(name="occupation", required=false) String occupation){
         try {

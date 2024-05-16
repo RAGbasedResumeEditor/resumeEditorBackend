@@ -36,20 +36,23 @@ public class ResumeManagementController {
 
     //자소서 목록 가져오기
     @GetMapping("/board/list")
-    public ResponseEntity<Map<String, Object>> getAllResumeBoard(@RequestParam("page") int page){
-        Page<ResumeBoard> rbList=rmService.getResumeBoards(page);
-        int totalPage=rbList.getTotalPages();
+    public ResponseEntity<Map<String, Object>> getAllResumeBoard(@RequestParam(name="page", defaultValue = "1") int page){
+       try {
+           Page<ResumeBoard> rbList = rmService.getResumeBoards(page);
+           int totalPage = rbList.getTotalPages();
 
-        if(page>totalPage) {
-            page=totalPage;
-            rbList=rmService.getResumeBoards(page);
-        }
+           if (page > totalPage) {
+               page = totalPage;
+               rbList = rmService.getResumeBoards(page);
+           }
 
-        if(rbList.isEmpty()){
-            return createBadReqResponse("자소서가 존재하지 않습니다.");
-        }
-
-        return createPagedResponse(totalPage,createRbList(rbList));
+           if (rbList.isEmpty()) {
+               return createBadReqResponse("자소서가 존재하지 않습니다.");
+           }
+           return createPagedResponse(totalPage, createRbList(rbList));
+       }catch(Exception e){
+           return createServerErrResponse();
+       }
     }
 
     //자소서 삭제
@@ -96,15 +99,19 @@ public class ResumeManagementController {
 */
     //자소서 검색
     @GetMapping("/board/list/search")
-    public ResponseEntity<Map<String, Object>> searchTitle(@RequestParam(name="group") String group,
+    public ResponseEntity<Map<String, Object>> searchTitle(@RequestParam(name="group", defaultValue = "title") String group,
                                                            @RequestParam(name="title", required = false) String title,
-                                                           @RequestParam(value = "rating", required = false) Float rating,
-                                                           @RequestParam("page") int page){
+                                                           @RequestParam(value ="rating", required = false, defaultValue = "3") Float rating,
+                                                           @RequestParam(name="page", defaultValue = "1") int page){
         Page<ResumeBoard> rbList =null;
         int totalPage=0;
+
         try{
             if(group.equals("title")) {
                 rbList = rmService.searchByTitle(title, page);
+                if(rbList.isEmpty()){
+                    return createBadReqResponse("자소서가 존재하지 않습니다.");
+                }
                 totalPage=rbList.getTotalPages();
                 if(page>totalPage) {
                     page=totalPage;
@@ -112,17 +119,15 @@ public class ResumeManagementController {
                 }
             }else if(group.equals("rating")){
                 rbList = rmService.searchByRating(rating, page);
+                if(rbList.isEmpty()){
+                    return createBadReqResponse("자소서가 존재하지 않습니다.");
+                }
                 totalPage=rbList.getTotalPages();
                 if(page>totalPage) {
                     page=totalPage;
                     rbList=rmService.searchByRating(rating, page);
                 }
-            }
-
-            if(rbList.isEmpty()){
-                return createBadReqResponse("자소서가 존재하지 않습니다.");
-            }
-
+            }//else if
             return createPagedResponse(totalPage,createRbList(rbList));
         }catch(Exception e){
             return createServerErrResponse();

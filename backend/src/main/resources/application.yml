@@ -63,6 +63,17 @@ spring:
 spring:
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie
+
+--- # Spring Batch Job enable
+#spring:
+#  batch:
+#    job:
+#      names: ${job.name:NONE}
+#    jdbc:
+#      initialize-schema: always  ## batch 메타 테이블을 생성할려면 always -> never
+    # main:
+    # web-application-type: none  ## 배치가끝나고 어플리케이션도 끝남.
+
 --- #Naver OAuth 설정
 #spring:
 #  security:

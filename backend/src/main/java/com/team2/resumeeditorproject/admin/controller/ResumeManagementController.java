@@ -41,10 +41,11 @@ public class ResumeManagementController {
            Page<ResumeBoard> rbList = rmService.getResumeBoards(page);
            int totalPage = rbList.getTotalPages();
 
+
            if (page > totalPage-1) {
                page = totalPage-1;
                rbList = rmService.getResumeBoards(page);
-           }
+           }else if(page<0) page=0;
 
            if (rbList.isEmpty()) {
                return createBadReqResponse("자소서가 존재하지 않습니다.");
@@ -113,18 +114,19 @@ public class ResumeManagementController {
                 if(page>totalPage-1) {
                     page=totalPage-1;
                     rbList=rmService.searchByTitle(title, page);
-                }
+                }else if(page<0) page=0;
+
                 if(rbList.isEmpty()){
                     return createBadReqResponse("자소서가 존재하지 않습니다.");
                 }
-                 }else if(group.equals("rating")){
+            }else if(group.equals("rating")){
                 rbList = rmService.searchByRating(rating, page);
                 totalPage=rbList.getTotalPages();
 
                 if(page>totalPage-1) {
                     page=totalPage-1;
                     rbList=rmService.searchByRating(rating, page);
-                }
+                }else if(page<0) page=0;
 
                 if(rbList.isEmpty()){
                     return createBadReqResponse("자소서가 존재하지 않습니다.");

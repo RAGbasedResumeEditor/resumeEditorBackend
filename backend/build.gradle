@@ -58,13 +58,15 @@ dependencies {
 	// dependencies added by YeonGyeong
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // thymeleaf
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2' // swagger
-	implementation 'org.springframework.boot:spring-boot-starter-validation' // validator
+	//implementation 'org.springframework.boot:spring-boot-starter-validation' // validator
 	implementation group: 'org.springframework.boot', name:'spring-boot-starter-mail', version:'3.0.5' // mail 인증
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis' //redis
 	implementation 'com.sun.mail:jakarta.mail:2.0.1' // jakarta mail
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' //spring security
 	testImplementation 'org.springframework.security:spring-security-test' // spring security
 	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // social login
+	//implementation 'org.springframework.boot:spring-boot-starter-batch'	// Spring Batch
+
 
 	// dependencies added by Eunbi
 	implementation 'com.fasterxml.jackson.core:jackson-databind'

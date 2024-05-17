@@ -78,11 +78,12 @@ public class ReissueController {
         Long uNum = jwtUtil.getUNum(refresh);
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
+        int mode = jwtUtil.getMode(refresh);
 
         // 새로운 access토큰 발급
-        String newAccess = jwtUtil.createJwt(uNum,"access", username, role, 3600000L); //생명주기 1시간
+        String newAccess = jwtUtil.createJwt(uNum, mode, "access", username, role, 3600000L); //생명주기 1시간
         // refresh토큰 만료 후 refresh토큰 갱신
-        String newRefresh = jwtUtil.createJwt(uNum,"refresh", username, role, 1209600000L); //생명주기 2주
+        String newRefresh = jwtUtil.createJwt(uNum, mode, "refresh", username, role, 1209600000L); //생명주기 2주
 
         // refresh토큰 저장 DB에 기존의 refresh토큰 삭제 후 새 Refresh 토큰 저장
         refreshRepository.deleteByRefresh(refresh);

@@ -84,9 +84,9 @@ public class UserManagementController {
 
         Page<User> userList = userManagementService.getAllUsersByRolePaged(role, pageable);
 
-        //page 가 totalPages 보다 높다면 0 페이지로 이동
+        // page 가 totalPages 보다 높다면 마지막 페이지로 이동
         if(page >= userList.getTotalPages()){
-            page=0;
+            page=userList.getTotalPages() - 1;
             pageable = PageRequest.of(page, size);
             userList = userManagementService.getAllUsersByRolePaged(role, pageable);
         }
@@ -118,9 +118,9 @@ public class UserManagementController {
              userList = userManagementService.getAllUsersByRolePaged(role, pageable);
         }
 
-        // page 가 totalPages 보다 높다면 0 페이지로 이동
+        // page 가 totalPages 보다 높다면 마지막 페이지로 이동
         if (page >= userList.getTotalPages()) {
-            page = 0;
+            page = userList.getTotalPages() - 1;
             pageable = PageRequest.of(page, size);
             if (group != null && keyword != null) {
                 userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, role, pageable);

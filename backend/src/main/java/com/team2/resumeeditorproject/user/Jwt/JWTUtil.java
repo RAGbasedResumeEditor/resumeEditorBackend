@@ -34,8 +34,13 @@ public class JWTUtil { // ver 0.12.3
     public Long getUNum(String token){
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("uNum", Long.class);
     }
+
+    public int getMode(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("mode", Integer.class);
+    }
+
     // 토큰을 생성할 메서드
-    public String createJwt(Long uNum, String category,String username, String role, Long expiredMs){
+    public String createJwt(Long uNum, int mode, String category,String username, String role, Long expiredMs){
 
         return Jwts.builder()
                 //claim : JWT에 저장되는 정보
@@ -43,6 +48,7 @@ public class JWTUtil { // ver 0.12.3
                 .claim("username", username)
                 .claim("role", role)
                 .claim("uNum", uNum) //uNum 추가
+                .claim("mode", mode) //mode 추가
                 // 토큰 발행시간
                 .issuedAt(new Date(System.currentTimeMillis()))
                 // 토큰 소멸시간(만료시간)

@@ -36,11 +36,11 @@ public class UserManagementServiceImpl implements UserManagementService{
     @Override
     public Page<User> searchUsersByGroupAndKeyword(String group, String keyword, String role, Pageable pageable) {
         return switch (group) {
-            case "username" -> adminUserRepository.findByUsernameContainingAndRole(keyword, role, pageable);
-            case "email" -> adminUserRepository.findByEmailContainingAndRole(keyword, role, pageable);
-            case "company" -> adminUserRepository.findByCompanyContainingAndRole(keyword, role, pageable);
-            case "occupation" -> adminUserRepository.findByOccupationContainingAndRole(keyword, role, pageable);
-            case "wish" -> adminUserRepository.findByWishContainingAndRole(keyword, role, pageable);
+            case "username" -> adminUserRepository.findByUsernameContainingAndRoleOrderByInDateDesc(keyword, role, pageable);
+            case "email" -> adminUserRepository.findByEmailContainingAndRoleOrderByInDateDesc(keyword, role, pageable);
+            case "company" -> adminUserRepository.findByCompanyContainingAndRoleOrderByInDateDesc(keyword, role, pageable);
+            case "occupation" -> adminUserRepository.findByOccupationContainingAndRoleOrderByInDateDesc(keyword, role, pageable);
+            case "wish" -> adminUserRepository.findByWishContainingAndRoleOrderByInDateDesc(keyword, role, pageable);
             default -> adminUserRepository.findByRole(role, pageable);
         };
     }

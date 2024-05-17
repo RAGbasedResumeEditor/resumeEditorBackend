@@ -16,5 +16,14 @@ public interface AdminService {
     Map<String, Object> CompResumeCnt(String company);
     Map<String, Object> OccupResumeCnt(String occupation);
 
-    Map<String, Long> resumeEditCntByStatus();
+    Map<String, Object> resumeEditCntByStatus();
+    Map<String, Object> resumeEditCntByOccup(String occupation);
+    Map<String, Object> resumeEditCntByComp(String company);
+    Map<String, Object> resumeEditCntByAge();
+    Map<String, Object> resumeEditCntByMode();
+
+    Map<String, Object> resumeCntByMonth();
+    Map<String, Object> resumeCntByDaily();
+    Map<String, Object> resumeCntByWeekly();
+
 }

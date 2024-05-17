@@ -82,13 +82,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        // 사용자 이름을 사용하여 사용자 정보를 조회하고 uNum 가져오기
+        // 사용자 이름을 사용하여 사용자 정보를 조회하고 uNum, mode 가져오기
         User user = userRepository.findByUsername(username);
         Long uNum = user.getUNum();
+        int mode = user.getMode();
 
         //토큰 생성(JWTUtil 에서 발급한 응답 값 호출)
-        String access = jwtUtil.createJwt(uNum,"access", username, role, 3600000L); //생명주기 1시간
-        String refresh = jwtUtil.createJwt(uNum,"refresh", username, role, 1209600000L); //생명주기 2주
+        String access = jwtUtil.createJwt(uNum, mode,"access", username, role, 3600000L); //생명주기 1시간
+        String refresh = jwtUtil.createJwt(uNum, mode, "refresh", username, role, 1209600000L); //생명주기 2주
 
         //Refresh 토큰 DB 저장
         addRefreshEntity(username, refresh, 1209600000L); //생명주기 2주
@@ -115,6 +116,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         System.out.println("Authentication fail");
         response.setStatus(401);
+
         try(PrintWriter out = response.getWriter()){
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("status", "Fail");

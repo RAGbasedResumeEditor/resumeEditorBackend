@@ -15,15 +15,15 @@ import java.util.List;
 @Repository
 public interface AdminUserRepository extends JpaRepository<User, Long> {
     // ROLE_USER 조회 + 페이징
-    @Query("SELECT u FROM User u WHERE u.role = :role")
+    @Query("SELECT u FROM User u WHERE u.role = :role ORDER BY u.inDate DESC")
     Page<User> findByRole(@Param("role") String role, Pageable pageable);
 
     // 키워드 검색을 위한 그룹 + 페이징
-    Page<User> findByUsernameContainingAndRole(String username, String role, Pageable pageable);
-    Page<User> findByEmailContainingAndRole(String email, String role, Pageable pageable);
-    Page<User> findByCompanyContainingAndRole(String company, String role, Pageable pageable);
-    Page<User> findByOccupationContainingAndRole(String occupation, String role, Pageable pageable);
-    Page<User> findByWishContainingAndRole(String wish, String role, Pageable pageable);
+    Page<User> findByUsernameContainingAndRoleOrderByInDateDesc(String username, String role, Pageable pageable);
+    Page<User> findByEmailContainingAndRoleOrderByInDateDesc(String email, String role, Pageable pageable);
+    Page<User> findByCompanyContainingAndRoleOrderByInDateDesc(String company, String role, Pageable pageable);
+    Page<User> findByOccupationContainingAndRoleOrderByInDateDesc(String occupation, String role, Pageable pageable);
+    Page<User> findByWishContainingAndRoleOrderByInDateDesc(String wish, String role, Pageable pageable);
 
     // 회원 탈퇴
     void deleteByDelDateLessThanEqual(LocalDateTime localDateTime);
@@ -37,6 +37,8 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     List<User> findByMode(int mode);
     List<User> findByWish(String wish);
     List<User> findByOccupation(String occupation);
+    List<User> findByCompany(String company);
+
 }
 
 

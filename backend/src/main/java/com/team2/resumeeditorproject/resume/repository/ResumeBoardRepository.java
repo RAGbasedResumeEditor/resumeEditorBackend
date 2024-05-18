@@ -42,5 +42,24 @@ public interface ResumeBoardRepository extends JpaRepository<ResumeBoard, Long> 
     @Query("UPDATE ResumeBoard SET rating_count = :newRatingCount, rating = :newRating WHERE RNum = :r_num")
     int updateRatingCount(@Param("r_num") Long r_num, @Param("newRatingCount") int newRatingCount, @Param("newRating") float newRating);
 
+//    @Query("SELECT rb, rb.title, r.content, r.w_date, row_number() over(order by rb.RNum asc) as num, rb.read_num as read_num, rb.rating as rating\n" +
+//            "FROM ResumeBoard rb JOIN Resume r ON rb.RNum = r.r_num\n" +
+//            "order by read_num desc")
+//    List<Object[]> getBoardRankingReadNum();
+
+    @Query("SELECT rb, rb.title, r.content, r.w_date, rb.read_num AS read_num " +
+            "FROM ResumeBoard rb " +
+            "JOIN Resume r ON rb.RNum = r.r_num " +
+            "ORDER BY read_num DESC " +
+            "LIMIT 3")
+    List<Object[]> getBoardRankingReadNum();
+
+    @Query("SELECT rb, rb.title, r.content, r.w_date, rb.rating AS rating " +
+            "FROM ResumeBoard rb " +
+            "JOIN Resume r ON rb.RNum = r.r_num " +
+            "ORDER BY rating DESC " +
+            "LIMIT 3")
+    List<Object[]> getBoardRankingRating();
+
     //float getRatingByRNum(long r_num);
 }

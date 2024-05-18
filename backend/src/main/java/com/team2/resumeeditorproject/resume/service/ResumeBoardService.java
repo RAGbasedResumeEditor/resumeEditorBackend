@@ -26,5 +26,9 @@ public interface ResumeBoardService {
 
     int updateRatingCount(Long rNum, int newRatingCount, float newRating);
 
+    List<Object[]> getBoardRankingReadNum();
+
+    List<Object[]> getBoardRankingRating();
+
 //    float getRating(long r_num);
 }

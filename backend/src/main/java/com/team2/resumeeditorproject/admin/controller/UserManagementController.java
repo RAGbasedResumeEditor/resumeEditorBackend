@@ -3,7 +3,6 @@ package com.team2.resumeeditorproject.admin.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminUserReposotory;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;

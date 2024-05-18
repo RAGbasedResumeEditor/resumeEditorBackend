@@ -2,6 +2,8 @@ package com.team2.resumeeditorproject.comment.repository;
 
 import com.team2.resumeeditorproject.comment.domain.Comment;
 import com.team2.resumeeditorproject.comment.dto.CommentDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +16,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "FROM Comment c JOIN User u ON c.UNum = u.uNum\n" +
             "WHERE c.deleted_at IS NULL AND c.RNum = :r_num " +
             "order by num desc")
-    List<Object[]> getComments(@Param("r_num") Long r_num);
+    Page<Object[]> getComments(@Param("r_num") Long r_num, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Comment SET deleted_at = CURRENT_TIMESTAMP WHERE CNum = :c_num")

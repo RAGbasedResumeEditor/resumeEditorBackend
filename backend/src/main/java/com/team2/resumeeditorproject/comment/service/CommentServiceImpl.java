@@ -5,6 +5,8 @@ import com.team2.resumeeditorproject.comment.dto.CommentDTO;
 import com.team2.resumeeditorproject.comment.repository.CommentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +30,8 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public List<Object[]> getComments(Long num) {
-        return commentRepository.getComments(num);
+    public Page<Object[]> getComments(Long num, Pageable pageable) {
+        return commentRepository.getComments(num, pageable);
     }
 
     @Override

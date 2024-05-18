@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.gpt.controller;
 
 import com.team2.resumeeditorproject.gpt.dto.ChatRequest;
 import com.team2.resumeeditorproject.gpt.dto.ChatResponse;
+import com.team2.resumeeditorproject.gpt.service.ChatConstants;
 import com.team2.resumeeditorproject.gpt.service.ChatService;
 import com.team2.resumeeditorproject.gpt.service.DataIngestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,13 @@ public class ChatController {
     @Autowired
     DataIngestionService dataIngestionService;
 
-    //@CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping
     public ChatResponse processMsg(@RequestBody ChatRequest chatRequest) {
         System.out.println(chatRequest.getUserMsg());
+        System.out.println(ChatConstants.QDRANT_GRPC_HOST);
+        System.out.println(ChatConstants.QDRANT_GRPC_PORT);
+        System.out.println(ChatConstants.QDRANT_API_KEY);
         var aiMessage = chatService.rag(chatRequest);
         var response = ChatResponse.builder().aiMsg(aiMessage).build();
         return response;

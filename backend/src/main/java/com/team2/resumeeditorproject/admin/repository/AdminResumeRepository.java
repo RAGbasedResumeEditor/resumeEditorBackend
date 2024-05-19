@@ -24,7 +24,7 @@ public interface AdminResumeRepository extends JpaRepository<Resume, Long> {
     List<Object[]> findWeeklyCorrectionCounts();
 
     // 일 별 첨삭 횟수
-    @Query(value = "SELECT DATE_FORMAT(r.w_date, '%Y-%m-%d') AS month, COUNT(*) AS count " +
+    @Query(value = "SELECT DATE_FORMAT(r.w_date, '%Y-%m-%d') AS date, COUNT(*) AS count " +
             "FROM resume r " +
             "GROUP BY DATE_FORMAT(r.w_date, '%Y-%m-%d')", nativeQuery = true)
     List<Object[]> findDailyCorrectionCounts();

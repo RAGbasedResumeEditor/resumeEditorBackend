@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
@@ -74,29 +75,21 @@ public class AdminController {
     public ResponseEntity<Map<String, Object>> getResumeEditCountByStatus(@RequestParam(name="group", required = false) String group,
                                                                           @RequestParam(name="company", required = false) String company,
                                                                           @RequestParam(name="occupation", required = false) String occupation) {
-        try{
-            if(group.equals("status")){
-                return createResponse(adminService.resumeEditCntByStatus());
-            }else if(group.equals("company")){
-                return createResponse(adminService.resumeEditCntByComp(company));
-            }else if(group.equals("occupation")){
-                return createResponse(adminService.resumeEditCntByOccup(occupation));
-            }else if(group.equals("age")){
-                return createResponse(adminService.resumeEditCntByAge());
-            }else if(group.equals("mode")){
-                return createResponse(adminService.resumeEditCntByMode());
-            }else if(group.equals("month")){ // 채용시즌(월별)
-                return createResponse(adminService.resumeCntByMonth());
-            }else if(group.equals("weekly")){ // 채용시즌(주별)
-                return createResponse(adminService.resumeCntByWeekly());
-            }else if(group.equals("daily")){ // 채용시즌(일별)
-                return createResponse(adminService.resumeCntByDaily());
-            }
-            else{
-                return createBadReqResponse("잘못된 요청입니다");
-            }
+        try {
+            Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
+                case "status" -> (g) -> createResponse(adminService.resumeEditCntByStatus());
+                case "company" -> (g) -> createResponse(adminService.resumeEditCntByComp(company));
+                case "occupation" -> (g) -> createResponse(adminService.resumeEditCntByOccup(occupation));
+                case "age" -> (g) -> createResponse(adminService.resumeEditCntByAge());
+                case "mode" -> (g) -> createResponse(adminService.resumeEditCntByMode());
+                case "monthly" -> (g) -> createResponse(adminService.resumeCntByMonth()); // 채용시즌(월별)
+                case "weekly" -> (g) -> createResponse(adminService.resumeCntByWeekly()); // 채용시즌(주별)
+                //case "daily" -> (g) -> createResponse(adminService.resumeCntByDaily()); // 채용시즌(일별)
+                default -> (g) -> createBadReqResponse("잘못된 요청입니다");
+            };
 
-        }catch(Exception e){
+            return action.apply(group);
+        } catch (Exception e) {
             return createServerErrResponse();
         }
     }

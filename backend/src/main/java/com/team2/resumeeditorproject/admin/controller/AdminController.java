@@ -1,18 +1,15 @@
 package com.team2.resumeeditorproject.admin.controller;
 
 import com.team2.resumeeditorproject.admin.service.AdminService;
-import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
@@ -24,27 +21,21 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping("/user")
-    public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name="group", defaultValue = "occupation") String group,
+    public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name="group", required=false) String group,
                                                          @RequestParam(name="occupation", required = false) String occupation,
                                                          @RequestParam(name="wish", required = false) String wish){
         try {
-            if(group.equals("count")){
-                return createResponse(adminService.userCnt());
-            }else if(group.equals("gender")){
-                return createResponse(adminService.genderCnt());
-            }else if(group.equals("age")){
-                return createResponse(adminService.ageCnt());
-            }else if(group.equals("status")){
-                return createResponse(adminService.statusCnt());
-            }else if(group.equals("mode")){
-                return createResponse(adminService.modeCnt());
-            }else if(group.equals("occupation")){
-                return createResponse(adminService.occupCnt(occupation));
-            }else if(group.equals("wish")){
-                return createResponse(adminService.wishCnt(wish));
-            } else{
-                return createBadReqResponse("잘못된 요청입니다.");
-            }
+            Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
+                case "count" -> (g) -> createResponse(adminService.userCnt());
+                case "gender" -> (g) -> createResponse(adminService.genderCnt());
+                case "age" -> (g) -> createResponse(adminService.ageCnt());
+                case "status" -> (g) -> createResponse(adminService.statusCnt());
+                case "mode" -> (g) -> createResponse(adminService.modeCnt());
+                case "occupation" -> (g) -> createResponse(adminService.occupCnt(occupation));
+                case "wish" -> (g) -> createResponse(adminService.wishCnt(wish));
+                default -> (g) ->  createBadReqResponse("잘못된 요청입니다.");
+            };
+            return action.apply(group);
         }catch(Exception e){
             return createServerErrResponse();
         }
@@ -55,13 +46,12 @@ public class AdminController {
                                                                      @RequestParam(name="company", required = false) String company,
                                                                      @RequestParam(name="occupation", required=false) String occupation){
         try {
-            if(group.equals("company")){
-                return createResponse(adminService.CompResumeCnt(company));
-            }else if(group.equals("occupation")){
-                return createResponse(adminService.OccupResumeCnt(occupation));
-            }else{
-                return createBadReqResponse("잘못된 요청입니다.");
-            }
+            Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
+                case "company" -> (g) -> createResponse(adminService.CompResumeCnt(company));
+                case "occupation" -> (g) -> createResponse(adminService.OccupResumeCnt(occupation));
+                default -> (g) ->  createBadReqResponse("잘못된 요청입니다.");
+            };
+            return action.apply(group);
         }catch(Exception e){
             return createServerErrResponse();
         }

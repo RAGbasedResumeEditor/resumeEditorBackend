@@ -18,6 +18,5 @@ public interface UserManagementService {
     void updateUserDeleteDate(Long uNum);
 
     @Transactional
-    @Scheduled(cron = "0 0 12 * * *") // 매일 오후 12시에 메서드 동작
     void deleteUserEnd();
 }

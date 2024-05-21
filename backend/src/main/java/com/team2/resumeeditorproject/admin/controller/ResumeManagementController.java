@@ -41,7 +41,6 @@ public class ResumeManagementController {
            Page<ResumeBoard> rbList = rmService.getResumeBoards(page);
            int totalPage = rbList.getTotalPages();
 
-
            if (page > totalPage-1) {
                page = totalPage-1;
                rbList = rmService.getResumeBoards(page);

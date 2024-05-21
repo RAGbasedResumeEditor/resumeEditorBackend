@@ -65,7 +65,7 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6' //spring security
 	testImplementation 'org.springframework.security:spring-security-test' // spring security
 	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // social login
-	implementation 'org.springframework.boot:spring-boot-starter-batch'	// Spring Batch
+	//implementation 'org.springframework.boot:spring-boot-starter-batch'	// Spring Batch
 
 
 	// dependencies added by Eunbi

@@ -54,42 +54,55 @@ public class ResumeBoardController {
         Date today = new Date();
 
         try {
+            if(page < 0){ // 페이지가 음수인 경우 첫 페이지로 이동하게
+                page = 0;
+            }
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(page, size);
             Page<Object[]> resultsPage = resumeBoardService.getAllResumeBoards(pageable);
 
-            List<Map<String, Object>> formattedResults = new ArrayList<>();
-
-            for (Object[] result : resultsPage.getContent()) {
-                Map<String, Object> formattedResult = new HashMap<>();
-
-                // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                ResumeBoard resumeBoard = (ResumeBoard) result[0];
-                formattedResult.put("r_num", resumeBoard.getRNum());
-                formattedResult.put("rating", (float)Math.round(resumeBoard.getRating() * 10) / 10);
-                formattedResult.put("rating_count", resumeBoard.getRating_count());
-                formattedResult.put("read_num", resumeBoard.getRead_num());
-
-                // 두 번째 요소는 Resume_board의 title
-                String title = (String) result[1];
-                formattedResult.put("title", title);
-
-                // 세 번째 요소는 Resume의 content
-                String content = (String) result[2];
-                formattedResult.put("content", content);
-
-                // 네 번째 요소는 Resume의 w_date
-                Date w_date = (Date) result[3];
-                formattedResult.put("w_date", w_date);
-
-                // 다섯 번째 요소는 num - 정렬된 글번호
-                Long num = (Long) result[4];
-                formattedResult.put("num", num);
-
-                formattedResults.add(formattedResult);
+            if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                page = resultsPage.getTotalPages() - 1;
+                pageable = PageRequest.of(page, size);
+                resultsPage = resumeBoardService.getAllResumeBoards(pageable);
             }
 
-            response.put("response", formattedResults);
+            if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
+                response.put("response", "게시글이 없습니다.");
+            }
+            else { // 게시글이 있는 경우
+                List<Map<String, Object>> formattedResults = new ArrayList<>();
+
+                for (Object[] result : resultsPage.getContent()) {
+                    Map<String, Object> formattedResult = new HashMap<>();
+
+                    // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
+                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
+                    formattedResult.put("r_num", resumeBoard.getRNum());
+                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeBoard.getRating_count());
+                    formattedResult.put("read_num", resumeBoard.getRead_num());
+
+                    // 두 번째 요소는 Resume_board의 title
+                    String title = (String) result[1];
+                    formattedResult.put("title", title);
+
+                    // 세 번째 요소는 Resume의 content
+                    String content = (String) result[2];
+                    formattedResult.put("content", content);
+
+                    // 네 번째 요소는 Resume의 w_date
+                    Date w_date = (Date) result[3];
+                    formattedResult.put("w_date", w_date);
+
+                    // 다섯 번째 요소는 num - 정렬된 글번호
+                    Long num = (Long) result[4];
+                    formattedResult.put("num", num);
+
+                    formattedResults.add(formattedResult);
+                }
+                response.put("response", formattedResults);
+            }
             response.put("time", today);
             response.put("status", "Success");
 //            response.put("currentPage", resultsPage.getNumber()); // 현재 페이지
@@ -98,7 +111,7 @@ public class ResumeBoardController {
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            response.put("response", "server error");
+            response.put("response", "server error " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -116,7 +129,7 @@ public class ResumeBoardController {
             if (resumeBoard != null) {
                 resumeBoard.setRead_num(resumeBoard.getRead_num()+1);
                 resumeBoardRepository.save(resumeBoard);
-            } else {
+            } else { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
             }
 
@@ -150,7 +163,7 @@ public class ResumeBoardController {
 
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
-            response.put("response", "server error");
+            response.put("response", "server error " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -165,43 +178,58 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
+            if(page < 0){ // 페이지가 음수인 경우 첫 페이지로 이동하게
+                page = 0;
+            }
+
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(page, size);
             Page<Object[]> resultsPage = resumeBoardService.searchBoard(keyword, pageable);
 
-            List<Map<String, Object>> formattedResults = new ArrayList<>();
-
-            for (Object[] result : resultsPage.getContent()) {
-                Map<String, Object> formattedResult = new HashMap<>();
-
-                // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                ResumeBoard resumeBoard = (ResumeBoard) result[0];
-                formattedResult.put("r_num", resumeBoard.getRNum());
-                formattedResult.put("rating", (float)Math.round(resumeBoard.getRating() * 10) / 10);
-                formattedResult.put("rating_count", resumeBoard.getRating_count());
-                formattedResult.put("read_num", resumeBoard.getRead_num());
-                formattedResult.put("title", resumeBoard.getTitle());
-
-                // 두 번째 요소는 Resume의 content
-                String content = (String) result[1];
-                formattedResult.put("content", content);
-
-                // 세 번째 요소는 Resume의 w_date
-                Date w_date = (Date) result[2];
-                formattedResult.put("w_date", w_date);
-
-                // 네 번째 요소는 num
-                Long num = (Long) result[3];
-                formattedResult.put("num", num);
-                formattedResults.add(formattedResult);
+            if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                page = resultsPage.getTotalPages() - 1;
+                pageable = PageRequest.of(page, size);
+                resultsPage = resumeBoardService.getAllResumeBoards(pageable);
             }
-            response.put("response", formattedResults);
+
+            if(resultsPage.getTotalElements() == 0){ // 검색 게시글이 없는 경우
+                response.put("response", "검색 결과가 없습니다.");
+            }
+            else { // 게시글이 있는 경우
+                List<Map<String, Object>> formattedResults = new ArrayList<>();
+
+                for (Object[] result : resultsPage.getContent()) {
+                    Map<String, Object> formattedResult = new HashMap<>();
+
+                    // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
+                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
+                    formattedResult.put("r_num", resumeBoard.getRNum());
+                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeBoard.getRating_count());
+                    formattedResult.put("read_num", resumeBoard.getRead_num());
+                    formattedResult.put("title", resumeBoard.getTitle());
+
+                    // 두 번째 요소는 Resume의 content
+                    String content = (String) result[1];
+                    formattedResult.put("content", content);
+
+                    // 세 번째 요소는 Resume의 w_date
+                    Date w_date = (Date) result[2];
+                    formattedResult.put("w_date", w_date);
+
+                    // 네 번째 요소는 num
+                    Long num = (Long) result[3];
+                    formattedResult.put("num", num);
+                    formattedResults.add(formattedResult);
+                }
+                response.put("response", formattedResults);
+            }
             response.put("time", today);
             response.put("status", "Success");
             response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            response.put("response", "server error : search Fail");
+            response.put("response", "server error : search Fail " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -209,17 +237,23 @@ public class ResumeBoardController {
     }
 
     /* 별점 주기 */
-    @PostMapping("/list/{num}/rating")
-    public ResponseEntity<Map<String, Object>> setRating(@PathVariable("num") Long num, @RequestBody RatingDTO ratingDTO){
+    @PostMapping("/list/rating")
+    public ResponseEntity<Map<String, Object>> setRating(@RequestBody RatingDTO ratingDTO){
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try{
+            long r_num = ratingDTO.getRNum();
+
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(r_num).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
+                throw new Exception(" - ResumeBoard with num " + r_num + " not found");
+            }
+
             Map<String, Object> result = new HashMap<>();
 
             int isRated = ratingService.ratingCount(ratingDTO.getRNum(), ratingDTO.getUNum());
 
             if(isRated>0){ // 이미 별점을 줬다면
-                System.out.println("이미 별점 줬어");
                 throw new Exception(" - 이미 별점을 준 게시글");
             }
 
@@ -262,4 +296,62 @@ public class ResumeBoardController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /* 게시글 랭킹 */
+    @GetMapping("/list/rank")
+    public ResponseEntity<Map<String, Object>> getBoardRanking(@RequestParam("group") String group) {
+        Map<String, Object> response = new HashMap<>();
+        Date today = new Date();
+
+        try {
+            List<Object[]> resultsPage = null;
+
+            if(group.equals("read_num")) {
+                resultsPage = resumeBoardService.getBoardRankingReadNum();
+            }
+            else if(group.equals("rating")){
+                resultsPage = resumeBoardService.getBoardRankingRating();
+            }
+            else{ // read_num 또는 rating이 아닌 경우
+                throw new Exception("랭킹 정렬 조건은 read_num 또는 rating만 가능합니다.");
+            }
+            List<Map<String, Object>> formattedResults = new ArrayList<>();
+
+            for (Object[] result : resultsPage) {
+                Map<String, Object> formattedResult = new HashMap<>();
+
+                // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
+                ResumeBoard resumeBoard = (ResumeBoard) result[0];
+                formattedResult.put("r_num", resumeBoard.getRNum());
+                formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
+                formattedResult.put("rating_count", resumeBoard.getRating_count());
+                formattedResult.put("read_num", resumeBoard.getRead_num());
+
+                // 두 번째 요소는 Resume_board의 title
+                String title = (String) result[1];
+                formattedResult.put("title", title);
+
+                // 세 번째 요소는 Resume의 content
+                String content = (String) result[2];
+                formattedResult.put("content", content);
+
+                // 네 번째 요소는 Resume의 w_date
+                Date w_date = (Date) result[3];
+                formattedResult.put("w_date", w_date);
+
+                formattedResults.add(formattedResult);
+            }
+            response.put("response", formattedResults);
+            response.put("time", today);
+            response.put("status", "Success");
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("response", "server error " + e.getMessage());
+            response.put("time", today);
+            response.put("status", "Fail");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

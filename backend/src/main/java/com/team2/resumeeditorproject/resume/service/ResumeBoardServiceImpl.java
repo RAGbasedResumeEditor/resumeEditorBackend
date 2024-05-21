@@ -66,6 +66,16 @@ public class ResumeBoardServiceImpl implements ResumeBoardService{
         return resumeBoardRepository.updateRatingCount(r_num, newRatingCount, newRating);
     }
 
+    @Override
+    public List<Object[]> getBoardRankingReadNum() {
+        return resumeBoardRepository.getBoardRankingReadNum();
+    }
+
+    @Override
+    public List<Object[]> getBoardRankingRating() {
+        return resumeBoardRepository.getBoardRankingRating();
+    }
+
 //    @Override
 //    public float getRating(long r_num) {
 //        return resumeBoardRepository.getRatingByRNum(r_num);

@@ -17,9 +17,17 @@ configurations {
 	}
 }
 
+
 repositories {
 	mavenCentral()
 }
+
+def grpcVersion = '1.59.0'
+def protobufVersion = '3.24.0'
+def protocVersion = protobufVersion
+def slf4jVersion = '2.0.7'
+def testcontainersVersion = '1.19.6'
+def jUnitVersion = '5.8.1'
 
 dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-data-mongodb' //MongoDB
@@ -43,9 +51,20 @@ dependencies {
 	//text compare용 diff-match-patch
 	implementation 'org.bitbucket.cowwoc:diff-match-patch:1.2'
 	//langchain4j
-	implementation 'dev.langchain4j:langchain4j:0.26.1'
-	implementation 'dev.langchain4j:langchain4j-open-ai:0.26.1'
-	implementation 'dev.langchain4j:langchain4j-qdrant:0.26.1'
+	implementation 'dev.langchain4j:langchain4j:0.30.0'
+	implementation 'dev.langchain4j:langchain4j-open-ai:0.30.0'
+	implementation 'dev.langchain4j:langchain4j-qdrant:0.30.0'
+
+	//grpc
+	implementation 'io.grpc:grpc-netty-shaded:1.54.0'
+	implementation 'io.grpc:grpc-protobuf:1.54.0'
+//	implementation 'io.grpc:grpc-stub:1.42.1'
+	implementation 'io.grpc:grpc-stub:1.54.0'
+	implementation("com.google.protobuf:protobuf-java:3.22.2")
+//	implementation 'com.google.protobuf:protobuf-java:3.19.1'  // 이 버전은 다른 protobuf 버전과 일치해야 합니다
+	implementation 'io.qdrant:client:1.9.1'
+
+	// implementation 'com.team2:qdrant-client:0.1.0' // 예시. 실제 Qdrant Java 클라이언트 라이브러리의 그룹 ID와 버전을 사용하세요.
 	// dependencies added by Ajin
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -71,7 +90,13 @@ dependencies {
 	// dependencies added by Eunbi
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
-
+configurations.all {
+	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+		if (details.requested.group == 'com.google.protobuf') {
+			details.useVersion '3.22.2' // Ensure this is the latest version compatible with all dependencies
+		}
+	}
+}
 tasks.named('test') {
 	useJUnitPlatform()
 }

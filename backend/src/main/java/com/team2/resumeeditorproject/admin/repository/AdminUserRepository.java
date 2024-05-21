@@ -15,15 +15,15 @@ import java.util.List;
 @Repository
 public interface AdminUserRepository extends JpaRepository<User, Long> {
     // ROLE_USER 조회 + 페이징
-    @Query("SELECT u FROM User u WHERE u.role = :role")
-    Page<User> findByRole(@Param("role") String role, Pageable pageable);
+    @Query("SELECT u FROM User u ORDER BY u.inDate DESC")
+    Page<User> findAll(Pageable pageable);
 
     // 키워드 검색을 위한 그룹 + 페이징
-    Page<User> findByUsernameContainingAndRole(String username, String role, Pageable pageable);
-    Page<User> findByEmailContainingAndRole(String email, String role, Pageable pageable);
-    Page<User> findByCompanyContainingAndRole(String company, String role, Pageable pageable);
-    Page<User> findByOccupationContainingAndRole(String occupation, String role, Pageable pageable);
-    Page<User> findByWishContainingAndRole(String wish, String role, Pageable pageable);
+    Page<User> findByUsernameContainingOrderByInDateDesc(String username, Pageable pageable);
+    Page<User> findByEmailContainingOrderByInDateDesc(String email, Pageable pageable);
+    Page<User> findByCompanyContainingOrderByInDateDesc(String company, Pageable pageable);
+    Page<User> findByOccupationContainingOrderByInDateDesc(String occupation,Pageable pageable);
+    Page<User> findByWishContainingOrderByInDateDesc(String wish, Pageable pageable);
 
     // 회원 탈퇴
     void deleteByDelDateLessThanEqual(LocalDateTime localDateTime);
@@ -37,6 +37,8 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     List<User> findByMode(int mode);
     List<User> findByWish(String wish);
     List<User> findByOccupation(String occupation);
+    List<User> findByCompany(String company);
+
 }
 
 

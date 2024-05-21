@@ -22,8 +22,8 @@ public class UserManagementServiceImpl implements UserManagementService{
 
     // 회원 목록 + 페이징
     @Override
-    public Page<User> getAllUsersByRolePaged(String role, Pageable pageable) {
-        return adminUserRepository.findByRole(role, pageable);
+    public Page<User> getAllUsersPaged(Pageable pageable) {
+        return adminUserRepository.findAll(pageable);
     }
 
     // 첨삭 횟수
@@ -34,14 +34,14 @@ public class UserManagementServiceImpl implements UserManagementService{
 
     // 그룹, 키워드 검색 + 페이징
     @Override
-    public Page<User> searchUsersByGroupAndKeyword(String group, String keyword, String role, Pageable pageable) {
+    public Page<User> searchUsersByGroupAndKeyword(String group, String keyword, Pageable pageable) {
         return switch (group) {
-            case "username" -> adminUserRepository.findByUsernameContainingAndRole(keyword, role, pageable);
-            case "email" -> adminUserRepository.findByEmailContainingAndRole(keyword, role, pageable);
-            case "company" -> adminUserRepository.findByCompanyContainingAndRole(keyword, role, pageable);
-            case "occupation" -> adminUserRepository.findByOccupationContainingAndRole(keyword, role, pageable);
-            case "wish" -> adminUserRepository.findByWishContainingAndRole(keyword, role, pageable);
-            default -> adminUserRepository.findByRole(role, pageable);
+            case "username" -> adminUserRepository.findByUsernameContainingOrderByInDateDesc(keyword, pageable);
+            case "email" -> adminUserRepository.findByEmailContainingOrderByInDateDesc(keyword, pageable);
+            case "company" -> adminUserRepository.findByCompanyContainingOrderByInDateDesc(keyword, pageable);
+            case "occupation" -> adminUserRepository.findByOccupationContainingOrderByInDateDesc(keyword,pageable);
+            case "wish" -> adminUserRepository.findByWishContainingOrderByInDateDesc(keyword,pageable);
+            default -> adminUserRepository.findAll(pageable);
         };
     }
 

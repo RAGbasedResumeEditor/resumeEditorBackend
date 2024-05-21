@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
+import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.user.domain.User;
@@ -9,18 +10,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService{ //관리자 페이지 통계 데이터 처리해주는 클래스
-/*
-      3) 자소서 첨삭 이용 통계
-        채용 시즌(날짜) 별 첨삭 횟수, 신입/경력 별 첨삭 횟수, 후기 별점 신입/경력별, 직군별, 연령별, 프로/라이트별 비율.
- */
+
     private final AdminUserRepository adminRepository;
     private final AdminResumeEditRepository adResEditRepository;
     private final AdminResumeBoardRepository adResBoardRepository;
+    private final AdminResumeRepository adResRepository;
 
     public static int totalUserCnt(AdminUserRepository adminUserRepository){
         List<User> users = adminUserRepository.findAll();
@@ -185,6 +188,8 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         return result;
     }
 
+    /* 3) 자소서 첨삭 이용 통계 */
+
     private long countResumeEdits(List<User> userList) {
         long totalResumeEdits = 0;
         for (User user : userList) {
@@ -193,22 +198,375 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         return totalResumeEdits;
     }
 
-    /* 신입/경력 별 첨삭 횟수 */
+    /* 신입/경력 별 첨삭 횟수,비율 */
     @Override
-    public Map<String, Long> resumeEditCntByStatus() {
-        Map<String, Long> result = new HashMap<>();
+    public Map<String, Object> resumeEditCntByStatus() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> editCounts = new LinkedHashMap<>();
+        Map<String, Object> editRatios = new LinkedHashMap<>();
 
-        // 상태가 1인 사용자들을 조회
+        // 신입(구직) 사용자 조회
         List<User> newUserList = adminRepository.findByStatus(1);
         long newWorkerCnt = countResumeEdits(newUserList);
 
-        // 상태가 2인 사용자들을 조회
+        // 경력(이직) 사용자 조회
         List<User> experiencedUserList = adminRepository.findByStatus(2);
         long experiencedWorkerCnt = countResumeEdits(experiencedUserList);
 
-        result.put("신입 첨삭 횟수", newWorkerCnt);
-        result.put("경력 첨삭 횟수", experiencedWorkerCnt);
+        long totalEditCnt = newWorkerCnt + experiencedWorkerCnt;
+        double newWorkerRatio = ((double) newWorkerCnt / totalEditCnt) * 100;
+        double experiencedWorkerRatio = ((double) experiencedWorkerCnt / totalEditCnt) * 100;
+
+        editCounts.put("status_1", newWorkerCnt);
+        editCounts.put("status_2", experiencedWorkerCnt);
+        editRatios.put("status_1", Math.round(newWorkerRatio * 100.0) / 100.0);
+        editRatios.put("status_2", Math.round(experiencedWorkerRatio * 100.0) / 100.0);
+
+        result.put("edit_cnt", editCounts);
+        result.put("edit_ratio", editRatios);
+
 
         return result;
     }
+
+    /* 직군 별 첨삭 횟수,비율 */
+    @Override
+    public Map<String, Object> resumeEditCntByOccup(String occupation) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> editCounts = new LinkedHashMap<>();
+        Map<String, Object> editRatios = new LinkedHashMap<>();
+
+        int userCnt = totalUserCnt(adminRepository);
+        List<User> occupList = adminRepository.findByOccupation(occupation);
+
+        long occupCnt = countResumeEdits(occupList);
+        double occupRatio = ((double) occupCnt / userCnt) * 100;
+
+        editCounts.put(occupation, occupCnt);
+        editRatios.put(occupation, Math.round(occupRatio * 100) / 100);
+
+        result.put("occup_edit_cnt", editCounts);
+        result.put("occup_edit_ratio", editRatios);
+
+        return result;
+    }
+
+    /* 회사 별 첨삭 횟수,비율*/
+    @Override
+    public Map<String, Object> resumeEditCntByComp(String company) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> editCounts = new LinkedHashMap<>();
+        Map<String, Object> editRatios = new LinkedHashMap<>();
+
+        int userCnt = totalUserCnt(adminRepository);
+        List<User> compList = adminRepository.findByCompany(company);
+
+        long compCnt = countResumeEdits(compList);
+        double compRatio = ((double) compCnt / userCnt) * 100;
+
+        editCounts.put(company, compCnt);
+        editRatios.put(company, Math.round(compRatio * 100) / 100);
+
+        result.put("company_edit_cnt", editCounts);
+        result.put("company_edit_ratio", editRatios);
+
+        return result;
+    }
+
+    /* 연령 별 첨삭 횟수,비율 */
+    @Override
+    public Map<String, Object> resumeEditCntByAge() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Long> ageGroupCounts = new LinkedHashMap<>();
+
+        ageGroupCounts.put("20s", 0L);
+        ageGroupCounts.put("30s", 0L);
+        ageGroupCounts.put("40s", 0L);
+        ageGroupCounts.put("50s", 0L);
+        ageGroupCounts.put("60s over", 0L);
+
+        List<User> users = adminRepository.findAll();
+
+        for (User user : users) {
+            int age = user.getAge();
+            String ageGroup = switch (age / 10) {
+                case 2 -> "20s";
+                case 3 -> "30s";
+                case 4 -> "40s";
+                case 5 -> "50s";
+                default -> age >= 60 ? "60s over" : null;
+            };
+
+            if (ageGroup != null) {
+                ageGroupCounts.put(ageGroup, ageGroupCounts.get(ageGroup) + adResEditRepository.countByUNum(user.getUNum()));
+            }
+        }
+
+        long totalEdits = ageGroupCounts.values().stream().mapToLong(Long::longValue).sum();
+
+        Map<String, Double> ageGroupRatios = new LinkedHashMap<>();
+        for (String ageGroup : ageGroupCounts.keySet()) {
+            long count = ageGroupCounts.get(ageGroup);
+            ageGroupRatios.put(ageGroup, totalEdits == 0 ? 0.0 : (double) count / totalEdits * 100);
+        }
+
+        result.put("age_edit_cnt", ageGroupCounts);
+        result.put("age_edit_ratio", ageGroupRatios);
+
+        return result;
+    }
+
+    /* 모드 별 첨삭 횟수,비율*/
+    @Override
+    public Map<String, Object> resumeEditCntByMode() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> editCounts = new LinkedHashMap<>();
+        Map<String, Object> editRatios = new LinkedHashMap<>();
+
+        // light모드 사용자 조회
+        List<User> lightList = adminRepository.findByMode(1);
+        long lightCnt = countResumeEdits(lightList);
+
+        // pro모드 사용자 조회
+        List<User> proList = adminRepository.findByMode(2);
+        long proCnt = countResumeEdits(proList);
+
+        long totalEditCnt = lightCnt + proCnt;
+        double lightRatio = ((double) lightCnt / totalEditCnt) * 100;
+        double proRatio = ((double) proCnt / totalEditCnt) * 100;
+
+        editCounts.put("mode_light", lightCnt);
+        editCounts.put("mode_pro", proCnt);
+
+        editRatios.put("mode_light", Math.round(lightRatio * 100) / 100);
+        editRatios.put("mode_pro", Math.round(proRatio * 100) / 100);
+
+        result.put("edit_cnt", editCounts);
+        result.put("edit_ratio", editRatios);
+
+        return result;
+    }
+
+    // 해당 월의 주차를 계산하는 메서드
+    private int getWeekOfMonth(String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return localDate.get(WeekFields.of(Locale.getDefault()).weekOfMonth());
+    }
+
+    /* 채용시즌(월별, 주차별, 일별) 첨삭 횟수,비율 */
+    @Override
+    public Map<String, Object> resumeCntByMonth() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Integer> editCounts = new LinkedHashMap<>();
+        Map<String, Double> editRatios = new LinkedHashMap<>();
+
+        // 월별 첨삭 횟수 조회
+        List<Object[]> monthList = adResRepository.findMonthlyCorrectionCounts();
+        // 주차별 첨삭 횟수 조회
+        List<Object[]> weeklyList = adResRepository.findWeeklyCorrectionCounts();
+        // 일별 첨삭 횟수 조회
+        List<Object[]> dailyList = adResRepository.findDailyCorrectionCounts();
+
+        // 전체 첨삭 횟수 계산
+        int totalCorrections = monthList.stream().mapToInt(row -> ((Number) row[1]).intValue()).sum();
+
+        // 월별 첨삭 횟수 및 비율 계산
+        for (Object[] row : monthList) {
+            String month = (String) row[0];
+            int monthCnt = ((Number) row[1]).intValue();
+            double monthRatio = ((double) monthCnt / totalCorrections) * 100;
+
+            editCounts.put(month, monthCnt);
+            editRatios.put(month, Math.round(monthRatio * 100) / 100.0);
+        }
+
+        // 주차별 첨삭 횟수 및 비율 계산
+        Map<String, Map<String, Integer>> weeklyEditCounts = new LinkedHashMap<>();
+        Map<String, Map<String, Double>> weeklyEditRatios = new LinkedHashMap<>();
+
+        for (Object[] row : weeklyList) {
+            String month = (String) row[0];
+            String week = "w0" + ((Number) row[1]).intValue();
+            int weeklyCnt = ((Number) row[2]).intValue();
+
+            // 월별 맵에 주차별 첨삭 횟수 저장
+            if (!weeklyEditCounts.containsKey(month)) {
+                weeklyEditCounts.put(month, new LinkedHashMap<>());
+                weeklyEditRatios.put(month, new LinkedHashMap<>());
+            }
+
+            Map<String, Integer> weekDataCounts = weeklyEditCounts.get(month);
+            weekDataCounts.put(week, weeklyCnt);
+
+            // 주차별 첨삭 비율 계산
+            int monthTotalCnt = editCounts.get(month);
+            double weeklyRatio = ((double) weeklyCnt / monthTotalCnt) * 100;
+            Map<String, Double> weekDataRatios = weeklyEditRatios.get(month);
+            weekDataRatios.put(week, Math.round(weeklyRatio * 100) / 100.0);
+        }
+
+        // 일별 첨삭 횟수 및 비율 계산
+        Map<String, Map<String, Integer>> dailyEditCounts = new LinkedHashMap<>();
+        Map<String, Map<String, Double>> dailyEditRatios = new LinkedHashMap<>();
+
+        for (Object[] row : dailyList) {
+            String date = (String) row[0];
+            String month = date.substring(0, 7);
+            int week = getWeekOfMonth(date);
+            int dailyCnt = ((Number) row[1]).intValue();
+
+            String weekKey = "w0" + week;
+            String dayKey = date;
+
+            // 월별 맵에 일별 첨삭 횟수 저장
+            if (!dailyEditCounts.containsKey(month)) {
+                dailyEditCounts.put(month, new LinkedHashMap<>());
+                dailyEditRatios.put(month, new LinkedHashMap<>());
+            }
+
+            Map<String, Integer> dayDataCounts = dailyEditCounts.get(month);
+            dayDataCounts.put(dayKey, dailyCnt);
+
+            // 일별 첨삭 비율 계산
+            int monthTotalCnt = editCounts.get(month);
+            double dailyRatio = ((double) dailyCnt / monthTotalCnt) * 100;
+            Map<String, Double> dayDataRatios = dailyEditRatios.get(month);
+            dayDataRatios.put(dayKey, Math.round(dailyRatio * 100) / 100.0);
+        }
+
+        Map<String, Object> combinedCounts = new LinkedHashMap<>();
+        Map<String, Object> combinedRatios = new LinkedHashMap<>();
+
+        combinedCounts.put("monthly", editCounts);
+        combinedCounts.put("weekly", weeklyEditCounts);
+        combinedCounts.put("daily", dailyEditCounts);
+
+        combinedRatios.put("monthly", editRatios);
+        combinedRatios.put("weekly", weeklyEditRatios);
+        combinedRatios.put("daily", dailyEditRatios);
+
+        result.put("edit_cnt", combinedCounts);
+        result.put("edit_ratio", combinedRatios);
+
+        return result;
+    }
+
+    /* 채용시즌(주차별) 첨삭 횟수 */
+    @Override
+    public Map<String, Object> resumeCntByWeekly() {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        // 일별 첨삭 횟수 조회
+        List<Object[]> dailyList = adResRepository.findDailyCorrectionCounts();
+
+        // 주차별 일자 데이터 초기화
+        for (Object[] row : dailyList) {
+            String date = (String) row[0]; // 일자
+            int count = ((Number) row[1]).intValue(); // 해당 일자의 첨삭 횟수
+            String month = date.substring(0, 7); // 연도와 월만 가져옴
+            String week = String.valueOf(getWeekOfMonth(date)); // 주차 계산
+
+            // 결과 맵에 데이터 추가
+            result.putIfAbsent(month, new LinkedHashMap<>());
+            Map<String, Map<String, Object>> monthData = (Map<String, Map<String, Object>>) result.get(month);
+            monthData.putIfAbsent("w0" + week, new TreeMap<>()); // 날짜순으로 정렬
+            Map<String, Object> weekData = monthData.get("w0" + week);
+            weekData.put(date, count); // 해당 주차의 날짜에 첨삭 횟수 저장
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("edit_cnt", result);
+
+        // edit_ratio 데이터 계산 및 추가
+        Map<String, Object> editRatio = new LinkedHashMap<>();
+        for (Map.Entry<String, Object> entry : result.entrySet()) {
+            Map<String, Map<String, Object>> monthData = (Map<String, Map<String, Object>>) entry.getValue();
+            Map<String, Map<String, Double>> monthRatioData = new LinkedHashMap<>();
+            for (Map.Entry<String, Map<String, Object>> weekEntry : monthData.entrySet()) {
+                Map<String, Object> weekData = weekEntry.getValue();
+                Map<String, Double> weekRatioData = new LinkedHashMap<>();
+                int totalCorrections = weekData.values().stream().mapToInt(value -> (int) value).sum();
+                for (Map.Entry<String, Object> dayEntry : weekData.entrySet()) {
+                    double ratio = totalCorrections == 0 ? 0 : ((int) dayEntry.getValue() / (double) totalCorrections) * 100;
+                    weekRatioData.put(dayEntry.getKey(), Math.round(ratio * 100.0) / 100.0);
+                }
+                monthRatioData.put(weekEntry.getKey(), new TreeMap<>(weekRatioData)); // 날짜순으로 정렬
+            }
+            editRatio.put(entry.getKey(), monthRatioData); // 월별 edit_ratio 데이터 저장
+        }
+        response.put("edit_ratio", editRatio);
+
+        return response;
+    }
+
+    /*
+    @Override
+    public Map<String, Object> resumeCntByWeekly() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        List<Object[]> weeklyList = adResRepository.findWeeklyCorrectionCounts();
+
+        Map<String, Map<Integer, Integer>> monthlyData = new LinkedHashMap<>();
+        Map<String, Integer> monthlyTotalCorrections = new LinkedHashMap<>();
+
+        // 월별 총 첨삭 횟수 계산
+        for (Object[] row : weeklyList) {
+            String month = (String) row[0];
+            int weeklyCnt = ((Number) row[2]).intValue();
+            monthlyTotalCorrections.put(month, monthlyTotalCorrections.getOrDefault(month, 0) + weeklyCnt);
+        }
+
+        for (Object[] row : weeklyList) {
+            String month = (String) row[0];
+            int week = ((Number) row[1]).intValue();
+            int weeklyCnt = ((Number) row[2]).intValue();
+
+            // 월별 데이터가 없으면 초기화
+            monthlyData.putIfAbsent(month, new LinkedHashMap<>());
+            monthlyData.get(month).put(week, weeklyCnt);
+        }
+
+        for (Map.Entry<String, Map<Integer, Integer>> entry : monthlyData.entrySet()) {
+            String month = entry.getKey();
+            int totalCorrections = monthlyTotalCorrections.get(month);
+            Map<String, Object> weeklyMap = new LinkedHashMap<>();
+
+            for (Map.Entry<Integer, Integer> weekEntry : entry.getValue().entrySet()) {
+                int week = weekEntry.getKey();
+                int weeklyCnt = weekEntry.getValue();
+                String weeklyRatio = String.format("%.2f%%", ((double) weeklyCnt / totalCorrections) * 100);
+
+                weeklyMap.put(week + "주차 첨삭 횟수", weeklyCnt);
+                weeklyMap.put(week + "주차 첨삭 비율", weeklyRatio);
+            }
+            result.put(month, weeklyMap);
+        }
+
+        return result;
+    }
+    */
+
+    /* 채용시즌(일별) 첨삭 횟수 */
+    /*
+    @Override
+    public Map<String, Object> resumeCntByDaily() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        List<Object[]> dailyList = adResRepository.findDailyCorrectionCounts();
+
+        int totalCorrections = dailyList.stream().mapToInt(row -> ((Number) row[1]).intValue()).sum();
+
+        for(Object[] row : dailyList){
+            String day =(String) row[0];
+            int dayCnt = ((Number) row[1]).intValue();
+            String dayRatio = String.format("%.2f", ((double) dayCnt / totalCorrections) * 100);
+
+            Map<String, Object> dailyStats = new HashMap<>();
+            dailyStats.put("일자 별 첨삭 횟수", dayCnt);
+            dailyStats.put("일자 별 첨삭 비율", dayRatio+"%");
+
+            result.put(day, dailyStats);
+        }
+
+        return result;
+    }
+    */
 }

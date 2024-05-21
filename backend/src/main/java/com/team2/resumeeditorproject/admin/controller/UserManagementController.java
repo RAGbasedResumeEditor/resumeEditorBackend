@@ -82,13 +82,13 @@ public class UserManagementController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<User> userList = userManagementService.getAllUsersByRolePaged(role, pageable);
+        Page<User> userList = userManagementService.getAllUsersPaged(pageable);
 
-        //page 가 totalPages 보다 높다면 0 페이지로 이동
+        // page 가 totalPages 보다 높다면 마지막 페이지로 이동
         if(page >= userList.getTotalPages()){
-            page=0;
+            page=userList.getTotalPages() - 1;
             pageable = PageRequest.of(page, size);
-            userList = userManagementService.getAllUsersByRolePaged(role, pageable);
+            userList = userManagementService.getAllUsersPaged(pageable);
         }
 
         return createResponse(userList);
@@ -113,19 +113,19 @@ public class UserManagementController {
 
         Page<User> userList;
         if(group !=null && keyword !=null){
-            userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, role, pageable);
+            userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
         }else{
-             userList = userManagementService.getAllUsersByRolePaged(role, pageable);
+             userList = userManagementService.getAllUsersPaged(pageable);
         }
 
-        // page 가 totalPages 보다 높다면 0 페이지로 이동
+        // page 가 totalPages 보다 높다면 마지막 페이지로 이동
         if (page >= userList.getTotalPages()) {
-            page = 0;
+            page = userList.getTotalPages() - 1;
             pageable = PageRequest.of(page, size);
             if (group != null && keyword != null) {
-                userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, role, pageable);
+                userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
             } else {
-                userList = userManagementService.getAllUsersByRolePaged(role, pageable);
+                userList = userManagementService.getAllUsersPaged(pageable);
             }
         }
         return createResponse(userList);
@@ -143,6 +143,10 @@ public class UserManagementController {
             User deletedUser = userRepository.findById(uNum)
                     .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
             refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
+
+            // 회원의 role을 ROLE_BLACKLIST 로 변경
+            deletedUser.setRole("ROLE_BLACKLIST");
+            userRepository.save(deletedUser);
 
             response.put("response", "User deleted successfully");
             response.put("time", new Date());

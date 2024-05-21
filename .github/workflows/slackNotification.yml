@@ -1,0 +1,20 @@
+name: Slack alert for main branch
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest
+          metion: here
+          if_mention: failure, cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATION }}
+        if: always()
+    

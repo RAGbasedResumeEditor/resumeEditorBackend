@@ -9,11 +9,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 public interface UserManagementService {
 
-    Page<User> getAllUsersByRolePaged(String role, Pageable pageable);
+    Page<User> getAllUsersPaged(Pageable pageable);
 
     int getResumeEditCountByRNum(Long uNum);
 
-    Page<User> searchUsersByGroupAndKeyword(String group, String keyword, String role, Pageable pageable);
+    Page<User> searchUsersByGroupAndKeyword(String group, String keyword, Pageable pageable);
 
     void updateUserDeleteDate(Long uNum);
 

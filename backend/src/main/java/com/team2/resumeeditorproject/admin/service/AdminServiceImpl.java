@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
 
@@ -240,7 +241,7 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         double occupRatio = ((double) occupCnt / userCnt) * 100;
 
         editCounts.put(occupation, occupCnt);
-        editRatios.put(occupation, Math.round(occupRatio * 100) / 100);
+        editRatios.put(occupation, Math.round(occupRatio * 100.0) / 100.0);
 
         result.put("occup_edit_cnt", editCounts);
         result.put("occup_edit_ratio", editRatios);
@@ -262,7 +263,7 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         double compRatio = ((double) compCnt / userCnt) * 100;
 
         editCounts.put(company, compCnt);
-        editRatios.put(company, Math.round(compRatio * 100) / 100);
+        editRatios.put(company, Math.round(compRatio * 100.0) / 100.0);
 
         result.put("company_edit_cnt", editCounts);
         result.put("company_edit_ratio", editRatios);
@@ -335,8 +336,8 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         editCounts.put("mode_light", lightCnt);
         editCounts.put("mode_pro", proCnt);
 
-        editRatios.put("mode_light", Math.round(lightRatio * 100) / 100);
-        editRatios.put("mode_pro", Math.round(proRatio * 100) / 100);
+        editRatios.put("mode_light", Math.round(lightRatio * 100.0) / 100.0);
+        editRatios.put("mode_pro", Math.round(proRatio * 100.0) / 100.0);
 
         result.put("edit_cnt", editCounts);
         result.put("edit_ratio", editRatios);
@@ -461,14 +462,31 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
             String date = (String) row[0]; // 일자
             int count = ((Number) row[1]).intValue(); // 해당 일자의 첨삭 횟수
             String month = date.substring(0, 7); // 연도와 월만 가져옴
-            String week = String.valueOf(getWeekOfMonth(date)); // 주차 계산
+            String week = "w0" + getWeekOfMonth(date); // 주차 계산
 
             // 결과 맵에 데이터 추가
             result.putIfAbsent(month, new LinkedHashMap<>());
             Map<String, Map<String, Object>> monthData = (Map<String, Map<String, Object>>) result.get(month);
-            monthData.putIfAbsent("w0" + week, new TreeMap<>()); // 날짜순으로 정렬
-            Map<String, Object> weekData = monthData.get("w0" + week);
+            monthData.putIfAbsent(week, new TreeMap<>()); // 날짜순으로 정렬
+            Map<String, Object> weekData = monthData.get(week);
             weekData.put(date, count); // 해당 주차의 날짜에 첨삭 횟수 저장
+        }
+
+        // 데이터가 없는 경우 0으로 초기화
+        for (String month : result.keySet()) {
+            Map<String, Map<String, Object>> monthData = (Map<String, Map<String, Object>>) result.get(month);
+            int daysInMonth = LocalDate.parse(month + "-01", DateTimeFormatter.ofPattern("yyyy-MM-dd")).lengthOfMonth();
+            for (int day = 1; day <= daysInMonth; day++) {
+                String date = month + "-" + (day < 10 ? "0" + day : day);
+                String week = "w0" + getWeekOfMonth(date);
+                monthData.putIfAbsent(week, new TreeMap<>());
+                Map<String, Object> weekData = monthData.get(week);
+                if (!weekData.containsKey(date) && isValidDate(date)) {
+                    weekData.put(date, 0);
+                }
+            }
+            monthData = new TreeMap<>(monthData);
+            result.put(month, monthData);
         }
 
         Map<String, Object> response = new LinkedHashMap<>();
@@ -496,6 +514,14 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         return response;
     }
 
+    private boolean isValidDate(String date) {
+        try {
+            LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
     /*
     @Override
     public Map<String, Object> resumeCntByWeekly() {
@@ -543,27 +569,28 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     */
 
     /* 채용시즌(일별) 첨삭 횟수 */
-    /*
     @Override
     public Map<String, Object> resumeCntByDaily() {
         Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Integer> editCounts = new LinkedHashMap<>();
+        Map<String, Object> editRatios = new LinkedHashMap<>();
+
         List<Object[]> dailyList = adResRepository.findDailyCorrectionCounts();
 
         int totalCorrections = dailyList.stream().mapToInt(row -> ((Number) row[1]).intValue()).sum();
 
-        for(Object[] row : dailyList){
-            String day =(String) row[0];
+        for (Object[] row : dailyList) {
+            String day = (String) row[0];
             int dayCnt = ((Number) row[1]).intValue();
-            String dayRatio = String.format("%.2f", ((double) dayCnt / totalCorrections) * 100);
+            double dayRatio = ((double) dayCnt / totalCorrections) * 100;
 
-            Map<String, Object> dailyStats = new HashMap<>();
-            dailyStats.put("일자 별 첨삭 횟수", dayCnt);
-            dailyStats.put("일자 별 첨삭 비율", dayRatio+"%");
-
-            result.put(day, dailyStats);
+            editCounts.put(day, dayCnt);
+            editRatios.put(day, Math.round(dayRatio * 100.0) / 100.0);
         }
+
+        result.put("edit_cnt", editCounts);
+        result.put("edit_ratio", editRatios);
 
         return result;
     }
-    */
 }

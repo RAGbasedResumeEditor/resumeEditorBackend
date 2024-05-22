@@ -84,7 +84,7 @@ public class AdminController {
                 case "mode" -> (g) -> createResponse(adminService.resumeEditCntByMode());
                 case "monthly" -> (g) -> createResponse(adminService.resumeCntByMonth()); // 채용시즌(월별)
                 case "weekly" -> (g) -> createResponse(adminService.resumeCntByWeekly()); // 채용시즌(주별)
-                //case "daily" -> (g) -> createResponse(adminService.resumeCntByDaily()); // 채용시즌(일별)
+                case "daily" -> (g) -> createResponse(adminService.resumeCntByDaily()); // 채용시즌(일별)
                 default -> (g) -> createBadReqResponse("잘못된 요청입니다");
             };
 

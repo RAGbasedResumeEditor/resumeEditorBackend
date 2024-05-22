@@ -23,7 +23,7 @@ public interface AdminService {
     Map<String, Object> resumeEditCntByMode();
 
     Map<String, Object> resumeCntByMonth();
-    //Map<String, Object> resumeCntByDaily();
+    Map<String, Object> resumeCntByDaily();
     Map<String, Object> resumeCntByWeekly();
 
 }

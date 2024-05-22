@@ -1,9 +1,6 @@
 package com.team2.resumeeditorproject.user.config;
 
-import com.team2.resumeeditorproject.user.Jwt.CustomLogoutFilter;
-import com.team2.resumeeditorproject.user.Jwt.JWTFilter;
-import com.team2.resumeeditorproject.user.Jwt.JWTUtil;
-import com.team2.resumeeditorproject.user.Jwt.LoginFilter;
+import com.team2.resumeeditorproject.user.Jwt.*;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -35,13 +33,20 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository, UserRepository userRepository) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
+                          RefreshRepository refreshRepository, UserRepository userRepository,
+                          CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
+                          UserDetailsService userDetailsService) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
         this.userRepository = userRepository;
+        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
+        this.userDetailsService = userDetailsService;
     }
     //AuthenticationManager Bean 등록
     @Bean
@@ -122,7 +127,7 @@ public class SecurityConfig {
         //필터 추가 (LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요)
         http
                 // LoginFilter에서 주입받은 authenticationManager를 꼭 주입해주어야 동작 가능
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository, userRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository, userRepository, customAuthenticationFailureHandler), UsernamePasswordAuthenticationFilter.class);
         //로그아웃 필터 추가
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
@@ -133,5 +138,13 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
+    }
+
+    @Bean
+    public CustomAuthenticationProvider customAuthenticationProvider() {
+        CustomAuthenticationProvider provider = new CustomAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(bCryptPasswordEncoder());
+        return provider;
     }
 }

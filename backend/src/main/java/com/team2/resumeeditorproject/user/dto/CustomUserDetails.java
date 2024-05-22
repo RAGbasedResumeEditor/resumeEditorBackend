@@ -5,7 +5,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
 //CustomUserDetailsService에 데이터를 넘겨주기 위한 클래스
 public class CustomUserDetails implements UserDetails {
@@ -60,8 +62,23 @@ public class CustomUserDetails implements UserDetails {
     // 계정 활성화 되었는지
     @Override
     public boolean isEnabled() {
-        // del_date가 null이면 계정이 활성화된 상태로 간주하고 true 반환
+        if ("ROLE_BLACKLIST".equals(user.getRole())) {
+            Date reactivationDate = getReactivationDate();
+            if (reactivationDate != null) {
+                return new Date().after(reactivationDate);
+            }
+        }
         // del_date가 null이 아니면 계정이 비활성화된 상태로 간주하고 false 반환
         return user.getDelDate() == null;
+    }
+
+    public Date getReactivationDate() {
+        if (user.getDelDate() != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(user.getDelDate());
+            calendar.add(Calendar.DATE, 60);
+            return calendar.getTime();
+        }
+        return null;
     }
 }

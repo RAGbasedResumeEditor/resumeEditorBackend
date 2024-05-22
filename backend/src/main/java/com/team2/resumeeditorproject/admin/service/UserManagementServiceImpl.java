@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +54,31 @@ public class UserManagementServiceImpl implements UserManagementService{
         adminUserRepository.save(user);
     }
 
+    // 매일 자정에 실행되는 스케줄러 설정
+    @Scheduled(cron = "0 0 0 * * ?")
+    @Override
+    public void updateDelDateForRoleBlacklist() {
+        // 현재 날짜 가져오기
+        Date currentDate = new Date();
+        // 60일 전 날짜 계산
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DATE, -60);
+        Date dateBefore60Days = calendar.getTime();
+
+        // UserRepository를 통해 role이 "ROLE_BLACKLIST"이고 del_date가 60일 이전인 사용자의 정보를 가져옴
+        List<User> usersToConvert = adminUserRepository.findByRoleAndDelDateBefore("ROLE_BLACKLIST", dateBefore60Days);
+
+        // 가져온 사용자들의 role을 "ROLE_USER"로 변경하고, del_date를 null로 업데이트
+        for (User user : usersToConvert) {
+            user.setRole("ROLE_USER");
+            user.setDelDate(null);
+        }
+
+        // 변경된 정보를 데이터베이스에 저장
+        adminUserRepository.saveAll(usersToConvert);
+    }
+/*
     // 30일 지나면 테이블에서 해당 회원 삭제
     @Override
     @Transactional
@@ -61,4 +86,5 @@ public class UserManagementServiceImpl implements UserManagementService{
     public void deleteUserEnd(){
         adminUserRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
     }
+     */
 }

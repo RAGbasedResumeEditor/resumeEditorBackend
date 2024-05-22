@@ -4,17 +4,19 @@ import com.team2.resumeeditorproject.user.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 
 @Repository
 public interface AdminUserRepository extends JpaRepository<User, Long> {
-    // ROLE_USER 조회 + 페이징
+    // 회원 조회 + 페이징
     @Query("SELECT u FROM User u ORDER BY u.inDate DESC")
     Page<User> findAll(Pageable pageable);
 
@@ -26,7 +28,7 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     Page<User> findByWishContainingOrderByInDateDesc(String wish, Pageable pageable);
 
     // 회원 탈퇴
-    void deleteByDelDateLessThanEqual(LocalDateTime localDateTime);
+    List<User> findByRoleAndDelDateBefore(String role, Date date);
 
     // ROLE_USER 조회
     @Query("SELECT u FROM User u WHERE u.role = :role")

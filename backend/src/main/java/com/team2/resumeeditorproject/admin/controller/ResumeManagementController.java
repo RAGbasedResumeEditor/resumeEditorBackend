@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.admin.controller;
 
 import com.team2.resumeeditorproject.admin.service.ResumeManagementService;
+import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,6 @@ public class ResumeManagementController {
     //자소서 목록 가져오기
     @GetMapping("/board/list")
     public ResponseEntity<Map<String, Object>> getAllResumeBoard(@RequestParam(name="page", defaultValue = "0") int page){
-       try {
            Page<ResumeBoard> rbList = rmService.getResumeBoards(page);
            int totalPage = rbList.getTotalPages();
 
@@ -49,24 +49,20 @@ public class ResumeManagementController {
            if (rbList.isEmpty()) {
                return createBadReqResponse("자소서가 존재하지 않습니다.");
            }
+
            return createPagedResponse(totalPage, createRbList(rbList));
-       }catch(Exception e){
-           return createServerErrResponse();
-       }
     }
 
     //자소서 삭제
-    @PostMapping("/board/list/delete/{rNum}")
-    public ResponseEntity<Map<String, Object>> deleteResume(@PathVariable("rNum") long rNum){
-        try {
+    @PostMapping("/board/list/delete")
+    public ResponseEntity<Map<String, Object>> deleteResume(@RequestBody ResumeBoardDTO rbDto){
+            long rNum=rbDto.getRNum();
             if(!rmService.checkResumeExists(rNum)){
-                return createBadReqResponse("존재하지 않는 자소서입니다.");
+                throw new BadRequestException("존재하지 않는 자소서입니다.");
             }
+
             rmService.deleteResume(rNum);
             return createResponse(rNum+"번 자소서 삭제 성공");
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
     }
 /*
     //자소서 수정
@@ -106,7 +102,6 @@ public class ResumeManagementController {
         Page<ResumeBoard> rbList =null;
         int totalPage=0;
 
-        try{
             if(group.equals("title")) {
                 rbList = rmService.searchByTitle(title, page);
                 totalPage=rbList.getTotalPages();
@@ -116,7 +111,7 @@ public class ResumeManagementController {
                 }else if(page<0) page=0;
 
                 if(rbList.isEmpty()){
-                    return createBadReqResponse("자소서가 존재하지 않습니다.");
+                    throw new BadRequestException("존재하지 않는 자소서입니다.");
                 }
             }else if(group.equals("rating")){
                 rbList = rmService.searchByRating(rating, page);
@@ -128,12 +123,9 @@ public class ResumeManagementController {
                 }else if(page<0) page=0;
 
                 if(rbList.isEmpty()){
-                    return createBadReqResponse("자소서가 존재하지 않습니다.");
+                    throw new BadRequestException("존재하지 않는 자소서입니다.");
                 }
             }//else if
             return createPagedResponse(totalPage,createRbList(rbList));
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
     }
 }

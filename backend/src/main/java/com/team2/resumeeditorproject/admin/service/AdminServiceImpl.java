@@ -108,6 +108,11 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
 
     @Override
     public Map<String, Object> CompResumeCnt(String company) { // 회사별 자소서 평점, 조회수
+
+        if (company == null) {
+            throw new IllegalArgumentException("Company parameter cannot be null");
+        }
+
         List<ResumeEdit> resumeByCompany = adResEditRepository.findByCompany(company);
         List<Float> ratesByComp = new ArrayList<>();
         List<Integer> viewsByComp = new ArrayList<>();
@@ -149,6 +154,11 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
 
     @Override
     public Map<String, Object> OccupResumeCnt(String occupation) {  //직군별 자소서 평점, 조회수
+
+        if (occupation == null) {
+            throw new IllegalArgumentException("Company parameter cannot be null");
+        }
+
         List<ResumeEdit> resumeByOccupation=adResEditRepository.findByOccupation(occupation);
         List<Float> ratesByOccup=new ArrayList<>();
         List<Integer> viewsByOccup=new ArrayList<>();
@@ -189,7 +199,6 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     }
 
     /* 3) 자소서 첨삭 이용 통계 */
-
     private long countResumeEdits(List<User> userList) {
         long totalResumeEdits = 0;
         for (User user : userList) {

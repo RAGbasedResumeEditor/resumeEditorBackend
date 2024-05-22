@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
@@ -40,15 +41,12 @@ public class UserController extends HttpServlet {
     //회원가입
     @PostMapping(value="/signup")
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
-        try{
-            if(userService.checkUsernameDuplicate(userDto.getUsername())){
-                return createBadReqResponse("이미 존재하는 username 입니다.");
+        String username=userDto.getUsername();
+            if(userService.checkUsernameDuplicate(username)){
+                throw new BadRequestException("["+username+"] 이미 존재하는 username 입니다.");
             }
             userService.signup(userDto);//회원가입 처리
             return createResponse("회원가입 성공");
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
     }//signup()
 /*
     @PostMapping("/signup/exists/username")
@@ -103,7 +101,6 @@ public class UserController extends HttpServlet {
 
         String username=getUsername();
 
-        try{
             User tempUser=userService.showUser(username);
             UserDTO user=new UserDTO();
                 user.setUNum(tempUser.getUNum());
@@ -121,9 +118,6 @@ public class UserController extends HttpServlet {
                 user.setInDate(tempUser.getInDate());
                 user.setDelDate(tempUser.getDelDate());
             return createResponse(user);
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
     }
 
     //회원탈퇴
@@ -133,7 +127,6 @@ public class UserController extends HttpServlet {
         String username=getUsername();
         Long uNum=userService.showUser(username).getUNum();
 
-        try {
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
             userManagementService.updateUserDeleteDate(uNum);
 
@@ -143,9 +136,6 @@ public class UserController extends HttpServlet {
             refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());;
 
             return createResponse( uNum+"번 회원 탈퇴 완료.");
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
     }
 
     //회원정보 수정
@@ -161,14 +151,10 @@ public class UserController extends HttpServlet {
             userDto.setBirthDate(tempUser.getBirthDate());
         }
 
-        try {
             if(userDto.getPassword()==null){
-                return createBadReqResponse("비밀번호는 반드시 입력해야합니다.");
+                throw new BadRequestException("비밀번호는 반드시 입력해야합니다.");
             }
             userService.updateUser(userDto);//수정 처리
             return createResponse(uNum+"번 회원 수정 완료.");
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
     }
 }

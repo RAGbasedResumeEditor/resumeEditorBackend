@@ -69,7 +69,6 @@ public class UserServiceImpl implements UserService{
     //30일 지나면 테이블에서 해당 회원 삭제
     @Override
     @Transactional
-    @Scheduled(cron = "0 0 12 * * *") // 매일 오후 12시에 메서드 동작
     public void deleteUserEnd(){
         userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
     }
@@ -87,14 +86,14 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public void updateUser(UserDTO userDto) {
         User user=userRepository.findById(userDto.getUNum()).orElseThrow(()->{return null;});
-        user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        user.setGender(userDto.getGender());
-        user.setBirthDate(userDto.getBirthDate());
-        user.setAge(userDto.getAge());
-        user.setStatus(userDto.getStatus());
-        user.setCompany(userDto.getCompany());
-        user.setOccupation(userDto.getOccupation());
-        user.setWish(userDto.getWish());
+            user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+            user.setGender(userDto.getGender());
+            user.setBirthDate(userDto.getBirthDate());
+            user.setAge(userDto.getAge());
+            user.setStatus(userDto.getStatus());
+            user.setCompany(userDto.getCompany());
+            user.setOccupation(userDto.getOccupation());
+            user.setWish(userDto.getWish());
         userRepository.save(user);
     }
 }

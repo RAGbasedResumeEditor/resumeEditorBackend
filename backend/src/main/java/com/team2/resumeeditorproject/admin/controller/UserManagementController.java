@@ -72,7 +72,7 @@ public class UserManagementController {
     public ResponseEntity<Map<String, Object>> getUserList(
             @RequestParam(defaultValue = "0", name = "page") int page) {
 
-        String role = "ROLE_USER";
+        //String role = "ROLE_USER";
         int size = 20;
 
         // 음수값이라면 0 페이지로 이동
@@ -101,7 +101,7 @@ public class UserManagementController {
             @RequestParam(required = false, name = "keyword") String keyword,
             @RequestParam(defaultValue = "0", name = "page") int page) {
 
-        String role = "ROLE_USER";
+        //String role = "ROLE_USER";
         int size = 20;
 
         // 음수값이라면 0 페이지로 이동
@@ -136,22 +136,34 @@ public class UserManagementController {
     public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("uNum") long uNum){
         Map<String, Object> response = new HashMap<>();
         try {
+            // uNum으로 사용자 조회
+            User user = userRepository.findById(uNum)
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
+
+            // 사용자가 이미 삭제된 상태인지 확인
+            if (user.getDelDate() != null) {
+                throw new RuntimeException("User already deleted with id: " + uNum);
+            }
+
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
             userManagementService.updateUserDeleteDate(uNum);
 
             // 해당 사용자의 refresh 토큰 정보 삭제
-            User deletedUser = userRepository.findById(uNum)
-                    .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
-            refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
+            refreshRepository.deleteRefreshByUsername(user.getUsername());
 
             // 회원의 role을 ROLE_BLACKLIST 로 변경
-            deletedUser.setRole("ROLE_BLACKLIST");
-            userRepository.save(deletedUser);
+            user.setRole("ROLE_BLACKLIST");
+            userRepository.save(user);
 
             response.put("response", "User deleted successfully");
             response.put("time", new Date());
             response.put("status", "Success");
             return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            response.put("response", e.getMessage());
+            response.put("time", new Date());
+            response.put("status", "Fail");
+            return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
             response.put("response", "Failed to delete user");
             response.put("time", new Date());

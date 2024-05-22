@@ -36,12 +36,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
+    private final CustomAuthenticationFailureHandler failureHandler;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository, UserRepository userRepository){
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,
+                       RefreshRepository refreshRepository, UserRepository userRepository,
+                       CustomAuthenticationFailureHandler failureHandler){
         this.authenticationManager=authenticationManager;
         this.jwtUtil=jwtUtil;
         this.refreshRepository=refreshRepository;
         this.userRepository=userRepository;
+        this.failureHandler = failureHandler;
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -115,19 +119,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override // 인증 실패 시
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         System.out.println("Authentication fail");
-        response.setStatus(401);
-
-        try(PrintWriter out = response.getWriter()){
-            Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("status", "Fail");
-            responseBody.put("time", new Date());
-            responseBody.put("response", "Authentication fail : non-existent username or already deleted user");
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(out, responseBody);
-        }catch(IOException e){
-            e.printStackTrace();
-        }
+        failureHandler.onAuthenticationFailure(request, response, exception);
     }
 
     // refresh토큰을 DB에 저장하여 관리하기 위한 메서드

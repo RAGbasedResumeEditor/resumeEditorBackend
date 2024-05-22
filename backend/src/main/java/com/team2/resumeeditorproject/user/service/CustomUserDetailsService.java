@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.user.service;
 
+import com.team2.resumeeditorproject.user.Error.UserBlacklistedException;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
@@ -19,11 +20,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        User userData=userRepository.findByUsername(username);
-        if(userData!=null){
-            return new CustomUserDetails(userData);
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        return null;
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        String role = user.getRole();
+        if (role.equals("ROLE_BLACKLIST") && !userDetails.isEnabled()) {
+            throw new UserBlacklistedException("User is blacklisted and cannot log in until " + userDetails.getReactivationDate());
+        }
+
+        return userDetails;
     }
 }

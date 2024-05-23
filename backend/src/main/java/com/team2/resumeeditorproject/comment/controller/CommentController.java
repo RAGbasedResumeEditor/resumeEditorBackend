@@ -103,29 +103,26 @@ public class CommentController {
 
         try{
             ResumeBoard resumeBoard = resumeBoardRepository.findById(r_num).orElse(null);
-            if (resumeBoard == null) { // 해당하는 게시글이 없다면
+            if(resumeBoard == null){ // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + r_num + " not found");
             }
 
-            if(page < 0){ // 페이지가 음수인 경우 첫 페이지로 이동하게
-                page = 0;
-            }
+            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(page, size);
             Page<Object[]> results = commentService.getComments(r_num, pageable);
 
-            if(page > results.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                page = results.getTotalPages() - 1;
-                pageable = PageRequest.of(page, size);
-                results = commentService.getComments(r_num, pageable);
-            }
-
-            List<Map<String, Object>> formattedResults = new ArrayList<>();
-            if(results.getTotalElements() == 0){ // 댓글이 없는 경우
+            if(results.getTotalPages() == 0){ // 댓글이 없는 경우
                 response.put("response", "댓글이 없습니다.");
             }
             else{
+                if(page > results.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    page = results.getTotalPages() - 1;
+                    pageable = PageRequest.of(page, size);
+                    results = commentService.getComments(r_num, pageable);
+                }
+                List<Map<String, Object>> formattedResults = new ArrayList<>();
                 for (Object[] result : results.getContent()) {
                     Map<String, Object> formattedResult = new HashMap<>();
 

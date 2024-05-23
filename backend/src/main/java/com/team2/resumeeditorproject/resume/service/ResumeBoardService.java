@@ -30,5 +30,8 @@ public interface ResumeBoardService {
 
     List<Object[]> getBoardRankingRating();
 
+    Page<Object[]> getBookmarkList(long u_num, Pageable pageable);
+
+
 //    float getRating(long r_num);
 }

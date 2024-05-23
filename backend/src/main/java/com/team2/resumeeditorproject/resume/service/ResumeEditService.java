@@ -1,6 +1,8 @@
 package com.team2.resumeeditorproject.resume.service;
 
+import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
+import org.modelmapper.ModelMapper;
 
 import java.util.List;
 /**
@@ -13,4 +15,6 @@ import java.util.List;
 public interface ResumeEditService {
     ResumeEditDTO insertResumeEdit(ResumeEditDTO resumeEditDTO);
 
+    ResumeEditDTO convertToDto(ResumeEdit resumeEdit);
+    void setModelMapper(ModelMapper modelMapper);
 }

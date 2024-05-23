@@ -1,6 +1,9 @@
 package com.team2.resumeeditorproject.resume.service;
 
 import com.team2.resumeeditorproject.resume.dto.ResumeDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * resumeService
  *
@@ -10,6 +13,12 @@ import com.team2.resumeeditorproject.resume.dto.ResumeDTO;
  */
 public interface ResumeService {
     ResumeDTO insertResume(ResumeDTO resumeDTO);
+
     String getResumeContent(long r_num);
+
+    Object getResumeEditDetail(Long num);
+
+    Page<Object[]> myPageEditList(long u_num, Pageable pageable);
+
 }
 

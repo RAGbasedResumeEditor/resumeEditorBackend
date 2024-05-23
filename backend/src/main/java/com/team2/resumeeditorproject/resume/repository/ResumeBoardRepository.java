@@ -61,5 +61,15 @@ public interface ResumeBoardRepository extends JpaRepository<ResumeBoard, Long> 
             "LIMIT 3")
     List<Object[]> getBoardRankingRating();
 
+    @Query("SELECT rb, r.content, r.w_date " +
+            "FROM ResumeBoard rb " +
+            "JOIN Bookmark b ON rb.RNum = b.RNum " +
+            "JOIN Resume r ON rb.RNum = r.r_num " +
+            "WHERE b.UNum = :u_num " +
+            "ORDER BY b.BNum DESC")
+    Page<Object[]> getBookmarkList(@Param("u_num") long u_num, Pageable pageable);
+
+
+
     //float getRatingByRNum(long r_num);
 }

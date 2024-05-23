@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.resume.domain;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Map;

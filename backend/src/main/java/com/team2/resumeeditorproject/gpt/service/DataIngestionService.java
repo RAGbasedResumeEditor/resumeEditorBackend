@@ -60,6 +60,8 @@ public class DataIngestionService {
                             ChatConstants.OPENAI_EMBEDDING_SIZE).build()).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
+        } finally {
+            client.close();
         }
     }
 
@@ -69,15 +71,35 @@ public class DataIngestionService {
         String fileContent = getFileContent();
         Document doc = Document.from(fileContent, Metadata.from("document-type", "history-document"));
 
+        // Ensure embeddingStore is correctly initialized
         EmbeddingStore<TextSegment> embeddingStore = getEmbeddingStore();
+        if (embeddingStore == null) {
+            throw new IllegalStateException("EmbeddingStore is not initialized");
+        }
+
+        // Split document into segments
         List<TextSegment> segments = documentSplitter.split(doc);
+        if (segments == null || segments.isEmpty()) {
+            throw new IllegalStateException("Document splitting resulted in no segments");
+        }
+
+        // Get embeddings for segments
         Response<List<Embedding>> embeddingResponse = embeddingModel.embedAll(segments);
+        if (embeddingResponse == null || embeddingResponse.content() == null) {
+            throw new IllegalStateException("Embedding response is null");
+        }
+
         List<Embedding> embeddings = embeddingResponse.content();
+        if (embeddings.size() != segments.size()) {
+            throw new IllegalStateException("The number of embeddings does not match the number of segments");
+        }
+
+        // Add embeddings and segments to the embedding store
         embeddingStore.addAll(embeddings, segments);
     }
 
     private EmbeddingModel getEmbeddingModel() {
-        String openaiApiKey = System.getenv("OPENAI_API_KEY");
+        String openaiApiKey = System.getenv("GPT_API_KEY");
         return OpenAiEmbeddingModel.withApiKey(openaiApiKey);
     }
 

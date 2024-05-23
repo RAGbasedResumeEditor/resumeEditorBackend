@@ -1,5 +1,7 @@
 package com.team2.resumeeditorproject.user.controller;
 
+import com.team2.resumeeditorproject.exception.BadRequestException;
+import com.team2.resumeeditorproject.exception.ForbiddenException;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.service.MailService;
 import com.team2.resumeeditorproject.user.service.UserService;
@@ -26,15 +28,11 @@ public class MailController {
     @PostMapping("/auth-code") // 사용자에게 이메일을 보낸다.
     public ResponseEntity<Map<String, Object>> mailSend(@RequestBody UserDTO userDto) throws AuthenticationException {
         String email=userDto.getEmail();
-        try {
             if(userService.checkEmailDuplicate(userDto.getEmail())){
-                return createBadReqResponse("이미 존재하는 email 입니다.");
+                throw new BadRequestException("["+email+"] 이미 존재하는 이메일입니다.");
             }
             mailService.sendEmail(email);
             return createResponse("인증 코드 전송 성공");
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
     }
 
     @PostMapping("/auth-check")
@@ -45,14 +43,10 @@ public class MailController {
 
         boolean checked=mailService.checkAuthNum(email, authCode); // Redis 일치 여부 확인
 
-        try {
             if (checked) {
                 return createResponse("인증 성공");
             } else {
                 return createBadReqResponse("인증 실패. 입력한 이메일 주소 혹은 인증 코드를 확인해주세요.");
             }
-        }catch(Exception e){
-            return createServerErrResponse();
-        }
     }
 }

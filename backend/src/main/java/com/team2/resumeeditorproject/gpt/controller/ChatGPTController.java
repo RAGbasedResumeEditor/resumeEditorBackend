@@ -1,14 +1,17 @@
 package com.team2.resumeeditorproject.gpt.controller;
 
 import com.team2.resumeeditorproject.gpt.dto.ChatCompletionDto;
+import com.team2.resumeeditorproject.gpt.dto.ChatRequestMsgDto;
 import com.team2.resumeeditorproject.gpt.dto.CompletionDto;
 import com.team2.resumeeditorproject.gpt.service.ChatGPTService;
 import lombok.extern.slf4j.Slf4j;
+import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -87,6 +90,26 @@ public class ChatGPTController {
                         String content = (String) message.get("content");
                         Map<String, Object> response = new HashMap<>();
                         response.put("content", content);
+                        // 자소서 원본 데이터를 text1으로 대체
+
+                        // ChatCompletionDto에서 messages 리스트를 가져옴
+                        List<ChatRequestMsgDto> chatDtos = chatCompletionDto.getMessages();
+                        String userContent = "";
+                        // messages 리스트를 반복하여 role이 user인 객체를 찾음
+                        for (ChatRequestMsgDto chatDto : chatDtos) {
+                            // role이 user인 경우
+                            if ("user".equals(chatDto.getRole())) {
+                                // content를 추출하여 출력
+                                userContent = chatDto.getContent();
+                                // 추출한 content를 어딘가에 저장하거나 다른 작업을 수행할 수 있음
+                            }
+                        }
+                        DiffMatchPatch dmp = new DiffMatchPatch();
+                        LinkedList<DiffMatchPatch.Diff> diff = dmp.diffMain(userContent, content, false);
+                        dmp.diffCleanupSemantic(diff);
+                        // diff 결과를 response에 추가
+                        response.put("diff", diff);
+
                         response.put("status","Success");
                         return ResponseEntity.ok(response); // 성공 상태 반환
                     }

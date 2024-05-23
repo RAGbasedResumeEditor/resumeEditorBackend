@@ -70,4 +70,9 @@ public class AdminController {
 
             return action.apply(group);
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<Map<String, Object>> getHistory(){
+       return createResponse(adminService.getHistory());
+    }
 }

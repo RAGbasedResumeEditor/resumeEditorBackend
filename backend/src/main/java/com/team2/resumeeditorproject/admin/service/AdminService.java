@@ -9,7 +9,7 @@ public interface AdminService {
     Map<String, Object> genderCnt();
     Map<String, Object> occupCnt(String occupation);
     Map<String, Object> wishCnt(String wish);
-    Map<String, String> ageCnt();
+    Map<String, Object> ageCnt();
     Map<String, Object> statusCnt();
     Map<String, Object> modeCnt();
 
@@ -26,4 +26,5 @@ public interface AdminService {
     Map<String, Object> resumeCntByDaily();
     Map<String, Object> resumeCntByWeekly();
 
+    Map<String, Object> getHistory();
 }

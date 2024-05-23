@@ -1,18 +1,14 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
+import com.team2.resumeeditorproject.admin.domain.History;
+import com.team2.resumeeditorproject.admin.repository.*;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -25,14 +21,13 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     private final AdminResumeEditRepository adResEditRepository;
     private final AdminResumeBoardRepository adResBoardRepository;
     private final AdminResumeRepository adResRepository;
+    private final AdminHistoryRepository adHisRepository;
 
     public static int totalUserCnt(AdminUserRepository adminUserRepository){
         List<User> users = adminUserRepository.findAll();
         return users.size();
     }
 
-    //@Scheduled(cron = "0 30 6,23 * * *") // 모든 요일 06:30AM, 11:30PM에 실행.
-    @Scheduled(fixedDelay = 2000)
     @Override
     public Map<String, Object> userCnt(){ // 총 회원수
         Map<String, Object> result=new HashMap<>();
@@ -40,70 +35,71 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         return result;
     }
 
-    @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
     public Map<String, Object> genderCnt() {  //성비
         int userCnt = totalUserCnt(adminRepository);
-        String female = String.format("%.2f", ((double) adminRepository.findByGender('F').size() / (double) userCnt) * 100);
-        String male = String.format("%.2f", ((double)  adminRepository.findByGender('M').size() / (double) userCnt) * 100);
+        double female = ((double) adminRepository.findByGender('F').size() / userCnt) * 100;
+        double male = ((double) adminRepository.findByGender('M').size() / userCnt) * 100;
+
         Map<String, Object> result=new HashMap<>();
-        result.put("female",female);
-        result.put("male",male);
+        result.put("female",Math.round(female*100.0)/100.0);
+        result.put("male",Math.round(male*100.0)/100.0);
         return result;
     }
 
     @Override
     public Map<String,Object> occupCnt(String occupation) {  //occupation
         int userCnt = totalUserCnt(adminRepository);
-        String occup = String.format("%.2f", ((double) adminRepository.findByOccupation(occupation).size() / (double) userCnt) * 100);
+        double occup=((double) adminRepository.findByOccupation(occupation).size() /userCnt) * 100;
+
         Map<String,Object> result=new HashMap<>();
-        result.put(occupation,occup);
+        result.put(occupation,Math.round(occup*100.0)/100.0);
         return result;
     }
 
     @Override
     public  Map<String, Object> wishCnt(String wish) {
         int userCnt = totalUserCnt(adminRepository);
-        String wishes = String.format("%.2f", ((double) adminRepository.findByWish(wish).size() / (double) userCnt) * 100);
+        double wishes=((double) adminRepository.findByWish(wish).size() / (double) userCnt) * 100;
+
         Map<String, Object> result=new HashMap<>();
-        result.put(wish,wishes);
+        result.put(wish,Math.round(wishes*100.0)/100.0);
         return result;
     }
 
-    @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
-    public Map<String, String> ageCnt() {  //연령대
+    public Map<String, Object> ageCnt() {  //연령대
         int userCnt = totalUserCnt(adminRepository);
-        Map<String, String> result=new HashMap<>();
+        Map<String, Object> result=new HashMap<>();
+        double percentage=0;
         for(int age=20;age<=50;age+=10){
-            String percentage=String.format("%.2f",((double)adminRepository.findByAgeBetween(age, age+9).size()/(double) userCnt)*100);
-            result.put(age+"", percentage);
+            percentage=((double)adminRepository.findByAgeBetween(age, age+9).size()/(double) userCnt)*100;
+            result.put(age+"", Math.round(percentage*100.0)/100.0);
         }
-        result.put("over_sixty", String.format("%.2f",((double)adminRepository.findByAgeBetween(60, 99).size()/(double) userCnt)*100));
+        percentage=((double)adminRepository.findByAgeBetween(60, 99).size()/(double) userCnt)*100;
+        result.put("over_sixty", Math.round(percentage*100.0)/100.0);
         return result;
     }
 
-    @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
     public Map<String, Object> statusCnt() {   //신입 경력 비율
         int userCnt = totalUserCnt(adminRepository);
-        String uneployed = String.format("%.2f", ((double)adminRepository.findByStatus(1).size()/(double)userCnt)*100); // 구직자 비율
-        String employed = String.format("%.2f", ((double)adminRepository.findByStatus(2).size()/(double)userCnt)*100); // 이직자 비율
+        double uneployed = ((double)adminRepository.findByStatus(1).size()/(double)userCnt)*100; // 구직자 비율
+        double employed = ((double)adminRepository.findByStatus(2).size()/(double)userCnt)*100; // 이직자 비율
         Map<String, Object> result=new HashMap<>();
-        result.put("unemplyed",uneployed);
-        result.put("employed",employed);
+        result.put("unemplyed",Math.round(uneployed*100.0)/100.0);
+        result.put("employed",Math.round(employed*100.0)/100.0);
         return result;
     }
 
-    @Scheduled(fixedDelay = 2000) // 2초마다 실행(for test)
     @Override
     public Map<String, Object> modeCnt() {    //프로 라이트 모드 비율
         int userCnt = totalUserCnt(adminRepository);
-        String light = String.format("%.2f", ((double)adminRepository.findByMode(1).size()/(double)userCnt)*100);
-        String pro = String.format("%.2f", ((double)adminRepository.findByMode(2).size()/(double)userCnt)*100);
+        double light = ((double)adminRepository.findByMode(1).size()/(double)userCnt)*100;
+        double pro = ((double)adminRepository.findByMode(2).size()/(double)userCnt)*100;
         Map<String, Object> result=new HashMap<>();
-        result.put("pro",light);
-        result.put("light",pro);
+        result.put("pro",Math.round(light*100.0)/100.0);
+        result.put("light",Math.round(pro*100.0)/100.0);
         return result;
     }
 
@@ -603,6 +599,14 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         result.put("edit_cnt", editCounts);
         result.put("edit_ratio", editRatios);
 
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getHistory(){
+        Map<String, Object> result=new HashMap<>();
+        List<History> histories=adHisRepository.findAll();
+        result.put("history",histories.get(20));
         return result;
     }
 }

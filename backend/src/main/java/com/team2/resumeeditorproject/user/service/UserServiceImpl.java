@@ -85,15 +85,20 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void updateUser(UserDTO userDto) {
-        User user=userRepository.findById(userDto.getUNum()).orElseThrow(()->{return null;});
-            user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        User user=userRepository.findById(userDto.getUNum()).orElseThrow(()-> new IllegalArgumentException("Invalid user ID"));
             user.setGender(userDto.getGender());
-            user.setBirthDate(userDto.getBirthDate());
             user.setAge(userDto.getAge());
             user.setStatus(userDto.getStatus());
             user.setCompany(userDto.getCompany());
             user.setOccupation(userDto.getOccupation());
             user.setWish(userDto.getWish());
+            if (userDto.getBirthDate() != null) {
+                user.setBirthDate(userDto.getBirthDate());
+                }
+
+            if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+                  user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+                }
         userRepository.save(user);
     }
 }

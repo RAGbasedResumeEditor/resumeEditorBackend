@@ -10,6 +10,9 @@ import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,7 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
@@ -33,8 +38,7 @@ public class UserController extends HttpServlet {
 
     public static String getUsername(){
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails=(CustomUserDetails) authentication.getPrincipal();
-
+        CustomUserDetails userDetails= (CustomUserDetails) authentication.getPrincipal();
         return userDetails.getUsername();
     }
 
@@ -99,7 +103,7 @@ public class UserController extends HttpServlet {
     @PostMapping("/user/search")
     public ResponseEntity<Map<String, Object>> showUser(){
 
-        String username=getUsername();
+        String username= getUsername();
 
             User tempUser=userService.showUser(username);
             UserDTO user=new UserDTO();
@@ -124,7 +128,7 @@ public class UserController extends HttpServlet {
     @PostMapping("/user/delete")
     public ResponseEntity<Map<String, Object>> deleteUser() throws AuthenticationException{
 
-        String username=getUsername();
+        String username= getUsername();
         Long uNum=userService.showUser(username).getUNum();
 
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
@@ -141,20 +145,11 @@ public class UserController extends HttpServlet {
     //회원정보 수정
     @PostMapping("/user/update")
     public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDto) throws AuthenticationException{
-        String username=getUsername();
+        String username= getUsername();
         User tempUser=userService.showUser(username);
-        Long uNum=tempUser.getUNum();
+        userDto.setUNum(tempUser.getUNum());
 
-        userDto.setUNum(uNum);
-
-        if(userDto.getBirthDate()==null){
-            userDto.setBirthDate(tempUser.getBirthDate());
-        }
-
-            if(userDto.getPassword()==null){
-                throw new BadRequestException("비밀번호는 반드시 입력해야합니다.");
-            }
-            userService.updateUser(userDto);//수정 처리
-            return createResponse(uNum+"번 회원 수정 완료.");
+        userService.updateUser(userDto);//수정 처리
+        return createResponse(getUsername()+" 회원 수정 완료.");
     }
 }

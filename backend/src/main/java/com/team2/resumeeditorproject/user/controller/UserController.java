@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.*;
 
+
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
 @Controller
@@ -64,7 +65,6 @@ public class UserController extends HttpServlet {
     public static String getUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
         return userDetails.getUsername();
     }
 
@@ -131,7 +131,6 @@ public class UserController extends HttpServlet {
 
         String username = getUsername();
 
-
             User tempUser=userService.showUser(username);
             UserDTO user=new UserDTO();
                 user.setUNum(tempUser.getUNum());
@@ -172,23 +171,13 @@ public class UserController extends HttpServlet {
 
     //회원정보 수정
     @PostMapping("/user/update")
-    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDto) throws AuthenticationException {
-        String username = getUsername();
-        User tempUser = userService.showUser(username);
-        Long uNum = tempUser.getUNum();
+    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDto) throws AuthenticationException{
+        String username= getUsername();
+        User tempUser=userService.showUser(username);
+        userDto.setUNum(tempUser.getUNum());
 
-        userDto.setUNum(uNum);
-
-        if (userDto.getBirthDate() == null) {
-            userDto.setBirthDate(tempUser.getBirthDate());
-        }
-
-
-            if(userDto.getPassword()==null){
-                throw new BadRequestException("비밀번호는 반드시 입력해야합니다.");
-            }
-            userService.updateUser(userDto);//수정 처리
-            return createResponse(uNum+"번 회원 수정 완료.");
+        userService.updateUser(userDto);//수정 처리
+        return createResponse(getUsername()+" 회원 수정 완료.");
     }
 
     // 즐겨찾기 목록 조회

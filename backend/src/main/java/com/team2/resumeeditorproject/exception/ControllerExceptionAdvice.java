@@ -1,21 +1,15 @@
-package com.team2.resumeeditorproject.user.Error;
+package com.team2.resumeeditorproject.exception;
 
-import com.team2.resumeeditorproject.exception.*;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.swing.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
 @RestControllerAdvice
 public class ControllerExceptionAdvice {
 
@@ -25,7 +19,7 @@ public class ControllerExceptionAdvice {
         response.put("response", e.getMessage());
         response.put("time", new Date());
         response.put("status","Fail");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); //500
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); //500
     }
 
     @ExceptionHandler

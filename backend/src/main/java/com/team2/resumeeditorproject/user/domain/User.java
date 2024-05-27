@@ -17,6 +17,7 @@ import java.util.Date;
 @SQLDelete(sql = "UPDATE user SET del_date = current_timestamp WHERE u_num = ?") // soft delete
 //@Where(clause="del_date is null")
 @NoArgsConstructor
+@DynamicUpdate
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

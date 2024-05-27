@@ -21,4 +21,12 @@ public interface AdminResumeEditRepository extends JpaRepository<ResumeEdit, Lon
     @Query("SELECT COUNT(r) FROM ResumeEdit r WHERE r.u_num = :uNum")
     int countByUNum(@Param("uNum") long uNum);
 
+    @Query("SELECT COUNT(r) FROM ResumeEdit r")
+    int countRecords();
+
+    @Query("SELECT DISTINCT r.occupation FROM ResumeEdit r")
+    List<String> findOccupations();
+
+    @Query("SELECT DISTINCT r.company FROM ResumeEdit r")
+    List<String> findCompanies();
 }

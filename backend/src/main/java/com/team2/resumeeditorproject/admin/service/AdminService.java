@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import java.util.List;
 import java.util.Map;
 
 //통계 관련 service
@@ -9,7 +10,7 @@ public interface AdminService {
     Map<String, Object> genderCnt();
     Map<String, Object> occupCnt(String occupation);
     Map<String, Object> wishCnt(String wish);
-    Map<String, Integer> ageCnt();
+    Map<String, Object> ageCnt();
     Map<String, Object> statusCnt();
     Map<String, Object> modeCnt();
 
@@ -26,4 +27,7 @@ public interface AdminService {
     Map<String, Object> resumeCntByDaily();
     Map<String, Object> resumeCntByWeekly();
 
+    Map<String, List<String>> rankComp();
+    Map<String, List<String>> rankOccup();
+    Map<String, List<String>> rankWish();
 }

@@ -23,7 +23,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -31,22 +31,13 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         responseBody.put("status", "Fail");
         responseBody.put("time", new Date());
 
-        Throwable cause = exception.getCause();
 
-        // UsernameNotFoundException을 직접 처리
-        if (cause instanceof UsernameNotFoundException) {
-            responseBody.put("response", "User not found: " + exception.getMessage());
-        }
         // 블랙리스트에 있는 경우
-        else if (exception instanceof UserBlacklistedException) {
+        if (exception instanceof UserBlacklistedException) {
             responseBody.put("response", exception.getMessage());
-        }else if (exception instanceof BadCredentialsException) {
-            responseBody.put("response", "Authentication failed: " + exception.getMessage());
         }
-        // 기타 인증 관련 예외 처리
-        else {
-            responseBody.put("response", "Authentication failed: " + exception.getMessage());
-        }
+
+        responseBody.put("response", "Authentication failed: " + exception.getMessage());
 
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));

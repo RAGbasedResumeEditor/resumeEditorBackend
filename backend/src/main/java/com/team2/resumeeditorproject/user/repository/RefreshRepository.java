@@ -20,4 +20,10 @@ public interface RefreshRepository extends JpaRepository<Refresh, Long> {
     @Modifying
     @Query("DELETE FROM Refresh WHERE username = :username")
     void deleteRefreshByUsername(@Param("username") String username);
+
+    // 만료 토큰 삭제
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM refresh WHERE STR_TO_DATE(expiration, '%a %b %d %H:%i:%s KST %Y') < NOW()", nativeQuery = true)
+    void deleteExpiredTokens();
 }

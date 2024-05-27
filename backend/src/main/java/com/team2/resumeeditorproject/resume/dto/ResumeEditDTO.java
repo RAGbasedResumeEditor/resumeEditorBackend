@@ -19,9 +19,7 @@ public class ResumeEditDTO {
     private Long r_num;
     private String company;
     private String occupation;
-    private JsonNode items;
-    private JsonNode awards;
-    private JsonNode experience;
+    private String item;
     private String options;
     private String r_content;
     private int mode;

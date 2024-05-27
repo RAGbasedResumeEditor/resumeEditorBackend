@@ -71,8 +71,13 @@ public class AdminController {
             return action.apply(group);
     }
 
-    @GetMapping("/history")
-    public ResponseEntity<Map<String, Object>> getHistory(){
-       return createResponse(adminService.getHistory());
+    @GetMapping("/rank/occupation")
+    public ResponseEntity<Map<String, Object>> getOccupRank(){
+        return createResponse(adminService.rankOccup());
+    }
+
+    @GetMapping("/rank/company")
+    public ResponseEntity<Map<String, Object>> getCompRank(){
+        return createResponse(adminService.rankComp());
     }
 }

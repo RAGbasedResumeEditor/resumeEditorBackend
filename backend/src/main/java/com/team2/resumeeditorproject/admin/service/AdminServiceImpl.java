@@ -1,11 +1,9 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.team2.resumeeditorproject.admin.domain.History;
 import com.team2.resumeeditorproject.admin.repository.*;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,7 +19,6 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     private final AdminResumeEditRepository adResEditRepository;
     private final AdminResumeBoardRepository adResBoardRepository;
     private final AdminResumeRepository adResRepository;
-    private final AdminHistoryRepository adHisRepository;
 
     public static int totalUserCnt(AdminUserRepository adminUserRepository){
         List<User> users = adminUserRepository.findAll();
@@ -58,12 +55,80 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     }
 
     @Override
+    public Map<String, List<String>> rankOccup(){ //직업별 유저 수, 첨삭 수 랭킹 5을 보여주는 메서드
+        //직업을 가져와 리스트에 담는다.
+        List<String> uOccupation=adminRepository.findOccupations(); // User 테이블에서
+        List<String> rOccupation=adResEditRepository.findOccupations(); // ResumeEdit 테이블에서
+        //직업별 유저 수, 직업별 첨삭 수를 구한다.
+        Map<String, Integer> userCnt=new HashMap<>();
+        Map<String, Integer> editCnt=new HashMap<>();
+        for(String occup:uOccupation){
+            userCnt.put((occup.isEmpty())?"무직":occup,adminRepository.findByOccupation(occup).size());
+        }
+        for(String occup:rOccupation){
+            editCnt.put(occup,adResEditRepository.findByOccupation(occup).size());
+        }
+        //value 오름차순 정렬한다.
+        List<String> uKeys = new ArrayList<>(userCnt.keySet());
+        List<String> rKeys = new ArrayList<>(editCnt.keySet());
+        Collections.sort(uKeys, (v1, v2) -> (userCnt.get(v2).compareTo(userCnt.get(v1))));
+        Collections.sort(rKeys, (v1, v2) -> (editCnt.get(v2).compareTo(editCnt.get(v1))));
+
+        List<String> uRanking=new ArrayList<>(); // user 수 rank 담을 List
+        List<String> rRanking=new ArrayList<>(); // resumeedit 수 rank 담을 List
+        for(int i=1;i<=5;i++){ // 1 ~ 5 순위까지 각 List에 더한다.
+            uRanking.add(uKeys.get(i-1));
+            rRanking.add(rKeys.get(i-1));
+        }
+
+        Map<String,List<String>> result=new HashMap<>(); // 출력할 responseEntity
+        result.put("ranking_user",uRanking);
+        result.put("ranking_resumeEdit", rRanking);
+        return result;
+    }
+
+    @Override
     public  Map<String, Object> wishCnt(String wish) {
         int userCnt = totalUserCnt(adminRepository);
         double wishes=((double) adminRepository.findByWish(wish).size() / (double) userCnt) * 100;
 
         Map<String, Object> result=new HashMap<>();
         result.put(wish,Math.round(wishes*100.0)/100.0);
+        return result;
+    }
+
+    @Override
+    public Map<String, List<String>> rankComp(){ //회사별 유저 수, 첨삭 수 랭킹 5을 보여주는 메서드
+        //직업을 가져와 리스트에 담는다.
+        List<String> uCompany=adminRepository.findCompanies(); // User 테이블에서
+        List<String> rCompany=adResEditRepository.findCompanies(); // ResumeEdit 테이블에서
+
+        //회사별 유저 수, 회사별 첨삭 수를 구한다.
+        Map<String, Integer> userCnt=new HashMap<>();
+        Map<String, Integer> editCnt=new HashMap<>();
+        for(String company:uCompany){
+            userCnt.put((company.isEmpty())?"없음":company,adminRepository.findByCompany(company).size());
+        }
+        for(String company:rCompany){
+            editCnt.put(company,adResEditRepository.findByCompany(company).size());
+        }
+
+        //value 오름차순 정렬한다.
+        List<String> uKeys = new ArrayList<>(userCnt.keySet());
+        List<String> rKeys = new ArrayList<>(editCnt.keySet());
+        Collections.sort(uKeys, (v1, v2) -> (userCnt.get(v2).compareTo(userCnt.get(v1))));
+        Collections.sort(rKeys, (v1, v2) -> (editCnt.get(v2).compareTo(editCnt.get(v1))));
+
+        List<String> uRanking=new ArrayList<>(); // user 수 rank 담을 List
+        List<String> rRanking=new ArrayList<>(); // resumeedit 수 rank 담을 List
+        for(int i=1;i<=5;i++){ // 1 ~ 5 순위까지 각 List에 더한다.
+            uRanking.add(uKeys.get(i-1));
+            rRanking.add(rKeys.get(i-1));
+        }
+
+        Map<String,List<String>> result=new HashMap<>();
+        result.put("ranking_user",uRanking);
+        result.put("ranking_resumeEdit", rRanking);
         return result;
     }
 
@@ -98,8 +163,8 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         double light = ((double)adminRepository.findByMode(1).size()/(double)userCnt)*100;
         double pro = ((double)adminRepository.findByMode(2).size()/(double)userCnt)*100;
         Map<String, Object> result=new HashMap<>();
-        result.put("pro",Math.round(light*100.0)/100.0);
-        result.put("light",Math.round(pro*100.0)/100.0);
+        result.put("pro",Math.round(pro*100.0)/100.0);
+        result.put("light",Math.round(light*100.0)/100.0);
         return result;
     }
 
@@ -599,14 +664,6 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         result.put("edit_cnt", editCounts);
         result.put("edit_ratio", editRatios);
 
-        return result;
-    }
-
-    @Override
-    public Map<String, Object> getHistory(){
-        Map<String, Object> result=new HashMap<>();
-        List<History> histories=adHisRepository.findAll();
-        result.put("history",histories.get(20));
         return result;
     }
 }

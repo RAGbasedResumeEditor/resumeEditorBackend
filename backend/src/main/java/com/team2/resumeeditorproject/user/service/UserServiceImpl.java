@@ -86,19 +86,37 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public void updateUser(UserDTO userDto) {
         User user=userRepository.findById(userDto.getUNum()).orElseThrow(()-> new IllegalArgumentException("Invalid user ID"));
+        if (userDto.getGender()!=null) {
             user.setGender(userDto.getGender());
-            user.setAge(userDto.getAge());
-            user.setStatus(userDto.getStatus());
-            user.setCompany(userDto.getCompany());
-            user.setOccupation(userDto.getOccupation());
-            user.setWish(userDto.getWish());
-            if (userDto.getBirthDate() != null) {
-                user.setBirthDate(userDto.getBirthDate());
-                }
+        }
 
-            if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
-                  user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-                }
+        if (userDto.getAge() != null) {
+            user.setAge(userDto.getAge());
+        }
+
+        if (userDto.getStatus() != null) {
+            user.setStatus(userDto.getStatus());
+        }
+
+        if (userDto.getCompany() != null) {
+            user.setCompany(userDto.getCompany());
+        }
+
+        if (userDto.getOccupation() != null) {
+            user.setOccupation(userDto.getOccupation());
+        }
+
+        if (userDto.getWish() != null) {
+            user.setWish(userDto.getWish());
+        }
+
+        if (userDto.getBirthDate() != null) {
+            user.setBirthDate(userDto.getBirthDate());
+        }
+
+        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+            user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        }
         userRepository.save(user);
     }
 }

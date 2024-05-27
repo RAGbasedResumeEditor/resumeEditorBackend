@@ -27,8 +27,10 @@ public class ResumeEdit {
     private String company;
     private String occupation;
     private String item;
+
  //   private String awards;
  //   private String experience;
+
     private String options;
     private String r_content;
     private int mode;

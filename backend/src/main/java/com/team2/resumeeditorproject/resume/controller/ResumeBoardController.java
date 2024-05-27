@@ -356,6 +356,7 @@ public class ResumeBoardController {
         }
     }
 
+    /* 즐겨찾기 */
     @PostMapping("/bookmark")
     public ResponseEntity<Map<String, Object>> setBookmark(@RequestBody BookmarkDTO bookmarkDTO) {
         Map<String, Object> response = new HashMap<>();

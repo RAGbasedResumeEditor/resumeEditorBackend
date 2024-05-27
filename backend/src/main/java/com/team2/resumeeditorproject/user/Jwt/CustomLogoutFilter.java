@@ -58,7 +58,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         if (refresh == null) {
 
             response.getWriter().write("Refresh token does not exist");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); //400응답
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //400응답
             return;
         }
 

@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.user.config;
 
+import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.Jwt.*;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
@@ -35,11 +36,12 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     private final UserDetailsService userDetailsService;
+    private final TrafficInterceptor trafficInterceptor;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
                           RefreshRepository refreshRepository, UserRepository userRepository,
                           CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
-                          UserDetailsService userDetailsService) {
+                          UserDetailsService userDetailsService, TrafficInterceptor trafficInterceptor) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
@@ -47,6 +49,7 @@ public class SecurityConfig {
         this.userRepository = userRepository;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
         this.userDetailsService = userDetailsService;
+        this.trafficInterceptor = trafficInterceptor;
     }
     //AuthenticationManager Bean 등록
     @Bean
@@ -127,7 +130,7 @@ public class SecurityConfig {
         //필터 추가 (LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요)
         http
                 // LoginFilter에서 주입받은 authenticationManager를 꼭 주입해주어야 동작 가능
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository, userRepository, customAuthenticationFailureHandler), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository, userRepository, customAuthenticationFailureHandler, trafficInterceptor), UsernamePasswordAuthenticationFilter.class);
         //로그아웃 필터 추가
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);

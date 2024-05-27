@@ -13,6 +13,7 @@ public interface AdminService {
 
     Map<String, List<String>> rankOccup();
     Map<String, List<String>> rankComp();
+    Map<String, List<String>> rankWish();
 
     Map<String, Object> ageCnt();
     Map<String, Object> statusCnt();
@@ -30,4 +31,5 @@ public interface AdminService {
     Map<String, Object> resumeCntByMonth();
     Map<String, Object> resumeCntByDaily();
     Map<String, Object> resumeCntByWeekly();
+
 }

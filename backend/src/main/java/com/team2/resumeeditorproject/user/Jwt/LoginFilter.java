@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.user.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.domain.Refresh;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
@@ -37,15 +38,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
     private final CustomAuthenticationFailureHandler failureHandler;
+    private final TrafficInterceptor trafficInterceptor;
 
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,
                        RefreshRepository refreshRepository, UserRepository userRepository,
-                       CustomAuthenticationFailureHandler failureHandler){
+                       CustomAuthenticationFailureHandler failureHandler,
+                       TrafficInterceptor trafficInterceptor){
         this.authenticationManager=authenticationManager;
         this.jwtUtil=jwtUtil;
         this.refreshRepository=refreshRepository;
         this.userRepository=userRepository;
         this.failureHandler = failureHandler;
+        this.trafficInterceptor = trafficInterceptor;
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -77,6 +81,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override // 인증 성공 시
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException{
+        // 로그인 시 트래픽 카운트 증가
+        trafficInterceptor.incrementTrafficCount();
+
         //Access/Refresh 토큰 발급
         //유저 정보(username, role) 꺼내오기
         String username = authentication.getName();

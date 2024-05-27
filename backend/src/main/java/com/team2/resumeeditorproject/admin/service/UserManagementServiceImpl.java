@@ -3,14 +3,13 @@ package com.team2.resumeeditorproject.admin.service;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
 import com.team2.resumeeditorproject.user.domain.User;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -22,6 +21,7 @@ public class UserManagementServiceImpl implements UserManagementService{
 
     // 회원 목록 + 페이징
     @Override
+    @Transactional(readOnly = true)
     public Page<User> getAllUsersPaged(Pageable pageable) {
         return adminUserRepository.findAll(pageable);
     }
@@ -34,6 +34,7 @@ public class UserManagementServiceImpl implements UserManagementService{
 
     // 그룹, 키워드 검색 + 페이징
     @Override
+    @Transactional(readOnly = true)
     public Page<User> searchUsersByGroupAndKeyword(String group, String keyword, Pageable pageable) {
         return switch (group) {
             case "username" -> adminUserRepository.findByUsernameContainingOrderByInDateDesc(keyword, pageable);
@@ -78,7 +79,7 @@ public class UserManagementServiceImpl implements UserManagementService{
         // 변경된 정보를 데이터베이스에 저장
         adminUserRepository.saveAll(usersToConvert);
     }
-/*
+    /*
     // 30일 지나면 테이블에서 해당 회원 삭제
     @Override
     @Transactional

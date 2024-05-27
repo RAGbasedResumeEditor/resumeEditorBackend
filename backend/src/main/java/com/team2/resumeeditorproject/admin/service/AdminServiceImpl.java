@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +52,7 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
 
         Map<String,Object> result=new HashMap<>();
         result.put(occupation,Math.round(occup*100.0)/100.0);
+
         return result;
     }
 
@@ -84,6 +86,7 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         Map<String,List<String>> result=new HashMap<>(); // 출력할 responseEntity
         result.put("ranking_user",uRanking);
         result.put("ranking_resumeEdit", rRanking);
+
         return result;
     }
 
@@ -94,6 +97,7 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
 
         Map<String, Object> result=new HashMap<>();
         result.put(wish,Math.round(wishes*100.0)/100.0);
+
         return result;
     }
 
@@ -129,9 +133,40 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         Map<String,List<String>> result=new HashMap<>();
         result.put("ranking_user",uRanking);
         result.put("ranking_resumeEdit", rRanking);
+
         return result;
     }
 
+    @Override
+    public Map<String, List<String>> rankWish() {
+        //회사별 유저 수, 첨삭 수 랭킹 5을 보여주는 메서드 (변수 수정 예정)
+        //희망직군을 가져와 리스트에 담는다.
+        List<String> wishes=adminRepository.findWishes();
+        //희망직군별 유저 수를 구한다.
+        Map<String, Integer> userCnt=new HashMap<>();
+        Map<String, Integer> editCnt=new HashMap<>();
+        for(String wish:wishes){
+            userCnt.put((wish.isEmpty())?"무직":wish,adminRepository.findByWish(wish).size());
+        }
+        //value 기준 오름차순 정렬한다.
+        List<String> keys = new ArrayList<>(userCnt.keySet());
+        Collections.sort(keys, (v1, v2) -> (userCnt.get(v2).compareTo(userCnt.get(v1))));
+        Map<String,List<String>> result=new HashMap<>();
+        //  for (String key : keys) {
+        //     System.out.println(key + " : " + userCnt.get(key));
+        //  }
+        //  for (String key : keys2) {
+        //      System.out.println(key + " : " + editCnt.get(key));
+        //  }
+        List<String> wishCnt=new ArrayList<>(); // 유저
+        for(int i=1;i<=5;i++){
+            wishCnt.add(keys.get(i-1));
+        }
+        result.put("ranking_user",wishCnt);
+
+        return result;
+    }
+  
     @Override
     public Map<String, Object> ageCnt() {  //연령대
         int userCnt = totalUserCnt(adminRepository);
@@ -296,7 +331,6 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         result.put("edit_cnt", editCounts);
         result.put("edit_ratio", editRatios);
 
-
         return result;
     }
 
@@ -350,22 +384,22 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         Map<String, Object> result = new LinkedHashMap<>();
         Map<String, Long> ageGroupCounts = new LinkedHashMap<>();
 
-        ageGroupCounts.put("20s", 0L);
-        ageGroupCounts.put("30s", 0L);
-        ageGroupCounts.put("40s", 0L);
-        ageGroupCounts.put("50s", 0L);
-        ageGroupCounts.put("60s over", 0L);
+        ageGroupCounts.put("20", 0L);
+        ageGroupCounts.put("30", 0L);
+        ageGroupCounts.put("40", 0L);
+        ageGroupCounts.put("50", 0L);
+        ageGroupCounts.put("over_sixty", 0L);
 
         List<User> users = adminRepository.findAll();
 
         for (User user : users) {
             int age = user.getAge();
             String ageGroup = switch (age / 10) {
-                case 2 -> "20s";
-                case 3 -> "30s";
-                case 4 -> "40s";
-                case 5 -> "50s";
-                default -> age >= 60 ? "60s over" : null;
+                case 2 -> "20";
+                case 3 -> "30";
+                case 4 -> "40";
+                case 5 -> "50";
+                default -> age >= 60 ? "over_sixty" : null;
             };
 
             if (ageGroup != null) {
@@ -666,4 +700,6 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
 
         return result;
     }
+
+
 }

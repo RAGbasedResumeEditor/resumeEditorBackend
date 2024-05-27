@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +48,20 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     List<User> findByOccupation(String occupation);
     List<User> findByCompany(String company);
 
+    // 총 회원 수
+    @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
+    long countAllUsers();
+
+    @Query("SELECT DISTINCT u.occupation FROM User u WHERE u.occupation IS NOT NULL")
+    List<String> findOccupations();
+
+    @Query("SELECT DISTINCT u.company FROM User u WHERE u.company IS NOT NULL")
+    List<String> findCompanies();
+
+    @Query("SELECT DISTINCT u.wish FROM User u WHERE u.wish IS NOT NULL")
+    List<String> findWishes();
+
+    List<User> findByInDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
 
 

@@ -21,6 +21,12 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u ORDER BY u.inDate DESC")
     Page<User> findAll(Pageable pageable);
 
+    // 유저 수 통계
+    @Query("SELECT DISTINCT u.occupation FROM User u WHERE u.occupation IS NOT NULL")
+    List<String> findOccupations();
+    @Query("SELECT DISTINCT u.company FROM User u WHERE u.company IS NOT NULL")
+    List<String> findCompanies();
+
     // 키워드 검색을 위한 그룹 + 페이징
     Page<User> findByUsernameContainingOrderByInDateDesc(String username, Pageable pageable);
     Page<User> findByEmailContainingOrderByInDateDesc(String email, Pageable pageable);

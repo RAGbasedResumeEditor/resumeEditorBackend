@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.hibernate.sql.ast.Clause;
@@ -16,6 +17,7 @@ import java.util.Date;
 @SQLDelete(sql = "UPDATE user SET del_date = current_timestamp WHERE u_num = ?") // soft delete
 //@Where(clause="del_date is null")
 @NoArgsConstructor
+@DynamicUpdate
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,9 +2,11 @@ package com.team2.resumeeditorproject.resume.controller;
 
 import com.team2.resumeeditorproject.resume.domain.Rating;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.dto.BookmarkDTO;
 import com.team2.resumeeditorproject.resume.dto.RatingDTO;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import com.team2.resumeeditorproject.resume.repository.RatingRepository;
+import com.team2.resumeeditorproject.resume.service.BookmarkService;
 import com.team2.resumeeditorproject.resume.service.RatingService;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
@@ -45,6 +47,9 @@ public class ResumeBoardController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BookmarkService bookmarkService;
+
     /* 게시글 목록 */
     @GetMapping("/list")
     public ResponseEntity<Map<String, Object>> getAllResumeBoards(@RequestParam("page") int page) {
@@ -54,23 +59,22 @@ public class ResumeBoardController {
         Date today = new Date();
 
         try {
-            if(page < 0){ // 페이지가 음수인 경우 첫 페이지로 이동하게
-                page = 0;
-            }
+            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
+
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(page, size);
             Page<Object[]> resultsPage = resumeBoardService.getAllResumeBoards(pageable);
-
-            if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                page = resultsPage.getTotalPages() - 1;
-                pageable = PageRequest.of(page, size);
-                resultsPage = resumeBoardService.getAllResumeBoards(pageable);
-            }
 
             if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
                 response.put("response", "게시글이 없습니다.");
             }
             else { // 게시글이 있는 경우
+                if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    page = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(page, size);
+                    resultsPage = resumeBoardService.getAllResumeBoards(pageable);
+                }
+
                 List<Map<String, Object>> formattedResults = new ArrayList<>();
 
                 for (Object[] result : resultsPage.getContent()) {
@@ -178,24 +182,22 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
-            if(page < 0){ // 페이지가 음수인 경우 첫 페이지로 이동하게
-                page = 0;
-            }
+            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(page, size);
             Page<Object[]> resultsPage = resumeBoardService.searchBoard(keyword, pageable);
 
-            if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                page = resultsPage.getTotalPages() - 1;
-                pageable = PageRequest.of(page, size);
-                resultsPage = resumeBoardService.getAllResumeBoards(pageable);
-            }
-
             if(resultsPage.getTotalElements() == 0){ // 검색 게시글이 없는 경우
                 response.put("response", "검색 결과가 없습니다.");
             }
             else { // 게시글이 있는 경우
+                if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    page = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(page, size);
+                    resultsPage = resumeBoardService.getAllResumeBoards(pageable);
+                }
+
                 List<Map<String, Object>> formattedResults = new ArrayList<>();
 
                 for (Object[] result : resultsPage.getContent()) {
@@ -237,7 +239,7 @@ public class ResumeBoardController {
     }
 
     /* 별점 주기 */
-    @PostMapping("/list/rating")
+    @PostMapping("/rating")
     public ResponseEntity<Map<String, Object>> setRating(@RequestBody RatingDTO ratingDTO){
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
@@ -352,6 +354,32 @@ public class ResumeBoardController {
             response.put("status", "Fail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /* 즐겨찾기 */
+    @PostMapping("/bookmark")
+    public ResponseEntity<Map<String, Object>> setBookmark(@RequestBody BookmarkDTO bookmarkDTO) {
+        Map<String, Object> response = new HashMap<>();
+        Date today = new Date();
+        try{
+
+            // 즐겨찾기를 누르면 테이블에 저장
+            // 즐겨찾기를 이미 눌렀으면(테이블에 이미 있으면) -> 삭제(즐겨찾기 취소)
+            // **추가 해야 할 거 : resume_board에 있는 것만 가능하도록
+            String result = bookmarkService.bookmarkBoard(bookmarkDTO);
+
+            response.put("response", result);
+            response.put("time", today);
+            response.put("status", "Success");
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e) {
+            response.put("response", "server error " + e.getMessage());
+            response.put("time", today);
+            response.put("status", "Fail");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
 }

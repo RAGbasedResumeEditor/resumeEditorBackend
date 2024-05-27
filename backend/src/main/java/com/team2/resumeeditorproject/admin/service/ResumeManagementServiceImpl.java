@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
+import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
     private final AdminResumeBoardRepository adResBoardRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ResumeBoard> getResumeBoards(int page) {
         Pageable pageable=PageRequest.of(page, 10, Sort.by("RNum").descending());
         Page<ResumeBoard> pageResult=adResBoardRepository.findAll(pageable);
@@ -30,7 +32,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
     @Transactional
     public void deleteResume(Long rNum){
         if(rNum==null){
-            return;
+            throw new BadRequestException("존재하지 않는 자소서입니다.");
         }
         adResBoardRepository.deleteById(rNum);
     }
@@ -47,6 +49,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
     }*/
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ResumeBoard> searchByTitle(String title, int page){
         if(title==null) title="없는 페이지";
         Pageable pageable=PageRequest.of(page, 10, Sort.by("RNum").descending());
@@ -55,6 +58,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ResumeBoard> searchByRating(Float rating, int page){
         if(rating>5) rating=5f;
         Pageable pageable=PageRequest.of(page, 10, Sort.by("RNum").descending());

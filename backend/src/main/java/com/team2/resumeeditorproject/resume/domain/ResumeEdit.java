@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.resume.domain;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Map;
@@ -27,8 +28,8 @@ public class ResumeEdit {
     private String occupation;
     private String item;
 
-    //   private String awards;
-    //   private String experience;
+ //   private String awards;
+ //   private String experience;
 
     private String options;
     private String r_content;

@@ -76,6 +76,13 @@ public class ResumeBoardServiceImpl implements ResumeBoardService{
         return resumeBoardRepository.getBoardRankingRating();
     }
 
+    @Override
+    public Page<Object[]> getBookmarkList(long u_num, Pageable pageable) {
+        return resumeBoardRepository.getBookmarkList(u_num, pageable);
+    }
+
+
+
 //    @Override
 //    public float getRating(long r_num) {
 //        return resumeBoardRepository.getRatingByRNum(r_num);

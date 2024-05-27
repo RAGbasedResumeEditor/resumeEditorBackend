@@ -27,4 +27,10 @@ public class ResumeEditServiceImpl implements ResumeEditService{
         return modelMapper.map(savedResume, ResumeEditDTO.class);
     }
 
+    public ResumeEditDTO convertToDto(ResumeEdit resumeEdit) {
+        return modelMapper.map(resumeEdit, ResumeEditDTO.class);
+    }
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 }

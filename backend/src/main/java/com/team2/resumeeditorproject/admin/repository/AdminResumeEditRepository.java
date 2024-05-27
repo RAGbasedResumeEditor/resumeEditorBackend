@@ -24,6 +24,7 @@ public interface AdminResumeEditRepository extends JpaRepository<ResumeEdit, Lon
     @Query("SELECT COUNT(r) FROM ResumeEdit r")
     int countRecords();
 
+    // 첨삭 횟수 통계
     @Query("SELECT DISTINCT r.occupation FROM ResumeEdit r")
     List<String> findOccupations();
 

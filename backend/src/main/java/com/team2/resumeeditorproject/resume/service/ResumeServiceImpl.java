@@ -5,6 +5,8 @@ import com.team2.resumeeditorproject.resume.dto.ResumeDTO;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -44,6 +46,16 @@ public class ResumeServiceImpl implements ResumeService{
             // 레코드가 존재하지 않으면 예외 처리 또는 적절한 방법으로 처리
             throw new RuntimeException("Resume not found for r_num: " + r_num);
         }
+    }
+
+    @Override
+    public Object getResumeEditDetail(Long num) {
+        return resumeRepository.getResumeEditDetail(num);
+    }
+
+    @Override
+    public Page<Object[]> myPageEditList(long u_num, Pageable pageable) {
+        return resumeRepository.getMyPageEditList(u_num, pageable);
     }
 
 }

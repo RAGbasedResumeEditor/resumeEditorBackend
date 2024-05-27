@@ -30,7 +30,7 @@ public class HistoryController {
     public ResponseEntity<Map<String, Object>> collectStatistics(){
         try {
             Map<String, Object> statistics = historyService.collectStatistics();
-            //historyService.saveStatistics(statistics);
+            historyService.saveStatistics(statistics);
             return ResponseEntity.ok(statistics);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "An error occurred while collecting statistics.", "details", e.getMessage()));

@@ -26,6 +26,8 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     List<String> findOccupations();
     @Query("SELECT DISTINCT u.company FROM User u WHERE u.company IS NOT NULL")
     List<String> findCompanies();
+    @Query("SELECT DISTINCT u.wish FROM User u WHERE u.wish IS NOT NULL")
+    List<String> findWishes();
 
     // 키워드 검색을 위한 그룹 + 페이징
     Page<User> findByUsernameContainingOrderByInDateDesc(String username, Pageable pageable);
@@ -51,15 +53,6 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     // 총 회원 수
     @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
     long countAllUsers();
-
-    @Query("SELECT DISTINCT u.occupation FROM User u WHERE u.occupation IS NOT NULL")
-    List<String> findOccupations();
-
-    @Query("SELECT DISTINCT u.company FROM User u WHERE u.company IS NOT NULL")
-    List<String> findCompanies();
-
-    @Query("SELECT DISTINCT u.wish FROM User u WHERE u.wish IS NOT NULL")
-    List<String> findWishes();
 
     List<User> findByInDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

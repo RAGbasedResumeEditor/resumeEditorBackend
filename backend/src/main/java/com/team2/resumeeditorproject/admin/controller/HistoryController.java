@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
 import com.team2.resumeeditorproject.admin.service.AdminService;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +37,9 @@ public class HistoryController {
     }
 
     // response가져오는 로직 구현
-
+    /*
     @GetMapping("/user")
-    public ResponseEntity<Map<String, Object>> getStatistics(
+    public ResponseEntity<Map<String, Object>> getUserStatistics(
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate,
             @RequestParam(value = "signupStartDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> signupStartDate,
@@ -55,7 +54,7 @@ public class HistoryController {
             Map<String, Object> todayTraffic = historyService.getTrafficForCurrentDate();
 
             Map<String, Object> statistics = historyService.collectStatistics();
-            //Object todayTraffic = statistics.get("traffic");
+            //Object todayTraffic = statistics.get("traffic"); // 이 부분 수정 예정
             Object userMode = statistics.get("user_mode");
             Object userStatus = statistics.get("user_status");
             Object userGender = statistics.get("user_gender");
@@ -64,7 +63,7 @@ public class HistoryController {
             Object userComp = statistics.get("user_comp");
             Object userWish = statistics.get("user_wish");
 
-            /* 일별 접속자수 집계 */
+            // 일별 접속자수 집계
             LocalDate start = startDate.orElse(LocalDate.now().minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
             LocalDate end = endDate.orElse(LocalDate.now()); // endDate가 주어지지 않으면 현재 날짜로 설정
 
@@ -78,7 +77,7 @@ public class HistoryController {
             Map<LocalDate, Integer> sortedTrafficData = new TreeMap<>(trafficData);
             // -------------------------
 
-            /* 일별 회원가입 집계 */
+            // 일별 회원가입 집계
             LocalDate signupStart = signupStartDate.orElse(LocalDate.now().minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
             LocalDate signupEnd = signupEndDate.orElse(LocalDate.now()); // endDate가 주어지지 않으면 현재 날짜로 설정
 
@@ -111,6 +110,21 @@ public class HistoryController {
         }catch(Exception e){
             return createBadReqResponse(e.getMessage());
         }
+    }
+    */
+    @GetMapping("/resume")
+    public ResponseEntity<Map<String, Object>> getResumeStatistics(){
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        Map<String, Object> statistics = historyService.collectStatistics();
+        Object editCount = statistics.get("edit_count");
+
+        //Map<String, Object> todayEditCount = historyService.getRNumForCurrentDate();
+
+        result.put("edit_count", editCount);
+        //result.putAll(todayEditCount);
+
+        return createResponse(result);
     }
     //---------
 }

@@ -42,13 +42,13 @@ public class HistoryServiceImpl implements HistoryService{
         statistics.put("user_gender", getUserGender());
         statistics.put("user_age", getUserAge());
 
-        Map<String, List<String>> getRankOccuUser = getUserOccu();
+        Map<String, Map<String, Integer>> getRankOccuUser = getUserOccu();
         statistics.put("user_occu", getRankOccuUser.get("ranking_user"));
 
-        Map<String, List<String>> getRankCompUser = getUserComp();
+        Map<String, Map<String, Integer>> getRankCompUser = getUserComp();
         statistics.put("user_comp", getRankCompUser.get("ranking_user"));
 
-        Map<String, List<String>> getRankWishUser = getUserWish();
+        Map<String, Map<String, Integer>> getRankWishUser = getUserWish();
         statistics.put("user_wish", getRankWishUser.get("ranking_user"));
 
         Map<String, Object> getEditModeRatio = getEditMode();
@@ -62,10 +62,10 @@ public class HistoryServiceImpl implements HistoryService{
 
         statistics.put("edit_date", getEditDate());
 
-        Map<String, List<String>> getRankOccuEdit = getEditOccu();
+        Map<String, Map<String, Integer>> getRankOccuEdit = getEditOccu();
         statistics.put("edit_occu", getRankOccuEdit.get("ranking_resumeEdit"));
 
-        Map<String, List<String>> getRankCompEdit = getEditComp();
+        Map<String, Map<String, Integer>> getRankCompEdit = getEditComp();
         statistics.put("edit_comp", getRankCompEdit.get("ranking_resumeEdit"));
         return statistics;
     }
@@ -124,15 +124,15 @@ public class HistoryServiceImpl implements HistoryService{
         return adminService.ageCnt();
     }
 
-    private Map<String, List<String>> getUserOccu(){
+    private Map<String, Map<String, Integer>> getUserOccu(){
         return adminService.rankOccup();
     }
 
-    private Map<String, List<String>> getUserComp(){
+    private Map<String, Map<String, Integer>> getUserComp(){
         return adminService.rankComp();
     }
 
-    private Map<String, List<String>> getUserWish(){
+    private Map<String, Map<String, Integer>> getUserWish(){
         return  adminService.rankWish();
     }
 
@@ -172,11 +172,11 @@ public class HistoryServiceImpl implements HistoryService{
         return result;
     }
 
-    private Map<String, List<String>> getEditOccu() {
+    private Map<String, Map<String, Integer>> getEditOccu() {
         return adminService.rankOccup();
     }
 
-    private Map<String, List<String>> getEditComp() {
+    private Map<String, Map<String, Integer>> getEditComp() {
         return adminService.rankComp();
     }
 

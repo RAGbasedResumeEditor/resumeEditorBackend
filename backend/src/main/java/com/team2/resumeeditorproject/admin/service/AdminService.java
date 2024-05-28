@@ -11,9 +11,9 @@ public interface AdminService {
     Map<String, Object> occupCnt(String occupation);
     Map<String, Object> wishCnt(String wish);
 
-    Map<String, List<String>> rankOccup();
-    Map<String, List<String>> rankComp();
-    Map<String, List<String>> rankWish();
+    Map<String, Map<String, Integer>> rankOccup();
+    Map<String, Map<String, Integer>> rankComp();
+    Map<String, Map<String, Integer>> rankWish();
 
     Map<String, Object> ageCnt();
     Map<String, Object> statusCnt();

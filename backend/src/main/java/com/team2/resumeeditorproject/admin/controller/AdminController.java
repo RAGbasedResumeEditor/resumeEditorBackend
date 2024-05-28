@@ -71,6 +71,7 @@ public class AdminController {
             return action.apply(group);
     }
 
+    // 관리자 - 통계 페이지 내에서 각 영역 top 5를 출력한다.
     @GetMapping("/rank/occupation")
     public ResponseEntity<Map<String, Object>> getOccupRank(){
         return createResponse(adminService.rankOccup());
@@ -79,5 +80,10 @@ public class AdminController {
     @GetMapping("/rank/company")
     public ResponseEntity<Map<String, Object>> getCompRank(){
         return createResponse(adminService.rankComp());
+    }
+
+    @GetMapping("/rank/wish")
+    public ResponseEntity<Map<String, Object>> getWishRank(){
+        return createResponse(adminService.rankWish());
     }
 }

@@ -57,7 +57,7 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     }
 
     @Override
-    public Map<String, List<String>> rankOccup(){ //직업별 유저 수, 첨삭 수 랭킹 5을 보여주는 메서드
+    public Map<String, Map<String, Integer>> rankOccup(){ //직업별 유저 수, 첨삭 수 랭킹 5을 보여주는 메서드
         //직업을 가져와 리스트에 담는다.
         List<String> uOccupation=adminRepository.findOccupations(); // User 테이블에서
         List<String> rOccupation=adResEditRepository.findOccupations(); // ResumeEdit 테이블에서
@@ -76,14 +76,14 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         Collections.sort(uKeys, (v1, v2) -> (userCnt.get(v2).compareTo(userCnt.get(v1))));
         Collections.sort(rKeys, (v1, v2) -> (editCnt.get(v2).compareTo(editCnt.get(v1))));
 
-        List<String> uRanking=new ArrayList<>(); // user 수 rank 담을 List
-        List<String> rRanking=new ArrayList<>(); // resumeedit 수 rank 담을 List
+        Map<String, Integer> uRanking=new HashMap<>(); // user 수 rank 담을 List
+        Map<String, Integer> rRanking=new HashMap<>(); // resumeedit 수 rank 담을 List
         for(int i=1;i<=5;i++){ // 1 ~ 5 순위까지 각 List에 더한다.
-            uRanking.add(uKeys.get(i-1));
-            rRanking.add(rKeys.get(i-1));
+            uRanking.put(uKeys.get(i-1),userCnt.get(uKeys.get(i-1)));
+            rRanking.put(rKeys.get(i-1),editCnt.get(rKeys.get(i-1)));
         }
 
-        Map<String,List<String>> result=new HashMap<>(); // 출력할 responseEntity
+        Map<String,Map<String, Integer>> result=new HashMap<>(); // 출력할 responseEntity
         result.put("ranking_user",uRanking);
         result.put("ranking_resumeEdit", rRanking);
 
@@ -102,7 +102,7 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     }
 
     @Override
-    public Map<String, List<String>> rankComp(){ //회사별 유저 수, 첨삭 수 랭킹 5을 보여주는 메서드
+    public Map<String, Map<String, Integer>> rankComp(){ //회사별 유저 수, 첨삭 수 랭킹 5을 보여주는 메서드
         //직업을 가져와 리스트에 담는다.
         List<String> uCompany=adminRepository.findCompanies(); // User 테이블에서
         List<String> rCompany=adResEditRepository.findCompanies(); // ResumeEdit 테이블에서
@@ -123,14 +123,14 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         Collections.sort(uKeys, (v1, v2) -> (userCnt.get(v2).compareTo(userCnt.get(v1))));
         Collections.sort(rKeys, (v1, v2) -> (editCnt.get(v2).compareTo(editCnt.get(v1))));
 
-        List<String> uRanking=new ArrayList<>(); // user 수 rank 담을 List
-        List<String> rRanking=new ArrayList<>(); // resumeedit 수 rank 담을 List
+        Map<String, Integer> uRanking=new HashMap<>(); // user 수 rank 담을 List
+        Map<String, Integer> rRanking=new HashMap<>(); // resumeedit 수 rank 담을 List
         for(int i=1;i<=5;i++){ // 1 ~ 5 순위까지 각 List에 더한다.
-            uRanking.add(uKeys.get(i-1));
-            rRanking.add(rKeys.get(i-1));
+            uRanking.put(uKeys.get(i-1),userCnt.get(uKeys.get(i-1)));
+            rRanking.put(rKeys.get(i-1),editCnt.get(rKeys.get(i-1)));
         }
 
-        Map<String,List<String>> result=new HashMap<>();
+        Map<String, Map<String, Integer>> result=new HashMap<>();
         result.put("ranking_user",uRanking);
         result.put("ranking_resumeEdit", rRanking);
 
@@ -138,30 +138,25 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     }
 
     @Override
-    public Map<String, List<String>> rankWish() {
-        //회사별 유저 수, 첨삭 수 랭킹 5을 보여주는 메서드 (변수 수정 예정)
-        //희망직군을 가져와 리스트에 담는다.
+    public Map<String, Map<String, Integer>> rankWish() { //희망 회사별 유저 수 랭킹 5을 보여주는 메서드
         List<String> wishes=adminRepository.findWishes();
-        //희망직군별 유저 수를 구한다.
         Map<String, Integer> userCnt=new HashMap<>();
-        Map<String, Integer> editCnt=new HashMap<>();
+
         for(String wish:wishes){
-            userCnt.put((wish.isEmpty())?"무직":wish,adminRepository.findByWish(wish).size());
+            userCnt.put((wish.isEmpty())?"없음":wish,adminRepository.findByWish(wish).size());
         }
+
         //value 기준 오름차순 정렬한다.
-        List<String> keys = new ArrayList<>(userCnt.keySet());
-        Collections.sort(keys, (v1, v2) -> (userCnt.get(v2).compareTo(userCnt.get(v1))));
-        Map<String,List<String>> result=new HashMap<>();
-        //  for (String key : keys) {
-        //     System.out.println(key + " : " + userCnt.get(key));
-        //  }
-        //  for (String key : keys2) {
-        //      System.out.println(key + " : " + editCnt.get(key));
-        //  }
-        List<String> wishCnt=new ArrayList<>(); // 유저
-        for(int i=1;i<=5;i++){
-            wishCnt.add(keys.get(i-1));
+        List<String> wKeys = new ArrayList<>(userCnt.keySet());
+        Collections.sort(wKeys, (v1, v2) -> (userCnt.get(v2).compareTo(userCnt.get(v1))));
+
+        Map<String, Integer> wishCnt=new HashMap<>();
+
+        for(int i=1;i<=5;i++){ // 유저 수 top 5
+            wishCnt.put(wKeys.get(i-1),userCnt.get(wKeys.get(i-1)));
         }
+
+        Map<String,Map<String, Integer>> result=new HashMap<>();
         result.put("ranking_user",wishCnt);
 
         return result;

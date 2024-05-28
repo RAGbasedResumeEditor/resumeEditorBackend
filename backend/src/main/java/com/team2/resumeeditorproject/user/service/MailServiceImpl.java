@@ -43,9 +43,9 @@ public class MailServiceImpl implements MailService{ // 인증코드를 생성�
     public void sendEmail(String email) { //메일을 어디서 어디로 보내고 인증 번호를 어떤 html 형식으로 보내는지 작성한다.
         AUTHNUM=createUuid(); // 인증 코드 생성
         toEmail = email; // 인증번호 받을 이메일 주소
-        String title = "[Resume Editor] verify your email"; // 이메일 제목
+        String title = "[Reditor] verify your email"; // 이메일 제목
         String content =                                    //html 형식으로 작성
-                        "<h5>본 이메일 인증은 Resume Editor 회원가입을 위한 필수사항입니다.<br>" +
+                        "<h5>본 이메일 인증은 Reditor 회원가입을 위한 필수사항입니다.<br>" +
                         "아래 인증 코드를 입력하여 홈페이지에서 남은 회원가입 절차를 완료하여 주시기 바랍니다.</h5>"+
                         "<h3 style='color:green'><b>" + AUTHNUM + "</b></h3>" +
                         "<h6>인증 코드는 5분간 유효합니다.</h6>";

@@ -2,14 +2,17 @@ package com.team2.resumeeditorproject.resume.controller;
 
 import com.team2.resumeeditorproject.resume.domain.Rating;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.BookmarkDTO;
 import com.team2.resumeeditorproject.resume.dto.RatingDTO;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import com.team2.resumeeditorproject.resume.repository.RatingRepository;
+import com.team2.resumeeditorproject.resume.repository.ResumeEditRepository;
 import com.team2.resumeeditorproject.resume.service.BookmarkService;
 import com.team2.resumeeditorproject.resume.service.RatingService;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
+import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +52,9 @@ public class ResumeBoardController {
 
     @Autowired
     private BookmarkService bookmarkService;
+
+    @Autowired
+    private ResumeEditRepository resumeEditRepository;
 
     /* 게시글 목록 */
     @GetMapping("/list")
@@ -137,6 +143,11 @@ public class ResumeBoardController {
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
             }
 
+            ResumeEdit resumeEdit = resumeEditRepository.findById(num).orElse(null);
+            if(resumeEdit == null){
+                throw new Exception(" - ResumeEdit with num " + num + " not found");
+            }
+
             Object results = resumeBoardService.getResumeBoard(num);
             Object[] resultArray = (Object[]) results;
             Map<String, Object> responseData = new HashMap<>();
@@ -164,6 +175,10 @@ public class ResumeBoardController {
             // 다섯번째 요소는 username
             String username = userRepository.findUsernameByUNum(u_num);
             responseData.put("username", username);
+
+
+            responseData.put("item", resumeEdit.getItem());
+
 
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
@@ -362,10 +377,13 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try{
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(bookmarkDTO.getRNum()).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
+                throw new Exception(" - ResumeBoard with num " + bookmarkDTO.getRNum() + " not found");
+            }
 
             // 즐겨찾기를 누르면 테이블에 저장
             // 즐겨찾기를 이미 눌렀으면(테이블에 이미 있으면) -> 삭제(즐겨찾기 취소)
-            // **추가 해야 할 거 : resume_board에 있는 것만 가능하도록
             String result = bookmarkService.bookmarkBoard(bookmarkDTO);
 
             response.put("response", result);

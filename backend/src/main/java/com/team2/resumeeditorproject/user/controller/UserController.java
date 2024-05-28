@@ -343,7 +343,7 @@ public class UserController extends HttpServlet {
             responseData.put("r_num", resumeEditDTO.getR_num());
             responseData.put("company", resumeEditDTO.getCompany());
             responseData.put("occupation", resumeEditDTO.getOccupation());
-            responseData.put("items", resumeEditDTO.getItem());
+            responseData.put("item", resumeEditDTO.getItem());
             responseData.put("options", resumeEditDTO.getOptions());
             responseData.put("r_content", resumeEditDTO.getR_content()); // 첨삭 전 자소서
             responseData.put("mode", resumeEditDTO.getMode());

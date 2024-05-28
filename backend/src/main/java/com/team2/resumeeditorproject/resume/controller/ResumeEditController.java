@@ -37,15 +37,6 @@ public class ResumeEditController {
     private ResumeEditService resumeEditService;
 
     @Autowired
-    private ResumeService resumeService;
-
-    @Autowired
-    private ResumeBoardService resumeBoardService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
     private UserRepository userRepository;
 
     @PostMapping("/upload")
@@ -67,37 +58,12 @@ public class ResumeEditController {
                 throw new Exception(" - User with num " + resumeEditDTO.getU_num() + " not found");
             }
 
-            // resumeEdit 테이블에 저장
-            resumeEditDTO = resumeEditService.insertResumeEdit(resumeEditDTO);
-
-            Long resumeEditId = resumeEditDTO.getR_num(); // resumeEdit 테이블의 primary key 얻기
-            int mode = resumeEditDTO.getMode(); // mode 얻기
-
-            // resume 테이블에 저장
-            ResumeDTO resumeDTO = new ResumeDTO();
-            resumeDTO.setR_num(resumeEditId);
-            resumeDTO.setContent(content);
-            resumeDTO.setU_num(resumeEditDTO.getU_num());
-            resumeDTO = resumeService.insertResume(resumeDTO);
-            Long resumeId = resumeDTO.getR_num();
+            // 트랜잭션이 적용된 메서드 호출
+            resumeEditDTO = resumeEditService.insertResumeEditTransaction(resumeEditDTO, content, user, resumeEditDTO.getMode());
 
             String resMsg = "resumeEdit/resume table insert success";
 
-            // mode가 pro(2)인 경우, resume_board 테이블에 저장하고 user mode 2로 변경
-            if(mode==2) {
-                ResumeBoardDTO resumeBoardDTO = new ResumeBoardDTO();
-                String title = resumeEditDTO.getCompany() + " " + resumeEditDTO.getOccupation();
-                resumeBoardDTO.setTitle(title);
-                resumeBoardDTO.setRNum(resumeId);
-                resumeBoardDTO.setRating(0);
-                resumeBoardDTO.setRating_count(0);
-                resumeBoardDTO.setRead_num(0);
-                resumeBoardService.insertResumeBoard(resumeBoardDTO);
-
-                if(user.getMode()==1) { // user의 모드가 1이면 2로 변경
-                    userService.updateUserMode(resumeEditDTO.getU_num());
-                }
-
+            if (resumeEditDTO.getMode() == 2) {
                 resMsg += ", resume_board table insert success";
             }
 

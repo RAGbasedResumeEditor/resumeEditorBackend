@@ -9,7 +9,10 @@ public interface HistoryService {
     void saveStatistics(Map<String, Object> statistics);
 
     Map<String, Object> getTotalTraffic();
+    Map<String, Object> getProUserCnt();
     Map<String, Object> getTrafficForCurrentDate();
     Map<LocalDate, Integer> getTrafficData(LocalDate startDate, LocalDate endDate);
     Map<LocalDate, Integer> getDailyUserRegistrations(LocalDate startDate, LocalDate endDate);
+
+    //Map<String, Object> getRNumForCurrentDate();
 }

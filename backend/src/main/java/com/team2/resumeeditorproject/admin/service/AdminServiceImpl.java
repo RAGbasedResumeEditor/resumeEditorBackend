@@ -198,6 +198,7 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
         return result;
     }
 
+
     @Override
     public Map<String, Object> CompResumeCnt(String company) { // 회사별 자소서 평점, 조회수
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.domain.History;
 import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
+import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.admin.repository.HistoryRepository;
 import com.team2.resumeeditorproject.user.domain.User;
@@ -24,6 +25,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     private final HistoryRepository historyRepository;
     private final AdminUserRepository userRepository;
+    private final AdminResumeRepository resumeRepository;
 
     private final ObjectMapper objectMapper;
     private final TrafficInterceptor trafficInterceptor;
@@ -182,6 +184,31 @@ public class HistoryServiceImpl implements HistoryService{
 
     // ---------------------------------------------
     // 통계 데이터 출력
+    /* 프로 유저 수 */
+    @Override
+    public Map<String, Object> getProUserCnt() {
+        Map<String, Object> result = new HashMap<>();
+
+        int proUser = userRepository.findByMode(2).size();
+
+        result.put("pro", proUser);
+
+        return result;
+    }
+
+    // 프로 유저 비율
+    /*
+    @Override
+    public Map<String, Object> getProUser() {
+        Map<String, Object> result = new HashMap<>();
+
+        Map<String, Object> proUser = adminService.modeCnt();
+
+        result.put("pro_ratio", proUser.get("pro"));
+
+        return result;
+    }
+    */
 
     /* 총 방문자 수 */
     @Override
@@ -214,12 +241,14 @@ public class HistoryServiceImpl implements HistoryService{
         Date startDateTime = Date.from(startDate.atStartOfDay(zoneId).toInstant());
         Date endDateTime = Date.from(endDate.plusDays(1).atStartOfDay(zoneId).minusSeconds(1).toInstant());
 
+        // 지정된 날짜 범위 내의 트래픽 데이터를 조회
         List<History> trafficData = historyRepository.findTrafficDataBetweenDates(startDateTime, endDateTime);
+
         return trafficData.stream()
                 .collect(Collectors.toMap(
                         history -> history.getW_date().toInstant().atZone(zoneId).toLocalDate(),
                         History::getTraffic,
-                        (existing, replacement) -> existing,
+                        (existing, replacement) -> existing, // 동일한 날짜에 대해 중복 키가 발생하면 기존 값을 유지
                         LinkedHashMap::new
                 ));
     }
@@ -245,4 +274,14 @@ public class HistoryServiceImpl implements HistoryService{
         // 날짜별로 정렬된 맵 반환
         return new TreeMap<>(dailyRegistrations);
     }
+
+//    @Override
+//    public Map<String, Object> getRNumForCurrentDate() {
+//        Map<String, Object> result = new HashMap<>();
+//
+//        Long todayEditCount = resumeRepository.findRNumByCurrentDate();
+//        result.put("edit_count", todayEditCount);
+//
+//        return result;
+//    }
 }

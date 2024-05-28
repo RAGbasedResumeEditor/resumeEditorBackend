@@ -29,7 +29,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         String role = user.getRole();
         if (role.equals("ROLE_BLACKLIST") && !userDetails.isEnabled()) {
-            throw new UserBlacklistedException("User is blacklisted and cannot log in until " + userDetails.getReactivationDate());
+            //throw new UserBlacklistedException("blacklisted until[" + userDetails.getReactivationDate()+"]");
+            throw new UserBlacklistedException("blacklisted");
         }
 
         return userDetails;

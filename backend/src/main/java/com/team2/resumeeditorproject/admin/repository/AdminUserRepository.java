@@ -50,10 +50,6 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     List<User> findByOccupation(String occupation);
     List<User> findByCompany(String company);
 
-    // 총 회원 수
-    @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
-    long countAllUsers();
-
     List<User> findByInDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
 

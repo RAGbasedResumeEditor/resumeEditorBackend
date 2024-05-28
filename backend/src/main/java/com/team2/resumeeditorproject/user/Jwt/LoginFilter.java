@@ -126,7 +126,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override // 인증 실패 시
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         System.out.println("Authentication fail");
-        response.setHeader("Access-Control-Allow-Origin", "https://resume-editor-frontend-indol.vercel.app");
+        response.setHeader("Access-Control-Allow-Origin", "https://www.reditor.me");
+        response.setHeader("Access-Control-Allow-Origin", "https://reditor.me");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "*");
         response.setHeader("Access-Control-Allow-Headers", "*");

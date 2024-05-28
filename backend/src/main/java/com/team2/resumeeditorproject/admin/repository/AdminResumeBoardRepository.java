@@ -11,4 +11,6 @@ public interface AdminResumeBoardRepository extends JpaRepository<ResumeBoard, L
     Page<ResumeBoard> findByTitleContaining(String title, Pageable pageable);
     Page<ResumeBoard> findByRatingBetween(Float rating1, Float rating2, Pageable pageable);
     Page<ResumeBoard> findAll(Pageable pageable);
+
+    long count();
 }

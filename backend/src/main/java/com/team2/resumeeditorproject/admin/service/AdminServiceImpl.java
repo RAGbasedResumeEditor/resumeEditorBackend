@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -491,17 +492,15 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
             int weeklyCnt = ((Number) row[2]).intValue();
 
             // 월별 맵에 주차별 첨삭 횟수 저장
-            if (!weeklyEditCounts.containsKey(month)) {
-                weeklyEditCounts.put(month, new LinkedHashMap<>());
-                weeklyEditRatios.put(month, new LinkedHashMap<>());
-            }
+            weeklyEditCounts.computeIfAbsent(month, k -> new TreeMap<>());
+            weeklyEditRatios.computeIfAbsent(month, k -> new TreeMap<>());
 
             Map<String, Integer> weekDataCounts = weeklyEditCounts.get(month);
             weekDataCounts.put(week, weeklyCnt);
 
             // 주차별 첨삭 비율 계산
-            int monthTotalCnt = editCounts.get(month);
-            double weeklyRatio = ((double) weeklyCnt / monthTotalCnt) * 100;
+            int monthTotalCnt = editCounts.getOrDefault(month, 0);
+            double weeklyRatio = monthTotalCnt == 0 ? 0 : ((double) weeklyCnt / monthTotalCnt) * 100;
             Map<String, Double> weekDataRatios = weeklyEditRatios.get(month);
             weekDataRatios.put(week, Math.round(weeklyRatio * 100) / 100.0);
         }
@@ -520,19 +519,40 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
             String dayKey = date;
 
             // 월별 맵에 일별 첨삭 횟수 저장
-            if (!dailyEditCounts.containsKey(month)) {
-                dailyEditCounts.put(month, new LinkedHashMap<>());
-                dailyEditRatios.put(month, new LinkedHashMap<>());
-            }
+            dailyEditCounts.computeIfAbsent(month, k -> new LinkedHashMap<>());
+            dailyEditRatios.computeIfAbsent(month, k -> new LinkedHashMap<>());
 
             Map<String, Integer> dayDataCounts = dailyEditCounts.get(month);
             dayDataCounts.put(dayKey, dailyCnt);
 
             // 일별 첨삭 비율 계산
-            int monthTotalCnt = editCounts.get(month);
-            double dailyRatio = ((double) dailyCnt / monthTotalCnt) * 100;
+            int monthTotalCnt = editCounts.getOrDefault(month, 0);
+            double dailyRatio = monthTotalCnt == 0 ? 0 : ((double) dailyCnt / monthTotalCnt) * 100;
             Map<String, Double> dayDataRatios = dailyEditRatios.get(month);
             dayDataRatios.put(dayKey, Math.round(dailyRatio * 100) / 100.0);
+        }
+
+        // 데이터가 없는 경우 0으로 초기화
+        for (String month : editCounts.keySet()) {
+            weeklyEditCounts.putIfAbsent(month, new LinkedHashMap<>());
+            weeklyEditRatios.putIfAbsent(month, new LinkedHashMap<>());
+            dailyEditCounts.putIfAbsent(month, new LinkedHashMap<String, Integer>());
+            dailyEditRatios.putIfAbsent(month, new LinkedHashMap<String, Double>());
+
+            // 주차별 데이터가 없는 경우 0으로 초기화
+            for (int i = 1; i <= 5; i++) { // 최대 5주차까지 고려
+                String weekKey = "w0" + i;
+                weeklyEditCounts.get(month).putIfAbsent(weekKey, 0);
+                weeklyEditRatios.get(month).putIfAbsent(weekKey, 0.0);
+            }
+
+            // 일별 데이터가 없는 경우 0으로 초기화
+            int daysInMonth = YearMonth.parse(month).lengthOfMonth();
+            for (int day = 1; day <= daysInMonth; day++) {
+                String dayKey = month + "-" + (day < 10 ? "0" + day : day);
+                dailyEditCounts.get(month).putIfAbsent(dayKey, 0);
+                dailyEditRatios.get(month).putIfAbsent(dayKey, 0.0);
+            }
         }
 
         Map<String, Object> combinedCounts = new LinkedHashMap<>();

@@ -30,7 +30,7 @@ public interface AdminResumeRepository extends JpaRepository<Resume, Long> {
             "GROUP BY DATE_FORMAT(r.w_date, '%Y-%m-%d')", nativeQuery = true)
     List<Object[]> findDailyCorrectionCounts();
 
-//    // 오늘 첨삭 수
-//    @Query("SELECT count(r.rNum) FROM resume r WHERE DATE_FORMAT(r.wDate, '%Y-%m-%d') = DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%d')")
-//    Long findRNumByCurrentDate();
+    // 오늘 첨삭 수
+    @Query("SELECT count(r) FROM Resume r WHERE DATE_FORMAT(r.w_date, '%Y-%m-%d') = :currentDate")
+    Long findRNumByCurrentDate(@Param("currentDate") String currentDate);
 }

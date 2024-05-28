@@ -121,7 +121,8 @@ public class AdminController {
     @GetMapping("/resumeEdit")
     public ResponseEntity<Map<String, Object>> getResumeEditCountByStatus(@RequestParam(name="group", required = false) String group,
                                                                           @RequestParam(name="company", required = false) String company,
-                                                                          @RequestParam(name="occupation", required = false) String occupation) {
+                                                                          @RequestParam(name="occupation", required = false) String occupation
+                                                                          ) {
             Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
                 case "status" -> (g) -> createResponse(adminService.resumeEditCntByStatus());
                 case "company" -> (g) -> createResponse(adminService.resumeEditCntByComp(company));
@@ -151,5 +152,56 @@ public class AdminController {
     @GetMapping("/rank/wish")
     public ResponseEntity<Map<String, Object>> getWishRank(){
         return createResponse(adminService.rankWish());
+    }
+
+    // 자소서 통계
+    @GetMapping("/resume/count")
+    public ResponseEntity<Map<String,Object>> getResumeStat(@RequestParam(name="group", required = false) String group){
+        Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
+            case "editTotal" -> (g) -> createResponse(historyService.getTotalEdit());
+            case "editToday" -> (g) -> createResponse(historyService.getRNumForCurrentDate());
+            case "boardToday" -> (g) -> createResponse(historyService.getTotalBoardCnt());
+            default -> (g) -> createBadReqResponse("잘못된 요청입니다");
+        };
+
+        return action.apply(group);
+    }
+
+    @GetMapping("/resume/monthly")
+    public ResponseEntity<Map<String,Object>> getEditStatByMonthly(){
+        try {
+            Map<String, Object> result = new LinkedHashMap<>();
+
+            result.put("edit_monthly", historyService.getEditByMonthly());
+
+            return createResponse(result);
+        }catch (Exception e){
+            return createBadReqResponse(e.getMessage());
+        }
+    }
+
+    @GetMapping("/resume/weekly")
+    public ResponseEntity<Map<String,Object>> getEditStatByWeekly(@RequestParam(name="month", required = false) String month){
+        try {
+            return createResponse(historyService.getEditByWeekly(month));
+        } catch (IllegalArgumentException e) {
+            return createBadReqResponse(e.getMessage());
+        } catch (Exception e) {
+            return createBadReqResponse(e.getMessage());
+        }
+    }
+
+    @GetMapping("/resume/daily")
+    public ResponseEntity<Map<String,Object>> getEditStatByDaily(@RequestParam(value = "startDate", required = false) String startDate,
+                                                                 @RequestParam(value = "endDate", required = false)  String endDate){
+        try {
+            Map<String, Object> result = new LinkedHashMap<>();
+
+            Map<String, Object> editDaily = historyService.getEditByDaily(startDate, endDate);
+            result.put("edit_daily", editDaily);
+            return createResponse(result);
+        } catch (Exception e) {
+            return createBadReqResponse(e.getMessage());
+        }
     }
 }

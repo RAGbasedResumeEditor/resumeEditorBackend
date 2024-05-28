@@ -27,6 +27,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Access-Control-Allow-Origin", "https://reditor.me");
+        response.setHeader("Access-Control-Allow-Origin", "https://www.reditor.me");
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "*");

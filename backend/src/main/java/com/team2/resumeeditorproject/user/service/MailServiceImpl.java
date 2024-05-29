@@ -1,5 +1,9 @@
 package com.team2.resumeeditorproject.user.service;
 
+import com.team2.resumeeditorproject.user.domain.User;
+import com.team2.resumeeditorproject.user.domain.Verification;
+import com.team2.resumeeditorproject.user.repository.UserRepository;
+import com.team2.resumeeditorproject.user.repository.VerificationRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -8,24 +12,26 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class MailServiceImpl implements MailService{ // 인증코드를 생성하고 이메일을 보내는 서비스
 
+    private final VerificationRepository vRepository;
     private final JavaMailSender mailSender; // 메일을 보내기 위한 인터페이스
-    private final RedisComponent redisComp;
     @Value("${spring.mail.username}")
     private String fromEmail;
     private String toEmail;
     private static String AUTHNUM;
 
     @Override
-    public boolean checkAuthNum(String email,String authnum){
-        if(redisComp.getValues(email)==null){ // redisUtill에 저장된 인증코드가 없다면 false를 반환
-            return false;
-        }else if(redisComp.getValues(email).equals(authnum)){ // redisUtill에 저장한 인증코드와 일치하면 true를 반환
+    public boolean checkAuthNum(String email,String authCode){
+        Verification verification = vRepository.findByEmail(email);
+        if(verification!=null && verification.getCode().equals(authCode) && new Date().before(verification.getExpiresAt())){
             return true;
         }else{
             return false;
@@ -54,9 +60,6 @@ public class MailServiceImpl implements MailService{ // 인증코드를 생성�
 
     @Override
     public void sendEmailEnd(String fromM, String toM, String title, String content) { //이메일을 전송하는 메서드
-        if(redisComp.existData(toM)){ // key에 해당하는 value값 존재 확인. Redis에 해당 수신 메일이 있다면 삭제
-            redisComp.deleteData((toM)); // key에 해당하는 value값 삭제.
-        }
         MimeMessage message = mailSender.createMimeMessage();//JavaMailSender 객체를 사용해 MimeMessage 객체를 생성
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message,true,"utf-8");//이메일 메시지와 관련된 설정
@@ -69,6 +72,30 @@ public class MailServiceImpl implements MailService{ // 인증코드를 생성�
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        redisComp.setDataExpire(toM, AUTHNUM,60*5L); // Redis에 저장 (5분간 유효)
+        // 현재 시간을 가져옵니다.
+        Date currentTime = new Date();
+        // Calendar 인스턴스를 생성하고 현재 시간을 설정합니다.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentTime);
+        // 5분을 더합니다.
+        calendar.add(Calendar.MINUTE, 5);
+        // 5분 후의 시간을 가져옵니다.
+        Date futureTime = calendar.getTime();
+
+        if(vRepository.findByEmail(toM)!=null){
+            Verification verification= vRepository.findByEmail(toM);
+            verification.setCode(AUTHNUM);
+            verification.setCreatedAt(currentTime);
+            verification.setExpiresAt(futureTime);
+            return;
+        }
+
+        Verification verification=Verification.builder()
+                .email(toM)
+                .code(AUTHNUM)
+                .createdAt(currentTime)
+                .expiresAt(futureTime)
+                .build();
+        vRepository.save(verification);
     }
 }

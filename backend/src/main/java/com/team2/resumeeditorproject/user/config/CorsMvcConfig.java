@@ -22,7 +22,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry.addMapping("/**")
-                .allowedOrigins("https://reditor.me","https://www.reditor.me","https://resume-editor-frontend-indol.vercel.app/")
+                .allowedOrigins("https://reditor.me","https://www.reditor.me")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true)

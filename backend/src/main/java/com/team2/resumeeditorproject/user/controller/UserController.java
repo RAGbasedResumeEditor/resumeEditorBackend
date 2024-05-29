@@ -165,7 +165,6 @@ public class UserController extends HttpServlet {
                     .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
             refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
 
-
             return createResponse( uNum+"번 회원 탈퇴 완료.");
     }
 

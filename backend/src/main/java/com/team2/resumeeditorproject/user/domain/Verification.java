@@ -21,15 +21,13 @@ public class Verification {
     private String code;
     private Date createdAt;
     private Date expiresAt;
-    private Boolean verified;
 
     @Builder
-    public Verification(Long vNum, String email, String code, Date createdAt, Date expiresAt, Boolean verified) {
+    public Verification(Long vNum, String email, String code, Date createdAt, Date expiresAt) {
         this.vNum = vNum;
         this.email = email;
         this.code = code;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
-        this.verified = verified;
     }
 }

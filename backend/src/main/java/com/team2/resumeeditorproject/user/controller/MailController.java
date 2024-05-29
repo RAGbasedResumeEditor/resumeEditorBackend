@@ -25,6 +25,7 @@ public class MailController {
     private final MailService mailService;
     private final UserService userService;
 
+
     @PostMapping("/auth-code") // 사용자에게 이메일을 보낸다.
     public ResponseEntity<Map<String, Object>> mailSend(@RequestBody UserDTO userDto) throws AuthenticationException {
         String email=userDto.getEmail();
@@ -41,9 +42,10 @@ public class MailController {
         String email=userDto.getEmail();
         String authCode=userDto.getAuthCode();
 
-        boolean checked=mailService.checkAuthNum(email, authCode); // Redis 일치 여부 확인
+        boolean checked=mailService.checkAuthNum(email, authCode);
 
             if (checked) {
+
                 return createResponse("인증 성공");
             } else {
                 return createBadReqResponse("인증 실패. 입력한 이메일 주소 혹은 인증 코드를 확인해주세요.");

@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public interface UserService {
     // 회원가입
-    Long signup(UserDTO userDto);
+    void signup(UserDTO userDto);
     //Boolean checkEmailDuplicate(String email);
     Boolean checkUsernameDuplicate(String username);
     Boolean checkEmailDuplicate(String email);
@@ -28,8 +28,6 @@ public interface UserService {
     //회원탈퇴
     void deleteUser(Long uNum);
 
-    @Scheduled(cron = "0 0 12 * * *") // 매일 오후 12시에 메서드 동작
-    void deleteUserEnd();
     Boolean checkUserExist(Long uNum);
     //회원정보 수정
     void updateUser(UserDTO userDto);

@@ -78,8 +78,9 @@ public class UserController extends HttpServlet {
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
         String username=userDto.getUsername();
         //30일 이내에 탈퇴한 회원 예외 처리
-        if(userRepository.findByUsername(username).getDelDate()!=null) {
-             Date delDate=userRepository.findByUsername(username).getDelDate();
+        User user=userRepository.findByUsername(username);
+        if(user!=null && user.getDelDate()!=null) {
+            Date delDate=user.getDelDate();
             //삭제한 날짜
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String deleted = dateFormat.format(delDate);
@@ -97,7 +98,7 @@ public class UserController extends HttpServlet {
         }
         //존재하는 username 예외 처리
         if(userService.checkUsernameDuplicate(username)){
-            throw new BadRequestException(username+"already exists.");
+            throw new BadRequestException(username+" already exists.");
         }
 
         userService.signup(userDto);//회원가입 처리

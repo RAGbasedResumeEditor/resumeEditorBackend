@@ -87,6 +87,7 @@ public class MailServiceImpl implements MailService{ // 인증코드를 생성�
             verification.setCode(AUTHNUM);
             verification.setCreatedAt(currentTime);
             verification.setExpiresAt(futureTime);
+            vRepository.save(verification);
             return;
         }
 

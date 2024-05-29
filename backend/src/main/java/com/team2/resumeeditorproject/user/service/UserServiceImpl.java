@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService{
 
     //회원가입
     @Override
-    public Long signup(UserDTO userDto)   {
+    public void signup(UserDTO userDto)   {
         //회원가입 진행
         User user=User.builder()
                 .email(userDto.getEmail())
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService{
                 .status(userDto.getStatus())
                 .mode(1)
                 .build();
-        return userRepository.save(user).getUNum();
+        userRepository.save(user);
     }
     @Override
     public Boolean checkEmailDuplicate(String email) {
@@ -66,12 +66,7 @@ public class UserServiceImpl implements UserService{
     public void deleteUser(Long uNum){
         userRepository.deleteById(uNum);
     }
-    //30일 지나면 테이블에서 해당 회원 삭제
-    @Override
-    @Transactional
-    public void deleteUserEnd(){
-        userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
-    }
+
     @Override
     public Boolean checkUserExist(Long uNum){
         Optional<User> user=userRepository.findById(uNum);

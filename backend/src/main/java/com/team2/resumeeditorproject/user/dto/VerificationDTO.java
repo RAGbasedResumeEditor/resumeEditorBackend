@@ -11,7 +11,6 @@ public class VerificationDTO {
     private String code;
     private Date createdAt;
     private Date expiresAt;
-    private Boolean verified;
 }
 
 

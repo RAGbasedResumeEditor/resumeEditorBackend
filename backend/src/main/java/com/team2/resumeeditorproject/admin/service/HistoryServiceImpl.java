@@ -3,9 +3,7 @@ package com.team2.resumeeditorproject.admin.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.domain.History;
 import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
-import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
-import com.team2.resumeeditorproject.admin.repository.HistoryRepository;
+import com.team2.resumeeditorproject.admin.repository.*;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +22,8 @@ public class HistoryServiceImpl implements HistoryService{
 
     private final HistoryRepository historyRepository;
     private final AdminUserRepository userRepository;
+    private final AdminResumeRepository resumeRepository;
+    private final AdminResumeBoardRepository resumeBoardRepository;
 
     private final ObjectMapper objectMapper;
     private final TrafficInterceptor trafficInterceptor;
@@ -36,7 +36,7 @@ public class HistoryServiceImpl implements HistoryService{
     public Map<String, Object> collectStatistics() {
         Map<String, Object> statistics = new LinkedHashMap<>();
         statistics.put("traffic", trafficInterceptor.getTrafficCnt());
-        statistics.put("edit_count", resumeEditCntByStatus());
+        statistics.put("edit_count", resumeEditCnt());
         statistics.put("user_mode", getUserMode());
         statistics.put("user_status", getUserStatus());
         statistics.put("user_gender", getUserGender());
@@ -103,7 +103,7 @@ public class HistoryServiceImpl implements HistoryService{
         return trafficInterceptor.getTrafficCnt();
     }
 
-    private int resumeEditCntByStatus(){
+    private int resumeEditCnt(){
         return adminResumeEditRepository.countRecords();
     }
 
@@ -182,6 +182,31 @@ public class HistoryServiceImpl implements HistoryService{
 
     // ---------------------------------------------
     // 통계 데이터 출력
+    /* 프로 유저 수 */
+    @Override
+    public Map<String, Object> getProUserCnt() {
+        Map<String, Object> result = new HashMap<>();
+
+        int proUser = userRepository.findByMode(2).size();
+
+        result.put("pro", proUser);
+
+        return result;
+    }
+
+    // 프로 유저 비율
+    /*
+    @Override
+    public Map<String, Object> getProUser() {
+        Map<String, Object> result = new HashMap<>();
+
+        Map<String, Object> proUser = adminService.modeCnt();
+
+        result.put("pro_ratio", proUser.get("pro"));
+
+        return result;
+    }
+    */
 
     /* 총 방문자 수 */
     @Override
@@ -214,12 +239,14 @@ public class HistoryServiceImpl implements HistoryService{
         Date startDateTime = Date.from(startDate.atStartOfDay(zoneId).toInstant());
         Date endDateTime = Date.from(endDate.plusDays(1).atStartOfDay(zoneId).minusSeconds(1).toInstant());
 
+        // 지정된 날짜 범위 내의 트래픽 데이터를 조회
         List<History> trafficData = historyRepository.findTrafficDataBetweenDates(startDateTime, endDateTime);
+
         return trafficData.stream()
                 .collect(Collectors.toMap(
                         history -> history.getW_date().toInstant().atZone(zoneId).toLocalDate(),
                         History::getTraffic,
-                        (existing, replacement) -> existing,
+                        (existing, replacement) -> existing, // 동일한 날짜에 대해 중복 키가 발생하면 기존 값을 유지
                         LinkedHashMap::new
                 ));
     }
@@ -244,5 +271,157 @@ public class HistoryServiceImpl implements HistoryService{
 
         // 날짜별로 정렬된 맵 반환
         return new TreeMap<>(dailyRegistrations);
+    }
+
+    /* 총 첨삭 수 */
+    @Override
+    public Map<String, Object> getTotalEdit() {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        Map<String, Object> statistics = this.collectStatistics();
+        Object editCount = statistics.get("edit_count");
+
+        result.put("edit_count", editCount);
+
+        return result;
+    }
+
+    /* 오늘 첨삭 수 */
+    @Override
+    public Map<String, Object> getRNumForCurrentDate() {
+        Map<String, Object> result = new HashMap<>();
+
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        Long todayEditCount = resumeRepository.findRNumByCurrentDate(currentDate);
+        result.put("edit_count", todayEditCount);
+
+        return result;
+    }
+
+    /* 총 게시글 수 */
+    @Override
+    public Map<String, Object> getTotalBoardCnt() {
+        Map<String, Object> result = new HashMap<>();
+
+        long totalBoardCnt = resumeBoardRepository.count();
+        result.put("total_board", totalBoardCnt);
+
+        return result;
+    }
+
+    /* 월별 첨삭 집계 */
+    @Override
+    public Map<String, Object> getEditByMonthly() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Integer> editCounts = new LinkedHashMap<>();
+        Map<String, Double> editRatios = new LinkedHashMap<>();
+
+
+        List<Object[]> monthList = resumeRepository.findMonthlyCorrectionCounts();
+
+        // 전체 첨삭 횟수 계산
+        int totalCorrections = monthList.stream().mapToInt(row -> ((Number) row[1]).intValue()).sum();
+
+        // 월별 첨삭 횟수 및 비율 계산
+        for (Object[] row : monthList) {
+            String month = (String) row[0];
+            int monthCnt = ((Number) row[1]).intValue();
+            double monthRatio = ((double) monthCnt / totalCorrections) * 100;
+
+            editCounts.put(month, monthCnt);
+            editRatios.put(month, Math.round(monthRatio * 100) / 100.0);
+        }
+
+        Map<String, Object> combinedCounts = new LinkedHashMap<>();
+        Map<String, Object> combinedRatios = new LinkedHashMap<>();
+
+        result.put("edit_cnt", editCounts);
+        result.put("edit_ratio", editRatios);
+
+        return result;
+    }
+
+    /* 주별 첨삭 집계 */
+    @Override
+    public Map<String, Object> getEditByWeekly(String month) {
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        // 월별 첨삭 데이터 가져오기
+        Map<String, Object> editMonthly = adminService.resumeCntByMonth();
+
+        // month가 null 또는 빈 값일 경우 현재 달로 설정
+        if (month == null || month.isEmpty()) {
+            LocalDate currentDate = LocalDate.now();
+            month = currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        }
+
+        boolean dataExists = false;
+
+        // edit_cnt에서 주어진 month의 weekly 데이터 추출
+        if (editMonthly != null) {
+            Map<String, Object> editCnt = (Map<String, Object>) editMonthly.get("edit_cnt");
+            if (editCnt != null && editCnt.containsKey("weekly")) {
+                Map<String, Object> editCntWeekly = (Map<String, Object>) editCnt.get("weekly");
+                if (editCntWeekly != null && editCntWeekly.containsKey(month)) {
+                    Map<String, Object> editCntResult = new LinkedHashMap<>();
+                    editCntResult.put(month, editCntWeekly.get(month));
+                    result.put("edit_cnt", editCntResult);
+                    dataExists = true;
+                }
+            }
+
+            // edit_ratio에서 주어진 month의 weekly 데이터 추출
+            Map<String, Object> editRatio = (Map<String, Object>) editMonthly.get("edit_ratio");
+            if (editRatio != null && editRatio.containsKey("weekly")) {
+                Map<String, Object> editRatioWeekly = (Map<String, Object>) editRatio.get("weekly");
+                if (editRatioWeekly != null && editRatioWeekly.containsKey(month)) {
+                    Map<String, Object> editRatioResult = new LinkedHashMap<>();
+                    editRatioResult.put(month, editRatioWeekly.get(month));
+                    result.put("edit_ratio", editRatioResult);
+                    dataExists = true;
+                }
+            }
+        }
+
+        if (!dataExists) {
+            throw new IllegalArgumentException("해당 월의 데이터가 없습니다.");
+        }
+
+        return result;
+    }
+
+    /* 일별 첨삭 집계 */
+    @Override
+    public Map<String, Object> getEditByDaily(String startDate, String endDate) {
+        Map<String, Object> editDaily = adminService.resumeCntByDaily();
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        // startDate와 endDate가 주어지지 않은 경우 현재 날짜를 기준으로 -6(총 7일)의 데이터를 설정
+        LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : LocalDate.now().minusDays(6);
+        LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : LocalDate.now();
+
+        // "edit_cnt" 데이터 처리
+        Map<String, Integer> editCntByDate = (Map<String, Integer>) editDaily.get("edit_cnt");
+        Map<String, Integer> filteredEditCntData = new LinkedHashMap<>();
+
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            String dateString = date.toString();
+            filteredEditCntData.put(dateString, editCntByDate.getOrDefault(dateString, 0));
+        }
+
+        // "edit_ratio" 데이터 처리
+        Map<String, Double> editRatioByDate = (Map<String, Double>) editDaily.get("edit_ratio");
+        Map<String, Double> filteredEditRatioData = new LinkedHashMap<>();
+
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            String dateString = date.toString();
+            filteredEditRatioData.put(dateString, editRatioByDate.getOrDefault(dateString, 0.0));
+        }
+
+        // 결과에 데이터 추가
+        result.put("edit_cnt", filteredEditCntData);
+        result.put("edit_ratio", filteredEditRatioData);
+
+        return result;
     }
 }

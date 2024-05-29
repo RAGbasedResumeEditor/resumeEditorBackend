@@ -1,17 +1,20 @@
 package com.team2.resumeeditorproject.admin.controller;
 
 import com.team2.resumeeditorproject.admin.service.AdminService;
+import com.team2.resumeeditorproject.admin.service.HistoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
@@ -22,6 +25,7 @@ import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 public class AdminController {
 
     private final AdminService adminService;
+    private final HistoryService historyService;
 
     /* 유저 정보에 관한 통계 */
     @GetMapping("/user")
@@ -36,9 +40,68 @@ public class AdminController {
                 case "mode" -> (g) -> createResponse(adminService.modeCnt());
                 case "occupation" -> (g) -> createResponse(adminService.occupCnt(occupation));
                 case "wish" -> (g) -> createResponse(adminService.wishCnt(wish));
+                case "pro" -> (g) -> createResponse(historyService.getProUserCnt());
+                case "visitTotal" -> (g) -> createResponse(historyService.getTotalTraffic());
+                case "visitToday" -> (g) -> createResponse(historyService.getTrafficForCurrentDate());
                 default -> (g) ->  createBadReqResponse("잘못된 요청입니다.");
             };
             return action.apply(group);
+    }
+
+    // 일별 접속자 집계
+    @GetMapping("/user/traffic")
+    public ResponseEntity<Map<String,Object>> getTrafficStatistics(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate){
+        try {
+            Map<String, Object> result = new LinkedHashMap<>();
+
+            LocalDate start = startDate.orElse(LocalDate.now().minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
+            LocalDate end = endDate.orElse(LocalDate.now()); // endDate가 주어지지 않으면 현재 날짜로 설정
+
+            Map<LocalDate, Integer> trafficData = historyService.getTrafficData(start, end);
+
+            // 트래픽 데이터가 없는 날짜에는 0을 설정
+            for (LocalDate date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1)) {
+                trafficData.putIfAbsent(date, 0);
+            }
+
+            Map<LocalDate, Integer> sortedTrafficData = new TreeMap<>(trafficData);
+
+            result.put("traffic_data", sortedTrafficData);
+
+            return createResponse(result);
+        }catch(Exception e){
+            return createBadReqResponse(e.getMessage());
+        }
+    }
+
+    // 일별 회원가입 집계
+    @GetMapping("/user/signup")
+    public ResponseEntity<Map<String,Object>> getSignupStatistics(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate){
+        try {
+            Map<String, Object> result = new LinkedHashMap<>();
+
+            LocalDate start = startDate.orElse(LocalDate.now().minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
+            LocalDate end = endDate.orElse(LocalDate.now()); // endDate가 주어지지 않으면 현재 날짜로 설정
+
+            Map<LocalDate, Integer> signupData = historyService.getDailyUserRegistrations(start, end);
+
+            // 트래픽 데이터가 없는 날짜에는 0을 설정
+            for (LocalDate date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1)) {
+                signupData.putIfAbsent(date, 0);
+            }
+
+            Map<LocalDate, Integer> sortedSignupData = new TreeMap<>(signupData);
+
+            result.put("signup_data", sortedSignupData);
+
+            return createResponse(result);
+        }catch(Exception e){
+            return createBadReqResponse(e.getMessage());
+        }
     }
 
     /* 자소서 목록에 관한 통계 */
@@ -58,7 +121,8 @@ public class AdminController {
     @GetMapping("/resumeEdit")
     public ResponseEntity<Map<String, Object>> getResumeEditCountByStatus(@RequestParam(name="group", required = false) String group,
                                                                           @RequestParam(name="company", required = false) String company,
-                                                                          @RequestParam(name="occupation", required = false) String occupation) {
+                                                                          @RequestParam(name="occupation", required = false) String occupation
+                                                                          ) {
             Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
                 case "status" -> (g) -> createResponse(adminService.resumeEditCntByStatus());
                 case "company" -> (g) -> createResponse(adminService.resumeEditCntByComp(company));
@@ -87,5 +151,56 @@ public class AdminController {
     @GetMapping("/rank/wish")
     public ResponseEntity<Map<String, Object>> getWishRank(){
         return createResponse(adminService.rankWish());
+    }
+
+    // 자소서 통계
+    @GetMapping("/resume/count")
+    public ResponseEntity<Map<String,Object>> getResumeStat(@RequestParam(name="group", required = false) String group){
+        Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
+            case "editTotal" -> (g) -> createResponse(historyService.getTotalEdit());
+            case "editToday" -> (g) -> createResponse(historyService.getRNumForCurrentDate());
+            case "boardToday" -> (g) -> createResponse(historyService.getTotalBoardCnt());
+            default -> (g) -> createBadReqResponse("잘못된 요청입니다");
+        };
+
+        return action.apply(group);
+    }
+
+    @GetMapping("/resume/monthly")
+    public ResponseEntity<Map<String,Object>> getEditStatByMonthly(){
+        try {
+            Map<String, Object> result = new LinkedHashMap<>();
+
+            result.put("edit_monthly", historyService.getEditByMonthly());
+
+            return createResponse(result);
+        }catch (Exception e){
+            return createBadReqResponse(e.getMessage());
+        }
+    }
+
+    @GetMapping("/resume/weekly")
+    public ResponseEntity<Map<String,Object>> getEditStatByWeekly(@RequestParam(name="month", required = false) String month){
+        try {
+            return createResponse(historyService.getEditByWeekly(month));
+        } catch (IllegalArgumentException e) {
+            return createBadReqResponse(e.getMessage());
+        } catch (Exception e) {
+            return createBadReqResponse(e.getMessage());
+        }
+    }
+
+    @GetMapping("/resume/daily")
+    public ResponseEntity<Map<String,Object>> getEditStatByDaily(@RequestParam(value = "startDate", required = false) String startDate,
+                                                                 @RequestParam(value = "endDate", required = false)  String endDate){
+        try {
+            Map<String, Object> result = new LinkedHashMap<>();
+
+            Map<String, Object> editDaily = historyService.getEditByDaily(startDate, endDate);
+            result.put("edit_daily", editDaily);
+            return createResponse(result);
+        } catch (Exception e) {
+            return createBadReqResponse(e.getMessage());
+        }
     }
 }

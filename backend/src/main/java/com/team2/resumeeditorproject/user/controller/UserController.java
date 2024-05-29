@@ -78,8 +78,8 @@ public class UserController extends HttpServlet {
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
         String username=userDto.getUsername();
         //30일 이내에 탈퇴한 회원 예외 처리
-        Date delDate=userRepository.findByUsername(username).getDelDate();
-        if(delDate!=null) {
+        if(userRepository.findByUsername(username).getDelDate()!=null) {
+             Date delDate=userRepository.findByUsername(username).getDelDate();
             //삭제한 날짜
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String deleted = dateFormat.format(delDate);

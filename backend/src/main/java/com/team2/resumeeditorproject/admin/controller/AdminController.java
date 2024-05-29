@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -67,7 +70,6 @@ public class AdminController {
                 case "daily" -> (g) -> createResponse(adminService.resumeCntByDaily()); // 채용시즌(일별)
                 default -> (g) -> createBadReqResponse("잘못된 요청입니다");
             };
-
             return action.apply(group);
     }
 

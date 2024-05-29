@@ -152,10 +152,10 @@ public class UserController extends HttpServlet {
 
     //회원탈퇴
     @PostMapping("/user/delete")
-    public ResponseEntity<Map<String, Object>> deleteUser() throws AuthenticationException {
+    public ResponseEntity<Map<String, Object>> deleteUser(@RequestBody UserDTO userDto) throws AuthenticationException {
 
-        String username = getUsername();
-        Long uNum = userService.showUser(username).getUNum();
+            String username = userDto.getUsername();
+            Long uNum = userService.showUser(username).getUNum();
 
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
             userManagementService.updateUserDeleteDate(uNum);
@@ -174,6 +174,7 @@ public class UserController extends HttpServlet {
         String username= getUsername();
         User tempUser=userService.showUser(username);
         userDto.setUNum(tempUser.getUNum());
+
 
         userService.updateUser(userDto);//수정 처리
         return createResponse(getUsername()+" 회원 수정 완료.");

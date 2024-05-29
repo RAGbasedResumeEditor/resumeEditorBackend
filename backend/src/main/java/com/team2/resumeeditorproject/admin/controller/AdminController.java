@@ -134,7 +134,6 @@ public class AdminController {
                 case "daily" -> (g) -> createResponse(adminService.resumeCntByDaily()); // 채용시즌(일별)
                 default -> (g) -> createBadReqResponse("잘못된 요청입니다");
             };
-
             return action.apply(group);
     }
 

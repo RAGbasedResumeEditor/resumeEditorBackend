@@ -6,9 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestControllerAdvice
 public class ControllerExceptionAdvice {
@@ -26,6 +24,22 @@ public class ControllerExceptionAdvice {
     public ResponseEntity<Map<String, Object>> handleException(BadRequestException e) {
         Map<String, Object> response = new HashMap<>();
         response.put("response", e.getMessage());
+        response.put("time", new Date());
+        response.put("status","Fail");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); //400
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, Object>> handleException(DelDateException e) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> result=new HashMap<>();
+        String delDate=e.getMessage();
+
+        String[] dates = delDate.replace("[", "").replace("]", "").split(", ");
+        result.put("deleted", dates[0]);
+        result.put("available", dates[1]);
+
+        response.put("response", result);
         response.put("time", new Date());
         response.put("status","Fail");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); //400

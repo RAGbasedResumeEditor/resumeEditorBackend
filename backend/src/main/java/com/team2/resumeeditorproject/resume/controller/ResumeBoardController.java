@@ -1,11 +1,13 @@
 package com.team2.resumeeditorproject.resume.controller;
 
+import com.team2.resumeeditorproject.resume.domain.Bookmark;
 import com.team2.resumeeditorproject.resume.domain.Rating;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.BookmarkDTO;
 import com.team2.resumeeditorproject.resume.dto.RatingDTO;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
+import com.team2.resumeeditorproject.resume.repository.BookmarkRepository;
 import com.team2.resumeeditorproject.resume.repository.RatingRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeEditRepository;
 import com.team2.resumeeditorproject.resume.service.BookmarkService;
@@ -13,10 +15,14 @@ import com.team2.resumeeditorproject.resume.service.RatingService;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
+import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
+import com.team2.resumeeditorproject.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -54,7 +60,19 @@ public class ResumeBoardController {
     private BookmarkService bookmarkService;
 
     @Autowired
+    private BookmarkRepository bookmarkRepository;
+
+    @Autowired
     private ResumeEditRepository resumeEditRepository;
+
+    @Autowired
+    private UserService userService;
+
+    public static String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userDetails.getUsername();
+    }
 
     /* 게시글 목록 */
     @GetMapping("/list")
@@ -314,6 +332,45 @@ public class ResumeBoardController {
         }
     }
 
+    /* 별점 확인 */
+    @GetMapping("/rating/{num}")
+    public ResponseEntity<Map<String, Object>> getRating(@PathVariable("num")  Long num) {
+        Map<String, Object> response = new HashMap<>();
+        Date today = new Date();
+        String username = getUsername();
+        Long uNum = userService.showUser(username).getUNum();
+        float result = 0;
+
+        try{
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
+                throw new Exception(" - ResumeBoard with num " + num + " not found");
+            }
+
+            // 별점 여부 확인
+            Rating rating = ratingRepository.findByRNumAndUNum(num, uNum);
+
+            if(rating == null){
+                result = 0; // 별점 안줬음
+            }
+            else{
+                result = rating.getRating(); // 별점줬음
+            }
+
+            response.put("response", result);
+            response.put("time", today);
+            response.put("status", "Success");
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e) {
+            response.put("response", "server error " + e.getMessage());
+            response.put("time", today);
+            response.put("status", "Fail");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
     /* 게시글 랭킹 */
     @GetMapping("/list/rank")
     public ResponseEntity<Map<String, Object>> getBoardRanking(@RequestParam("group") String group) {
@@ -385,6 +442,45 @@ public class ResumeBoardController {
             // 즐겨찾기를 누르면 테이블에 저장
             // 즐겨찾기를 이미 눌렀으면(테이블에 이미 있으면) -> 삭제(즐겨찾기 취소)
             String result = bookmarkService.bookmarkBoard(bookmarkDTO);
+
+            response.put("response", result);
+            response.put("time", today);
+            response.put("status", "Success");
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e) {
+            response.put("response", "server error " + e.getMessage());
+            response.put("time", today);
+            response.put("status", "Fail");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    /* 즐겨찾기 확인 */
+    @GetMapping("/bookmark/{num}")
+    public ResponseEntity<Map<String, Object>> getBookmark(@PathVariable("num")  Long num) {
+        Map<String, Object> response = new HashMap<>();
+        Date today = new Date();
+        String username = getUsername();
+        Long uNum = userService.showUser(username).getUNum();
+        String result = "";
+
+        try{
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
+                throw new Exception(" - ResumeBoard with num " + num + " not found");
+            }
+            
+            // 즐겨찾기 여부 확인
+            Bookmark bookmark = bookmarkRepository.findByRNumAndUNum(num, uNum);
+
+            if(bookmark == null){
+                result = "false"; // 즐겨찾기 안했음
+            }
+            else{
+                result = "true"; // 이미 즐겨찾기 했음
+            }
 
             response.put("response", result);
             response.put("time", today);

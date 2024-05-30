@@ -77,6 +77,7 @@ public class UserController extends HttpServlet {
     @PostMapping(value="/signup")
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
         String username=userDto.getUsername();
+
         //30일 이내에 탈퇴한 회원 예외 처리
         User user=userRepository.findByUsername(username);
         if(user!=null && user.getDelDate()!=null) {

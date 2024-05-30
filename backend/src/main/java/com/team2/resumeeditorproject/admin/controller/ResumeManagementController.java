@@ -62,7 +62,6 @@ public class ResumeManagementController {
         int size = 10; // 한 페이지에 보여줄 게시글 수
 
         Map<String, Object> response = new HashMap<>();
-        Date today = new Date();
 
             page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
@@ -107,7 +106,6 @@ public class ResumeManagementController {
                 }
                 response.put("response", formattedResults);
             }
-            response.put("time", today);
             response.put("status", "Success");
             response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
 

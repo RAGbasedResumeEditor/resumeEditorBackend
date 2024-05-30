@@ -104,7 +104,8 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     private int resumeEditCnt(){
-        return adminResumeEditRepository.countRecords();
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return resumeRepository.findRNumByCurrentDate(currentDate);
     }
 
     /* 유저별 각 비율 */
@@ -225,8 +226,15 @@ public class HistoryServiceImpl implements HistoryService{
         Map<String, Object> result = new HashMap<>();
 
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        Long todayTraffic = historyRepository.findTrafficByCurrentDate(currentDate);
-        result.put("today_visit", todayTraffic);
+
+        // 기존의 오늘 트래픽을 DB에서 가져옴
+        Long todayTrafficFromDb = historyRepository.findTrafficByCurrentDate(currentDate);
+
+        // 트래픽 인터셉터에서 현재 트래픽 카운트를 가져옴
+        int todayTrafficCount = trafficInterceptor.getTrafficCnt();
+
+        // DB에서 가져온 값과 인터셉터에서 가져온 값을 합산하여 결과에 추가
+        result.put("today_visit", todayTrafficFromDb + todayTrafficCount);
 
         return result;
     }
@@ -278,8 +286,7 @@ public class HistoryServiceImpl implements HistoryService{
     public Map<String, Object> getTotalEdit() {
         Map<String, Object> result = new LinkedHashMap<>();
 
-        Map<String, Object> statistics = this.collectStatistics();
-        Object editCount = statistics.get("edit_count");
+        long editCount = historyRepository.findTotalEditCount();
 
         result.put("edit_count", editCount);
 
@@ -289,11 +296,13 @@ public class HistoryServiceImpl implements HistoryService{
     /* 오늘 첨삭 수 */
     @Override
     public Map<String, Object> getRNumForCurrentDate() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>();
 
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        Long todayEditCount = resumeRepository.findRNumByCurrentDate(currentDate);
-        result.put("edit_count", todayEditCount);
+
+        long editCount = historyRepository.findEditCountByCurrentDate(currentDate);
+
+        result.put("edit_count", editCount);
 
         return result;
     }

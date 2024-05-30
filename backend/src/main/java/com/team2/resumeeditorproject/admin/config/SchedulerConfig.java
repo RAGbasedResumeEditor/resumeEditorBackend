@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.admin.config;
 
 import com.team2.resumeeditorproject.admin.service.HistoryService;
+import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.RefreshService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class SchedulerConfig {
 
     private final HistoryService historyService;
     private final RefreshService refreshService;
+    private final UserManagementService userManagementService;
     private final UserRepository userRepository;
 
     //@Scheduled(cron = "0 40 16 * * ?") // 테스트
@@ -33,7 +35,7 @@ public class SchedulerConfig {
     }
 
     // 만료 토큰 삭제
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * ?")
     public void deleteExpiredTokens() {
         try {
             refreshService.deleteExpiredTokens();
@@ -41,6 +43,16 @@ public class SchedulerConfig {
             e.printStackTrace();
         }
     }
+
+    // ROLE_BLACKLIST 회원 60일 후 ROLE_USER로 변경 후 del_date null
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    public void updateRoleForBlacklist(){
+        try{
+            userManagementService.updateDelDateForRoleBlacklist();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
 
     //30일 지나면 테이블에서 해당 회원 삭제
     @Scheduled(cron = "0 0 12 * * *")

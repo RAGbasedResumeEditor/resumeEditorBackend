@@ -55,8 +55,6 @@ public class UserManagementServiceImpl implements UserManagementService{
         adminUserRepository.save(user);
     }
 
-    // 매일 자정에 실행되는 스케줄러 설정
-    @Scheduled(cron = "0 0 0 * * ?")
     @Override
     public void updateDelDateForRoleBlacklist() {
         // 현재 날짜 가져오기
@@ -67,25 +65,16 @@ public class UserManagementServiceImpl implements UserManagementService{
         calendar.add(Calendar.DATE, -60);
         Date dateBefore60Days = calendar.getTime();
 
-        // UserRepository를 통해 role이 "ROLE_BLACKLIST"이고 del_date가 60일 이전인 사용자의 정보를 가져옴
-        List<User> usersToConvert = adminUserRepository.findByRoleAndDelDateBefore("ROLE_BLACKLIST", dateBefore60Days);
+        // "ROLE_BLACKLIST"인 사용자의 정보를 가져옴
+        List<User> blacklistedUsers = adminUserRepository.findByRole("ROLE_BLACKLIST");
 
-        // 가져온 사용자들의 role을 "ROLE_USER"로 변경하고, del_date를 null로 업데이트
-        for (User user : usersToConvert) {
-            user.setRole("ROLE_USER");
-            user.setDelDate(null);
+        // 가져온 사용자 중 del_date가 60일 이상 지난 사용자의 del_date를 null로 업데이트
+        for (User user : blacklistedUsers) {
+            if (user.getDelDate() != null && user.getDelDate().before(dateBefore60Days)) {
+                user.setDelDate(null);
+            }
         }
 
-        // 변경된 정보를 데이터베이스에 저장
-        adminUserRepository.saveAll(usersToConvert);
+        adminUserRepository.saveAll(blacklistedUsers);
     }
-    /*
-    // 30일 지나면 테이블에서 해당 회원 삭제
-    @Override
-    @Transactional
-    @Scheduled(cron = "0 0 12 * * *") // 매일 오후 12시에 메서드 동작
-    public void deleteUserEnd(){
-        adminUserRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
-    }
-     */
 }

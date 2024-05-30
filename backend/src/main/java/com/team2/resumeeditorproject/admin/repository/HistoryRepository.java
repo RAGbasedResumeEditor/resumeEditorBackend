@@ -20,4 +20,10 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     @Query("SELECT h FROM History h WHERE h.w_date BETWEEN :startDate AND :endDate")
     List<History> findTrafficDataBetweenDates(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query("SELECT SUM(h.edit_count) FROM History h WHERE DATE_FORMAT(h.w_date, '%Y-%m-%d') = :currentDate")
+    long findEditCountByCurrentDate(@Param("currentDate") String currentDate);
+
+    @Query("SELECT SUM(h.edit_count) FROM History h")
+    Long findTotalEditCount();
 }

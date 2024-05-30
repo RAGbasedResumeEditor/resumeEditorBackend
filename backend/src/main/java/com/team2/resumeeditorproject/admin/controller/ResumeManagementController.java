@@ -6,6 +6,9 @@ import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +38,7 @@ public class ResumeManagementController {
         return rbDtoList;
     }
 
-    //자소서 목록 가져오기
+    /*자소서 목록 가져오기
     @GetMapping("/board/list")
     public ResponseEntity<Map<String, Object>> getAllResumeBoard(@RequestParam(name="page", defaultValue = "0") int page){
            Page<ResumeBoard> rbList = rmService.getResumeBoards(page);
@@ -51,7 +54,66 @@ public class ResumeManagementController {
            }
 
            return createPagedResponse(totalPage, createRbList(rbList));
+    }*/
+
+    /* 게시글 목록 */
+    @GetMapping("/board/list")
+    public ResponseEntity<Map<String, Object>> getAllResumeBoards(@RequestParam("page") int page) {
+        int size = 10; // 한 페이지에 보여줄 게시글 수
+
+        Map<String, Object> response = new HashMap<>();
+        Date today = new Date();
+
+            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
+
+            // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Object[]> resultsPage = rmService.getAllResumeBoards(pageable);
+
+            if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
+                response.put("response", "게시글이 없습니다.");
+            }
+            else { // 게시글이 있는 경우
+                if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    page = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(page, size);
+                    resultsPage = rmService.getAllResumeBoards(pageable);
+                }
+
+                List<Map<String, Object>> formattedResults = new ArrayList<>();
+
+                for (Object[] result : resultsPage.getContent()) {
+                    Map<String, Object> formattedResult = new HashMap<>();
+
+                    // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
+                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
+                    formattedResult.put("r_num", resumeBoard.getRNum());
+                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeBoard.getRating_count());
+                    formattedResult.put("read_num", resumeBoard.getRead_num());
+
+                    // 두 번째 요소는 Resume_board의 title
+                    String title = (String) result[1];
+                    formattedResult.put("title", title);
+
+                    // 네 번째 요소는 Resume의 w_date
+                    Date w_date = (Date) result[2];
+                    formattedResult.put("w_date", w_date);
+
+                    String username=(String)result[3];
+                    formattedResult.put("username",username);
+
+                    formattedResults.add(formattedResult);
+                }
+                response.put("response", formattedResults);
+            }
+            response.put("time", today);
+            response.put("status", "Success");
+            response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     //자소서 삭제
     @PostMapping("/board/list/delete")

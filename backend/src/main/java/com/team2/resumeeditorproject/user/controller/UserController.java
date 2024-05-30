@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.exception.DelDateException;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
@@ -32,6 +33,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -72,11 +77,32 @@ public class UserController extends HttpServlet {
     @PostMapping(value="/signup")
     public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
         String username=userDto.getUsername();
-            if(userService.checkUsernameDuplicate(username)){
-                throw new BadRequestException("["+username+"] 이미 존재하는 username 입니다.");
-            }
-            userService.signup(userDto);//회원가입 처리
-            return createResponse("회원가입 성공");
+        //30일 이내에 탈퇴한 회원 예외 처리
+        User user=userRepository.findByUsername(username);
+        if(user!=null && user.getDelDate()!=null) {
+            Date delDate=user.getDelDate();
+            //삭제한 날짜
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String deleted = dateFormat.format(delDate);
+            //회원가입 가능한 날짜
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(delDate);
+            calendar.add(Calendar.DAY_OF_MONTH, 30);
+            Date newDate = calendar.getTime();
+            String available = dateFormat.format(newDate);
+
+            List<String> result=new ArrayList<>();
+            result.add(deleted);
+            result.add(available);
+            throw new DelDateException(result);
+        }
+        //존재하는 username 예외 처리
+        if(userService.checkUsernameDuplicate(username)){
+            throw new BadRequestException(username+" already exists.");
+        }
+
+        userService.signup(userDto);//회원가입 처리
+        return createResponse("회원가입 성공");
     }//signup()
 /*
     @PostMapping("/signup/exists/username")
@@ -129,7 +155,7 @@ public class UserController extends HttpServlet {
     @PostMapping("/user/search")
     public ResponseEntity<Map<String, Object>> showUser() {
 
-        String username = getUsername();
+            String username = getUsername();
 
             User tempUser=userService.showUser(username);
             UserDTO user=new UserDTO();
@@ -154,8 +180,7 @@ public class UserController extends HttpServlet {
     @PostMapping("/user/delete")
     public ResponseEntity<Map<String, Object>> deleteUser(@RequestBody UserDTO userDto) throws AuthenticationException {
 
-            String username = userDto.getUsername();
-            Long uNum = userService.showUser(username).getUNum();
+            Long uNum =userDto.getUNum();
 
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
             userManagementService.updateUserDeleteDate(uNum);
@@ -174,7 +199,6 @@ public class UserController extends HttpServlet {
         String username= getUsername();
         User tempUser=userService.showUser(username);
         userDto.setUNum(tempUser.getUNum());
-
 
         userService.updateUser(userDto);//수정 처리
         return createResponse(getUsername()+" 회원 수정 완료.");

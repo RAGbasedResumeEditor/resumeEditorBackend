@@ -8,6 +8,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 // DB 연결하여 회원 조회하기 위한 클래스
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -28,9 +33,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         CustomUserDetails userDetails = new CustomUserDetails(user);
 
         String role = user.getRole();
+
         if (role.equals("ROLE_BLACKLIST") && !userDetails.isEnabled()) {
-            //throw new UserBlacklistedException("blacklisted until[" + userDetails.getReactivationDate()+"]");
-            throw new UserBlacklistedException("blacklisted");
+            LocalDateTime localDateTime = userDetails.getReactivationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            String blackListedDate = localDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+            throw new UserBlacklistedException("blacklisted "+blackListedDate);
+//            throw new UserBlacklistedException("blacklisted");
         }
 
         return userDetails;

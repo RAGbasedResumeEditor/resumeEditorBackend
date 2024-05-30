@@ -26,24 +26,18 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.setHeader("Access-Control-Allow-Origin", "https://reditor.me");
-        response.setHeader("Access-Control-Allow-Origin", "https://www.reditor.me");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Methods", "*");
-        response.setHeader("Access-Control-Allow-Headers", "*");
-        response.setHeader("Access-Control-Max-Age", "3600");
-
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("status", "Fail");
         responseBody.put("time", new Date());
+        responseBody.put("message", exception.getMessage());
 
-
-        // 블랙리스트에 있는 경우
-        if (exception instanceof UserBlacklistedException) {
-            responseBody.put("response", exception.getMessage());
+        if(exception instanceof UserBlacklistedException){
+            responseBody.put("blackListed","true");
         }
-
-        responseBody.put("response", "Authentication failed: " + exception.getMessage());
+        System.out.println(exception.getMessage().split(" ")[0]);
+        if(exception.getMessage().split(" ")[0].equals("blacklisted")){
+            responseBody.put("blackListed","true");
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));

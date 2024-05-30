@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RatingRepository extends JpaRepository<Rating, Long> {
     int countByRNumAndUNum(long r_num, long u_num);
+
+    Rating findByRNumAndUNum(long r_num, long u_num);
 }

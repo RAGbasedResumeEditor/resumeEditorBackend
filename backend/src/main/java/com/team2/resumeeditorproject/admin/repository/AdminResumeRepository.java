@@ -32,5 +32,5 @@ public interface AdminResumeRepository extends JpaRepository<Resume, Long> {
 
     // 오늘 첨삭 수
     @Query("SELECT count(r) FROM Resume r WHERE DATE_FORMAT(r.w_date, '%Y-%m-%d') = :currentDate")
-    Long findRNumByCurrentDate(@Param("currentDate") String currentDate);
+    int findRNumByCurrentDate(@Param("currentDate") String currentDate);
 }

@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
-@EnableScheduling // scheduled
 @SpringBootApplication(scanBasePackages = {"com.team2.resumeeditorproject"})
 public class ResumeEditorProjectApplication {
 

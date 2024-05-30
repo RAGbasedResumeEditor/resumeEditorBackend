@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.admin.config;
 
 import com.team2.resumeeditorproject.admin.service.HistoryService;
+import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.service.RefreshService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ public class SchedulerConfig {
 
     private final HistoryService historyService;
     private final RefreshService refreshService;
+    private final UserManagementService userManagementService;
 
     //@Scheduled(cron = "0 40 16 * * ?") // 테스트
     @Scheduled(cron = "0 0 2 * * ?")  // 매일 새벽2시에 실행
@@ -29,11 +31,22 @@ public class SchedulerConfig {
     }
 
     // 만료 토큰 삭제
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * ?")
     public void deleteExpiredTokens() {
         try {
             refreshService.deleteExpiredTokens();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ROLE_BLACKLIST 회원 60일 후 ROLE_USER로 변경 후 del_date null
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    public void updateRoleForBlacklist(){
+        try{
+            userManagementService.updateDelDateForRoleBlacklist();
+        }
+        catch(Exception e){
             e.printStackTrace();
         }
     }

@@ -155,7 +155,7 @@ public class UserController extends HttpServlet {
     @PostMapping("/user/search")
     public ResponseEntity<Map<String, Object>> showUser() {
 
-        String username = getUsername();
+            String username = getUsername();
 
             User tempUser=userService.showUser(username);
             UserDTO user=new UserDTO();
@@ -199,7 +199,6 @@ public class UserController extends HttpServlet {
         String username= getUsername();
         User tempUser=userService.showUser(username);
         userDto.setUNum(tempUser.getUNum());
-
 
         userService.updateUser(userDto);//수정 처리
         return createResponse(getUsername()+" 회원 수정 완료.");

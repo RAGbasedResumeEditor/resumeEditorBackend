@@ -3,7 +3,6 @@ package com.team2.resumeeditorproject.admin.service;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
-import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +25,12 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
         Pageable pageable=PageRequest.of(page, 10, Sort.by("RNum").descending());
         Page<ResumeBoard> pageResult=adResBoardRepository.findAll(pageable);
         return pageResult;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Object[]> getAllResumeBoards(Pageable pageable) {
+        return adResBoardRepository.findAllResumeBoards(pageable);
     }
 
     @Override

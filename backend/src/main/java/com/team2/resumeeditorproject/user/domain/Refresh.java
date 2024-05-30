@@ -10,7 +10,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Refresh {
+public class  Refresh {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

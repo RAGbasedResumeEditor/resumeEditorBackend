@@ -60,9 +60,6 @@ public class ResumeEditServiceImpl implements ResumeEditService{
             String title = resumeEditDTO.getCompany() + " " + resumeEditDTO.getOccupation();
             resumeBoardDTO.setTitle(title);
             resumeBoardDTO.setRNum(resumeId);
-            resumeBoardDTO.setRating(0);
-            resumeBoardDTO.setRating_count(0);
-            resumeBoardDTO.setRead_num(0);
             resumeBoardService.insertResumeBoard(resumeBoardDTO);
 
             if (user.getMode() == 1) { // user의 모드가 1이면 2로 변경

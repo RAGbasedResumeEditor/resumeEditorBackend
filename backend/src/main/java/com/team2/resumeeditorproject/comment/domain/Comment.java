@@ -13,7 +13,7 @@ import java.util.Date;
 @Getter
 @Entity
 @Table(name="comment")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
     @Id

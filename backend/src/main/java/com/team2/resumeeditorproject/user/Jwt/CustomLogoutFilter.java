@@ -95,7 +95,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // => 토큰 검증 완료
 
         // 로그아웃 진행
-        // Refresh 토큰 DB에서 제거 => 제거해야 reissue경로에서 reissuing이 되지 않음
+        // Refresh 토큰 DB에서 제거
         refreshRepository.deleteByRefresh(refresh);
 
         response.setHeader("refresh",null);

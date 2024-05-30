@@ -52,7 +52,6 @@ public class ReissueController {
         }
 
         // 있다면 만료 확인
-        //expired check
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {

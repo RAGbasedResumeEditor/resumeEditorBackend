@@ -46,13 +46,13 @@ public class SchedulerConfig {
 
     // ROLE_BLACKLIST 회원 60일 후 ROLE_USER로 변경 후 del_date null
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
-    public void updateRoleForBlacklist(){
-        try{
+    public void updateRoleForBlacklist() {
+        try {
             userManagementService.updateDelDateForRoleBlacklist();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
     //30일 지나면 테이블에서 해당 회원 삭제
     @Scheduled(cron = "0 0 12 * * *")
@@ -60,4 +60,5 @@ public class SchedulerConfig {
     public void deleteUserEnd(){
         userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
     }
+
 }

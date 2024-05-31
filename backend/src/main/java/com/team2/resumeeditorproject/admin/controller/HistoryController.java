@@ -22,7 +22,7 @@ public class HistoryController {
     private final AdminService adminService;
 
     // 통계 수집
-
+/*
     @GetMapping("/collection")
     public ResponseEntity<Map<String, Object>> collectStatistics(){
         try {
@@ -33,6 +33,6 @@ public class HistoryController {
             return ResponseEntity.status(500).body(Map.of("error", "An error occurred while collecting statistics.", "details", e.getMessage()));
         }
     }
-
+*/
 
 }

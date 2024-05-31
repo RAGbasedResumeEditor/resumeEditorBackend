@@ -30,8 +30,6 @@ public class HistoryServiceImpl implements HistoryService{
     private final TrafficService trafficService;
 
     private final ObjectMapper objectMapper;
-    private final TrafficInterceptor trafficInterceptor;
-    private final AdminResumeEditRepository adminResumeEditRepository;
     private final AdminService adminService;
 
     /* 통계 수집 */
@@ -203,20 +201,6 @@ public class HistoryServiceImpl implements HistoryService{
         return result;
     }
 
-    // 프로 유저 비율
-    /*
-    @Override
-    public Map<String, Object> getProUser() {
-        Map<String, Object> result = new HashMap<>();
-
-        Map<String, Object> proUser = adminService.modeCnt();
-
-        result.put("pro_ratio", proUser.get("pro"));
-
-        return result;
-    }
-    */
-
     /* 총 방문자 수 */
     @Override
     public Map<String, Object> getTotalTraffic() {
@@ -263,7 +247,7 @@ public class HistoryServiceImpl implements HistoryService{
     public Map<String, Object> getTotalEdit() {
         Map<String, Object> result = new LinkedHashMap<>();
 
-        long editCount = historyRepository.findTotalEditCount();
+        long editCount = resumeRepository.count();
 
         result.put("edit_count", editCount);
 
@@ -277,7 +261,7 @@ public class HistoryServiceImpl implements HistoryService{
 
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        long editCount = historyRepository.findEditCountByCurrentDate(currentDate);
+        long editCount = resumeRepository.findRNumByCurrentDate(currentDate);
 
         result.put("edit_count", editCount);
 

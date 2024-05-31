@@ -11,4 +11,5 @@ public interface TrafficService {
     long getTotalTraffic();
     long getTrafficForCurrentDate();
     Map<LocalDate, Integer> getTrafficData(LocalDate startDate, LocalDate endDate);
+    void updateEditCountForToday();
 }

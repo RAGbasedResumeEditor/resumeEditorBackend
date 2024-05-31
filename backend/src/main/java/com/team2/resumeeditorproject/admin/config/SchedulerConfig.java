@@ -30,10 +30,13 @@ public class SchedulerConfig {
 
     private final TrafficInterceptor trafficInterceptor;
 
-    // 매일 오후 11시 59분에 트래픽 데이터를 저장
-    @Scheduled(cron = "0 59 23 * * ?")
+    // 트래픽 데이터 저장
+    @Scheduled(cron = "0 59 23 * * ?") //매일 오후 11시 59분 00초에 실행
     public void scheduleTrafficSave() {
         try {
+            // edit_count 업데이트
+            trafficService.updateEditCountForToday();
+
             Traffic todayTraffic = trafficService.getTraffic(LocalDate.now());
             if (todayTraffic != null) {
                 trafficService.saveTraffic(todayTraffic.getVisitCount(), todayTraffic.getEditCount());
@@ -54,7 +57,7 @@ public class SchedulerConfig {
         }
     }
 
-    // 오늘 방문자 수 0부터 시작
+    // 트래픽 리셋
     @Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행
     public void scheduleTrafficReset() {
         try {

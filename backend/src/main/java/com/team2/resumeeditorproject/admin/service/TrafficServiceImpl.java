@@ -1,11 +1,13 @@
 package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.domain.Traffic;
+import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
 import com.team2.resumeeditorproject.admin.repository.TrafficRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class TrafficServiceImpl implements TrafficService{
 
     private final TrafficRepository trafficRepository;
+    private final AdminResumeRepository resumeRepository;
 
     // 트래픽 저장
     @Override
@@ -65,5 +68,26 @@ public class TrafficServiceImpl implements TrafficService{
         }
 
         return trafficData;
+    }
+
+    // 오늘 첨삭 수 저장
+    @Override
+    public void updateEditCountForToday() {
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        int editCount = resumeRepository.findRNumByCurrentDate(currentDate);
+
+        LocalDate today = LocalDate.now();
+        Traffic traffic = trafficRepository.findByInDate(today);
+
+        if (traffic != null) {
+            traffic.setEditCount(editCount);
+            trafficRepository.save(traffic);
+        } else {
+            traffic = new Traffic();
+            traffic.setInDate(today);
+            traffic.setVisitCount(0);
+            traffic.setEditCount(editCount);
+            trafficRepository.save(traffic);
+        }
     }
 }

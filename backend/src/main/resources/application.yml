@@ -64,6 +64,10 @@ spring:
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie
 
+---
+spring:
+  jackson:
+    time-zone: Asia/Seoul
 --- # Spring Batch Job enable
 #spring:
 #  batch:

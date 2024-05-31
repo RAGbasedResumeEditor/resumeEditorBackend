@@ -3,6 +3,7 @@ package com.team2.resumeeditorproject.admin.domain;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -57,5 +58,7 @@ public class History {
 
     @Column(nullable = false, updatable = false, insertable = false, columnDefinition = "timestamp default current_timestamp")
     private Date w_date;
+
+    private LocalDate traffic_date;
 
 }

@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.admin.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.domain.History;
+import com.team2.resumeeditorproject.admin.domain.Traffic;
 import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.admin.repository.*;
 import com.team2.resumeeditorproject.user.domain.User;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,6 +26,8 @@ public class HistoryServiceImpl implements HistoryService{
     private final AdminUserRepository userRepository;
     private final AdminResumeRepository resumeRepository;
     private final AdminResumeBoardRepository resumeBoardRepository;
+    private final TrafficRepository trafficRepository;
+    private final TrafficService trafficService;
 
     private final ObjectMapper objectMapper;
     private final TrafficInterceptor trafficInterceptor;
@@ -35,8 +39,12 @@ public class HistoryServiceImpl implements HistoryService{
     @Transactional(readOnly = true)
     public Map<String, Object> collectStatistics() {
         Map<String, Object> statistics = new LinkedHashMap<>();
-        statistics.put("traffic", trafficInterceptor.getTrafficCnt());
-        statistics.put("edit_count", resumeEditCnt());
+
+        Traffic todayTraffic = trafficRepository.findByInDate(LocalDate.now());
+        if (todayTraffic != null) {
+            statistics.put("traffic", todayTraffic.getVisitCount());
+            statistics.put("edit_count", todayTraffic.getEditCount());
+        }
         statistics.put("user_mode", getUserMode());
         statistics.put("user_status", getUserStatus());
         statistics.put("user_gender", getUserGender());
@@ -92,15 +100,15 @@ public class HistoryServiceImpl implements HistoryService{
             history.setEdit_date(objectMapper.writeValueAsString(statistics.get("edit_date")));
             history.setEdit_occu(objectMapper.writeValueAsString(statistics.get("edit_occu")));
             history.setEdit_comp(objectMapper.writeValueAsString(statistics.get("edit_comp")));
+
+            // 어제의 날짜를 계산하여 traffic_date 컬럼에 저장
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            history.setTraffic_date(yesterday);
+
             historyRepository.save(history);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        trafficInterceptor.resetTrafficCnt();
-    }
-
-    private int getTrafficCnt(){
-        return trafficInterceptor.getTrafficCnt();
     }
 
     private int resumeEditCnt(){
@@ -213,10 +221,8 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     public Map<String, Object> getTotalTraffic() {
         Map<String, Object> result = new HashMap<>();
-
-        long totalTraffic = historyRepository.findTotalTraffic();
+        long totalTraffic = trafficService.getTotalTraffic();
         result.put("total_visit", totalTraffic);
-
         return result;
     }
 
@@ -224,40 +230,11 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     public Map<String, Object> getTrafficForCurrentDate() {
         Map<String, Object> result = new HashMap<>();
-
-        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        // 기존의 오늘 트래픽을 DB에서 가져옴
-        Long todayTrafficFromDb = historyRepository.findTrafficByCurrentDate(currentDate);
-
-        // 트래픽 인터셉터에서 현재 트래픽 카운트를 가져옴
-        int todayTrafficCount = trafficInterceptor.getTrafficCnt();
-
-        // DB에서 가져온 값과 인터셉터에서 가져온 값을 합산하여 결과에 추가
-        result.put("today_visit", todayTrafficFromDb + todayTrafficCount);
-
+        long todayTrafficFromDb = trafficService.getTrafficForCurrentDate();
+        result.put("today_visit", todayTrafficFromDb);
         return result;
     }
 
-    /* 일별 접속자 집계 */
-    @Override
-    public Map<LocalDate, Integer> getTrafficData(LocalDate startDate, LocalDate endDate) {
-        // LocalDate를 Date로 변환하여 하루의 시작과 끝으로 설정
-        ZoneId zoneId = ZoneId.systemDefault(); // 시스템 기본 시간대를 사용
-        Date startDateTime = Date.from(startDate.atStartOfDay(zoneId).toInstant());
-        Date endDateTime = Date.from(endDate.plusDays(1).atStartOfDay(zoneId).minusSeconds(1).toInstant());
-
-        // 지정된 날짜 범위 내의 트래픽 데이터를 조회
-        List<History> trafficData = historyRepository.findTrafficDataBetweenDates(startDateTime, endDateTime);
-
-        return trafficData.stream()
-                .collect(Collectors.toMap(
-                        history -> history.getW_date().toInstant().atZone(zoneId).toLocalDate(),
-                        History::getTraffic,
-                        (existing, replacement) -> existing, // 동일한 날짜에 대해 중복 키가 발생하면 기존 값을 유지
-                        LinkedHashMap::new
-                ));
-    }
 
     /* 일별 회원가입 집계 */
     @Override

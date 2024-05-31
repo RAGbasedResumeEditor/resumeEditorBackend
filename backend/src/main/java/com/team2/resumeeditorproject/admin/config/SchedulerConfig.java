@@ -1,6 +1,9 @@
 package com.team2.resumeeditorproject.admin.config;
 
+import com.team2.resumeeditorproject.admin.domain.Traffic;
+import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
+import com.team2.resumeeditorproject.admin.service.TrafficService;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.RefreshService;
@@ -10,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -22,13 +26,39 @@ public class SchedulerConfig {
     private final RefreshService refreshService;
     private final UserManagementService userManagementService;
     private final UserRepository userRepository;
+    private final TrafficService trafficService;
 
-    //@Scheduled(cron = "0 40 16 * * ?") // 테스트
-    @Scheduled(cron = "0 0 2 * * ?")  // 매일 새벽2시에 실행
+    private final TrafficInterceptor trafficInterceptor;
+
+    // 매일 오후 11시 59분에 트래픽 데이터를 저장
+    @Scheduled(cron = "0 59 23 * * ?")
     public void scheduleTrafficSave() {
+        try {
+            Traffic todayTraffic = trafficService.getTraffic(LocalDate.now());
+            if (todayTraffic != null) {
+                trafficService.saveTraffic(todayTraffic.getVisitCount(), todayTraffic.getEditCount());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 트래픽 수집 및 저장
+    @Scheduled(cron = "0 0 2 * * ?")  // 매일 새벽2시에 실행
+    public void scheduleStatisticsSave() {
         try {
             Map<String, Object> statistics = historyService.collectStatistics();
             historyService.saveStatistics(statistics);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 오늘 방문자 수 0부터 시작
+    @Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행
+    public void scheduleTrafficReset() {
+        try {
+            trafficInterceptor.resetTrafficCount();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.admin.controller;
 
 import com.team2.resumeeditorproject.admin.service.AdminService;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
+import com.team2.resumeeditorproject.admin.service.TrafficService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class AdminController {
 
     private final AdminService adminService;
     private final HistoryService historyService;
+    private final TrafficService trafficService;
 
     /* 유저 정보에 관한 통계 */
     @GetMapping("/user")
@@ -59,7 +61,7 @@ public class AdminController {
             LocalDate start = startDate.orElse(LocalDate.now().minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
             LocalDate end = endDate.orElse(LocalDate.now()); // endDate가 주어지지 않으면 현재 날짜로 설정
 
-            Map<LocalDate, Integer> trafficData = historyService.getTrafficData(start, end);
+            Map<LocalDate, Integer> trafficData = trafficService.getTrafficData(start, end);
 
             // 트래픽 데이터가 없는 날짜에는 0을 설정
             for (LocalDate date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1)) {

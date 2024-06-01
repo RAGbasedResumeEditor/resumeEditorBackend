@@ -18,7 +18,7 @@ import java.util.Date;
 //@Where(clause="del_date is null")
 @NoArgsConstructor
 @DynamicUpdate
-public class User extends  TimeEntity {
+public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uNum;
@@ -37,11 +37,11 @@ public class User extends  TimeEntity {
     private Date inDate;
     private Date delDate;
 
-    @Enumerated(EnumType.STRING)
-    private Login login; // for social login
+   // @Enumerated(EnumType.STRING)
+   // private Login login; // for social login
 
     @Builder
-    public User(Long uNum, String email, String username, String password, String role, int age, String birthDate, char gender, String company, String occupation, String wish, int status, int mode, Date inDate, Date delDate, Login login) {
+    public User(Long uNum, String email, String username, String password, String role, int age, String birthDate, char gender, String company, String occupation, String wish, int status, int mode, Date inDate, Date delDate) {
         this.uNum = uNum;
         this.email = email;
         this.username=username;
@@ -57,20 +57,5 @@ public class User extends  TimeEntity {
         this.mode = mode;
         this.inDate = inDate;
         this.delDate = delDate;
-        this.login=login;
-    }
-
-    public void modify(String username, String password){
-        this.username=username;
-        this.password=password;
-    }
-
-    public User updateModifiedDate(){
-        this.onPreUpdate();
-        return this;
-    }
-
-    public String getRoleValue(){
-        return this.login.getValue();
     }
 }

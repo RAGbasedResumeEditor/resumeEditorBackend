@@ -8,7 +8,6 @@ import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -24,12 +23,12 @@ import java.util.*;
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JWTUtil2 jwtUtil;
+    private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
     private final RefreshRepository refreshRepository;
     private final TrafficInterceptor trafficInterceptor;
 
-    public CustomSuccessHandler(JWTUtil2 jwtUtil, UserRepository userRepository, RefreshRepository refreshRepository
+    public CustomSuccessHandler(JWTUtil jwtUtil, UserRepository userRepository, RefreshRepository refreshRepository
     , TrafficInterceptor trafficInterceptor) {
         this.jwtUtil = jwtUtil;
         this.userRepository=userRepository;
@@ -45,7 +44,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
         //로그인 username 추출
-        String username = customUserDetails.getUsername();
+        String username = customUserDetails.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -80,6 +79,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }catch(IOException e){
             e.printStackTrace();
         }
+
         // 로그인 성공 시 redirect할 주소
         response.sendRedirect("https://www.reditor.me/main/resume");
     }

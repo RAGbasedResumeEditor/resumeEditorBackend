@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.user.config;
 
 import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.Jwt.*;
+import com.team2.resumeeditorproject.user.OAuth2.CustomSuccessHandler;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.CustomOAuth2UserService;
@@ -39,12 +40,13 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final TrafficInterceptor trafficInterceptor;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
                           RefreshRepository refreshRepository, UserRepository userRepository,
                           CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
                           UserDetailsService userDetailsService, TrafficInterceptor trafficInterceptor,
-                          CustomOAuth2UserService customOAuth2UserService) {
+                          CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
@@ -54,6 +56,7 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
         this.trafficInterceptor = trafficInterceptor;
         this.customOAuth2UserService=customOAuth2UserService;
+        this.customSuccessHandler=customSuccessHandler;
     }
     //AuthenticationManager Bean 등록
     @Bean
@@ -148,11 +151,12 @@ public class SecurityConfig {
         //social login
         http
                 .oauth2Login((oauth2)->oauth2
-                        .loginPage("/oauth2/authorization/naver") // 권한 접근 실패 시 로그인 페이지로 이동
+                    //    .loginPage("/oauth2/authorization/naver") // 커스텀 로그인 페이지 요청 uri
                         .defaultSuccessUrl("https://www.reditor.me/main/resume")// 로그인 성공 시 이동할 페이지
                         .failureUrl("https://www.reditor.me/") // 로그인 실패 시 이동할 페이지
-                        .userInfoEndpoint(userinfoEndpoint -> userinfoEndpoint
-                                .userService(customOAuth2UserService)));
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig.userService(customOAuth2UserService))// 데이터를 받는 userDetailsService 등록
+                        .successHandler(customSuccessHandler)
+                );
         return http.build();
     }
 

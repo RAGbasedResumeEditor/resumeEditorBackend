@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.user.dto;
 
-import com.team2.resumeeditorproject.user.domain.Login;
 import lombok.Data;
 import lombok.Setter;
 
@@ -25,7 +24,6 @@ public class UserDTO {
     private Date delDate;
     private String authCode;
 
-    private Login login;
     // 스네이크로 바꿔보고 안되면?
     // 첨삭횟수 설정 메서드
     @Setter

@@ -31,7 +31,7 @@ public class SchedulerConfig {
     private final TrafficInterceptor trafficInterceptor;
 
     // 트래픽 데이터 저장
-    @Scheduled(cron = "0 59 23 * * ?") //매일 오후 11시 59분 00초에 실행
+    @Scheduled(cron = "0 0 0 * * ?") // 자정
     public void scheduleTrafficSave() {
         try {
             // edit_count 업데이트

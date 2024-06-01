@@ -2,8 +2,10 @@ package com.team2.resumeeditorproject.user.config;
 
 import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.Jwt.*;
+import com.team2.resumeeditorproject.user.OAuth2.CustomSuccessHandler;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
+import com.team2.resumeeditorproject.user.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,11 +39,14 @@ public class SecurityConfig {
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     private final UserDetailsService userDetailsService;
     private final TrafficInterceptor trafficInterceptor;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
                           RefreshRepository refreshRepository, UserRepository userRepository,
                           CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
-                          UserDetailsService userDetailsService, TrafficInterceptor trafficInterceptor) {
+                          UserDetailsService userDetailsService, TrafficInterceptor trafficInterceptor,
+                          CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
@@ -50,6 +55,8 @@ public class SecurityConfig {
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
         this.userDetailsService = userDetailsService;
         this.trafficInterceptor = trafficInterceptor;
+        this.customOAuth2UserService=customOAuth2UserService;
+        this.customSuccessHandler=customSuccessHandler;
     }
     //AuthenticationManager Bean 등록
     @Bean
@@ -121,6 +128,8 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // access토큰이 만료된 상태로 접근을 하기 때문에 로그인자체가 불가능한 상태 이므로 모든 경로 허용
                         .requestMatchers("/reissue").permitAll()
+                        // OAuth2 로그인 경로 허용
+                        .requestMatchers("/oauth2/**","/login/**").permitAll()
                         // 그외 요청은 로그인 사용자만 접근 가능
                         .anyRequest().authenticated());
 
@@ -139,7 +148,15 @@ public class SecurityConfig {
         http
                 .sessionManagement((session)->session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+        //social login
+        http
+                .oauth2Login((oauth2)->oauth2
+                    //    .loginPage("/oauth2/authorization/naver") // 커스텀 로그인 페이지 요청 uri (controller)
+                        .defaultSuccessUrl("https://www.reditor.me/main/resume")// 로그인 성공 시 이동할 페이지
+                        .failureUrl("https://www.reditor.me/") // 로그인 실패 시 이동할 페이지
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig.userService(customOAuth2UserService))// 데이터를 받는 userDetailsService 등록
+                        .successHandler(customSuccessHandler) // 로그인 성공 시 jwt handling
+                );
         return http.build();
     }
 

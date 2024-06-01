@@ -18,7 +18,7 @@ import java.util.Date;
 //@Where(clause="del_date is null")
 @NoArgsConstructor
 @DynamicUpdate
-public class User {
+public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uNum;
@@ -36,6 +36,9 @@ public class User {
     private int mode;
     private Date inDate;
     private Date delDate;
+
+   // @Enumerated(EnumType.STRING)
+   // private Login login; // for social login
 
     @Builder
     public User(Long uNum, String email, String username, String password, String role, int age, String birthDate, char gender, String company, String occupation, String wish, int status, int mode, Date inDate, Date delDate) {

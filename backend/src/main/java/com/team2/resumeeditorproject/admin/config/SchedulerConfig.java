@@ -42,7 +42,7 @@ public class SchedulerConfig {
     }
 
     // 트래픽 수집 및 저장
-    @Scheduled(cron = "0 0 2 * * ?")  // 매일 새벽2시에 실행
+    @Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Seoul")  // 매일 새벽2시에 실행
     public void scheduleStatisticsSave() {
         try {
             Map<String, Object> statistics = historyService.collectStatistics();
@@ -65,7 +65,7 @@ public class SchedulerConfig {
      */
 
     // 만료 토큰 삭제
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
     public void deleteExpiredTokens() {
         try {
             refreshService.deleteExpiredTokens();

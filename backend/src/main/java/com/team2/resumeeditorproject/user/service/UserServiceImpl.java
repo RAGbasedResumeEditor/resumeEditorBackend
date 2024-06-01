@@ -50,27 +50,6 @@ public class UserServiceImpl implements UserService{
     public Boolean checkUsernameDuplicate(String username) {
         return userRepository.existsByUsername(username);
     }
-
-    //for social login
-    public void login(UserDTO userDto){
-    }
-
-    @Transactional
-    public void userLogin(UserDTO userDto){
-        if(userDto.getPassword()!=null){
-            login(userDto);
-        }else{
-            naverLogin(userDto);
-        }
-    }
-    public void naverLogin(UserDTO userDto){
-        Boolean isExists=userRepository.existsByEmail(userDto.getEmail());
-        if(isExists){
-            return;
-        }
-    }
-
-
     /* eunbi */
     @Override
     @Transactional

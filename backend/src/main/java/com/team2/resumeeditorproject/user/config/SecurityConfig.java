@@ -151,11 +151,11 @@ public class SecurityConfig {
         //social login
         http
                 .oauth2Login((oauth2)->oauth2
-                    //    .loginPage("/oauth2/authorization/naver") // 커스텀 로그인 페이지 요청 uri
+                    //    .loginPage("/oauth2/authorization/naver") // 커스텀 로그인 페이지 요청 uri (controller)
                         .defaultSuccessUrl("https://www.reditor.me/main/resume")// 로그인 성공 시 이동할 페이지
                         .failureUrl("https://www.reditor.me/") // 로그인 실패 시 이동할 페이지
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig.userService(customOAuth2UserService))// 데이터를 받는 userDetailsService 등록
-                        .successHandler(customSuccessHandler)
+                        .successHandler(customSuccessHandler) // 로그인 성공 시 jwt handling
                 );
         return http.build();
     }

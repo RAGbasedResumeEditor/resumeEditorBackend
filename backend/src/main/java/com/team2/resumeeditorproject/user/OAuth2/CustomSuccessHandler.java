@@ -37,7 +37,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+
         // 로그인 시 트래픽 카운트 증가
         trafficInterceptor.incrementTrafficCount();
 
@@ -45,7 +46,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
         //로그인 username 추출
         String username = customUserDetails.getName();
-
+        //로그인 role 추출
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
@@ -63,7 +64,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //Refresh 토큰 DB 저장
         addRefreshEntity(username, refresh, 1209600000L); //생명주기 2주
 
-        //응답 설정
+        //응답 설정 (Header로 전달)
         response.setHeader("access", access);
         response.setHeader("refresh", refresh);
         response.setStatus(HttpStatus.OK.value()); //200
@@ -79,9 +80,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }catch(IOException e){
             e.printStackTrace();
         }
-
-        // 로그인 성공 시 redirect할 주소
-        response.sendRedirect("https://www.reditor.me/main/resume");
     }
 
     // refresh토큰을 DB에 저장하여 관리하기 위한 메서드

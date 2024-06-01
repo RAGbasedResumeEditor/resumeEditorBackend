@@ -26,6 +26,6 @@ public interface RefreshRepository extends JpaRepository<Refresh, Long> {
     @Modifying
     @Query(value = "DELETE FROM refresh WHERE " +
             "(STR_TO_DATE(rt.expiration, '%a %b %d %H:%i:%s KST %Y') < NOW()) " +
-            "OR (STR_TO_DATE(rt.expiration, '%a %b %d %H:%i:%s UTC %Y') < NOW())", nativeQuery = true)
+            "OR (STR_TO_DATE(rt.expiration, '%a %b %d %H:%i:%s UTC %Y') < UTC_TIMESTAMP())", nativeQuery = true)
     void deleteExpiredTokens();
 }

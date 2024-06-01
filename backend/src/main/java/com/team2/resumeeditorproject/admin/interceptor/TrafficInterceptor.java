@@ -39,17 +39,7 @@ public class TrafficInterceptor implements HandlerInterceptor {
         return trafficCounter.get();
     }
 
-    /*
     public void resetTrafficCnt() {
         trafficCounter.set(0);
-    }
-     */
-    public void resetTrafficCount() {
-        Traffic traffic = trafficRepository.findByInDate(LocalDate.now());
-        if (traffic != null) {
-            traffic.setVisitCount(0);
-            traffic.setEditCount(0);
-            trafficRepository.save(traffic);
-        }
     }
 }

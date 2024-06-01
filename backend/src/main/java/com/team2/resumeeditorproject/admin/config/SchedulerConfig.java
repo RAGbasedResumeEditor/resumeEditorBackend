@@ -30,17 +30,12 @@ public class SchedulerConfig {
 
     private final TrafficInterceptor trafficInterceptor;
 
-    // 트래픽 데이터 저장
-    @Scheduled(cron = "0 0 0 * * ?") // 자정
+    // 첨삭수 traffic 테이블에 저장
+    @Scheduled(cron = "0 59 23 * * ?") // 매일 오후 11시 59분 0초에 실행
     public void scheduleTrafficSave() {
         try {
             // edit_count 업데이트
             trafficService.updateEditCountForToday();
-
-            Traffic todayTraffic = trafficService.getTraffic(LocalDate.now());
-            if (todayTraffic != null) {
-                trafficService.saveTraffic(todayTraffic.getVisitCount(), todayTraffic.getEditCount());
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,6 +52,7 @@ public class SchedulerConfig {
         }
     }
 
+    /*
     // 트래픽 리셋
     @Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행
     public void scheduleTrafficReset() {
@@ -66,6 +62,7 @@ public class SchedulerConfig {
             e.printStackTrace();
         }
     }
+     */
 
     // 만료 토큰 삭제
     @Scheduled(cron = "0 0 0 * * ?")

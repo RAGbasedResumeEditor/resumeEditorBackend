@@ -25,7 +25,7 @@ public class TrafficServiceImpl implements TrafficService{
         Traffic traffic = new Traffic();
         traffic.setVisitCount(visitCount);
         traffic.setEditCount(editCount);
-        traffic.setInDate(LocalDate.now());
+        traffic.setInDate(LocalDate.now().minusDays(1)); // 어제 날짜로 저장);
         trafficRepository.save(traffic);
     }
 
@@ -74,11 +74,13 @@ public class TrafficServiceImpl implements TrafficService{
     @Override
     public void updateEditCountForToday() {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        // 당일 첨삭 수
         int editCount = resumeRepository.findRNumByCurrentDate(currentDate);
 
         LocalDate today = LocalDate.now();
         Traffic traffic = trafficRepository.findByInDate(today);
 
+        // 당일 데이터가 이미 존재하는 경우(로그인에 의해 이미 존재할 것임)
         if (traffic != null) {
             traffic.setEditCount(editCount);
             trafficRepository.save(traffic);

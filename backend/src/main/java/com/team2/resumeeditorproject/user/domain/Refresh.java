@@ -1,11 +1,10 @@
 package com.team2.resumeeditorproject.user.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Entity
 @Getter
@@ -18,6 +17,8 @@ public class  Refresh {
 
     private String username;
     private String refresh;
-    private String expiration;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expiration;
 
 }

@@ -109,13 +109,10 @@ public class ReissueController {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String formattedExpirationDate = sdf.format(date);
-
         Refresh refreshEntity = new Refresh();
         refreshEntity.setUsername(username);
         refreshEntity.setRefresh(refresh);
-        refreshEntity.setExpiration(formattedExpirationDate);
+        refreshEntity.setExpiration(date);
 
         refreshRepository.save(refreshEntity);
         //=>토큰을 생성하고 난 이후에 값 저장

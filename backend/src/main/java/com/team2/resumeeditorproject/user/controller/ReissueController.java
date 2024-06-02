@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,14 +103,17 @@ public class ReissueController {
     }
 
     // refresh토큰을 DB에 저장하여 관리하기 위한 메서드
-    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
+    private synchronized void addRefreshEntity(String username, String refresh, Long expiredMs) {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedExpirationDate = sdf.format(date);
 
         Refresh refreshEntity = new Refresh();
         refreshEntity.setUsername(username);
         refreshEntity.setRefresh(refresh);
-        refreshEntity.setExpiration(date.toString());
+        refreshEntity.setExpiration(formattedExpirationDate);
 
         refreshRepository.save(refreshEntity);
         //=>토큰을 생성하고 난 이후에 값 저장

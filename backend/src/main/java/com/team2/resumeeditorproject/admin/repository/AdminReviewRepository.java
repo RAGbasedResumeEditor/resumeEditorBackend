@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.admin.repository;
 
-import com.team2.resumeeditorproject.admin.domain.Review;
+import com.team2.resumeeditorproject.review.domain.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

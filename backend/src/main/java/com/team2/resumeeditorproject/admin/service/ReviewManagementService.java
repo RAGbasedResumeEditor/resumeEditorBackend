@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.team2.resumeeditorproject.admin.domain.Review;
+
+import com.team2.resumeeditorproject.review.domain.Review;
 import org.springframework.data.domain.Page;
 
 public interface ReviewManagementService {

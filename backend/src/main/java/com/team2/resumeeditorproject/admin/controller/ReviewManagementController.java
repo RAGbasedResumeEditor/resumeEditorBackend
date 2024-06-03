@@ -1,9 +1,9 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.domain.Review;
-import com.team2.resumeeditorproject.admin.dto.ReviewDTO;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
 import com.team2.resumeeditorproject.exception.BadRequestException;
+import com.team2.resumeeditorproject.review.domain.Review;
+import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +39,8 @@ public class ReviewManagementController {
         List<ReviewDTO> rvDtoList = new ArrayList<>();
         for (Review rv : rvList) {
             ReviewDTO rvDto = new ReviewDTO();
-            rvDto.setRv_num(rv.getRv_num());
-            rvDto.setU_num(rv.getU_num());
+            rvDto.setRvNum(rv.getRvNum());
+            rvDto.setUNum(rv.getUNum());
             rvDto.setContent(rv.getContent());
             rvDto.setRating(rv.getRating());
             rvDto.setMode(rv.getMode());
@@ -69,8 +69,8 @@ public class ReviewManagementController {
             List<ReviewDTO> rvDtoList = new ArrayList<>();
             for (Review rv : rvList) {
                 ReviewDTO rvDto = new ReviewDTO();
-                rvDto.setRv_num(rv.getRv_num());
-                rvDto.setU_num(rv.getU_num());
+                rvDto.setRvNum(rv.getRvNum());
+                rvDto.setUNum(rv.getUNum());
                 rvDto.setContent(rv.getContent());
                 rvDto.setRating(rv.getRating());
                 rvDto.setMode(rv.getMode());

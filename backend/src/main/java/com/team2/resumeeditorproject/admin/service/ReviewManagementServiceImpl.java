@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.team2.resumeeditorproject.admin.domain.Review;
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
+import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

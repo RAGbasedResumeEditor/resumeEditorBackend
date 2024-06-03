@@ -1,9 +1,9 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.domain.Review;
 import com.team2.resumeeditorproject.admin.dto.ReviewDTO;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
 import com.team2.resumeeditorproject.exception.BadRequestException;
+import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,6 @@ import java.util.Map;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createPagedResponse;
 
@@ -43,8 +42,8 @@ public class ReviewManagementController {
         List<ReviewDTO> rvDtoList = new ArrayList<>();
         for (Review rv : rvList) {
             ReviewDTO rvDto = new ReviewDTO();
-            rvDto.setRv_num(rv.getRv_num());
-            rvDto.setU_num(rv.getU_num());
+            rvDto.setRv_num(rv.getRvNum());
+            rvDto.setU_num(rv.getUNum());
             rvDto.setContent(rv.getContent());
             rvDto.setRating(rv.getRating());
             rvDto.setMode(rv.getMode());
@@ -73,8 +72,8 @@ public class ReviewManagementController {
             List<ReviewDTO> rvDtoList = new ArrayList<>();
             for (Review rv : rvList) {
                 ReviewDTO rvDto = new ReviewDTO();
-                rvDto.setRv_num(rv.getRv_num());
-                rvDto.setU_num(rv.getU_num());
+                rvDto.setRv_num(rv.getRvNum());
+                rvDto.setU_num(rv.getUNum());
                 rvDto.setContent(rv.getContent());
                 rvDto.setRating(rv.getRating());
                 rvDto.setMode(rv.getMode());
@@ -103,17 +102,12 @@ public class ReviewManagementController {
             }
             response.put("time", new Date());
             return ResponseEntity.ok(response);
-        }catch(Exception e){
+        } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("response", "Failed to selected : "+ e.getMessage());
+            errorResponse.put("response", "Failed to selected : " + e.getMessage());
             errorResponse.put("time", new Date());
             errorResponse.put("status", "Fail");
             return ResponseEntity.badRequest().body(errorResponse);
         }
-
-    public ResponseEntity<?> selectReview(@RequestParam("rvNum") Long rvNum) {
-        reviewService.selectReview(rvNum);
-        return ResponseEntity.ok("Review selected successfully");
-
     }
 }

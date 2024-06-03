@@ -40,7 +40,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     @Override
     @Transactional(readOnly = true)
     public Page<Review> getAllReviews(int page){
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("rvNum").descending());
         Page<Review> pageResult = reviewRepository.findAll(pageable);
         return pageResult;
     }

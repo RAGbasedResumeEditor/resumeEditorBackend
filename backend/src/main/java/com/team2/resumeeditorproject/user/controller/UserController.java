@@ -2,10 +2,12 @@ package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.exception.DelDateException;
+import com.team2.resumeeditorproject.resume.domain.Occupation;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
+import com.team2.resumeeditorproject.resume.repository.OccupationRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
@@ -16,7 +18,6 @@ import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
-import com.team2.resumeeditorproject.user.service.OccupationListService;
 import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
@@ -65,7 +65,7 @@ public class UserController extends HttpServlet {
     private ModelMapper modelMapper;
 
     @Autowired
-    private OccupationListService occupationService;
+    private OccupationRepository occupationRepository;
 
 
     public static String getUsername() {
@@ -74,18 +74,25 @@ public class UserController extends HttpServlet {
         return userDetails.getUsername();
     }
 
-    // 직종 목록 가져오기
-    /*
-    @GetMapping("/user/occupations")
-    public ResponseEntity<Map<String,Object>> getAllOccupations() {
+    // 직종 검색하여 가져오기
+    @GetMapping("/signup/load/{occupation}")
+    public ResponseEntity<Map<String, Object>> loadOccupation(@PathVariable("occupation")  String occupation) {
         Map<String, Object> response = new HashMap<>();
-        List<String> occupations = occupationService.getAllOccupations().stream()
-                .map(Occupation::getOccupation)
-                .collect(Collectors.toList());
-        response.put("occupations", occupations);
-        return ResponseEntity.ok(Map.of("response", response, "status", "Success"));
+        try {
+            List<Occupation> existingOccupation = occupationRepository.findByOccupationContaining(occupation);
+            if (existingOccupation != null && !existingOccupation.isEmpty()) {
+                response.put("status","Success");
+                response.put("occupationList", existingOccupation);
+
+            } else {
+                response.put("status", "Not found");
+            }
+        } catch (Exception e) {
+            response.put("status", "Error");
+            response.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(response);
     }
-     */
 
     //회원가입
     @PostMapping(value="/signup")

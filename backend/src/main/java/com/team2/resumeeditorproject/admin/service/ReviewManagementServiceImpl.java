@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,6 +54,11 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("rvNum").descending());
         Page<Review> pageResult = reviewRepository.findByShow(pageable);
         return pageResult;
-        }
     }
+
+    @Override
+    public List<Review> getVisibleReviews() {
+        return reviewRepository.findAllByShow(true);
+    }
+}
 

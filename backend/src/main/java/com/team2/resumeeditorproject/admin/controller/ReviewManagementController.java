@@ -90,10 +90,10 @@ public class ReviewManagementController {
             Map<String, Object> response = new HashMap<>();
             if (reviewService.selectReview(rvNum)) {
                 response.put("response", "Review selected successfully");
-                response.put("status", "success");
+                response.put("status", "Success");
             } else {
                 response.put("response", "Already selected");
-                response.put("status", "fail");
+                response.put("status", "Fail");
             }
             response.put("time", new Date());
             return ResponseEntity.ok(response);

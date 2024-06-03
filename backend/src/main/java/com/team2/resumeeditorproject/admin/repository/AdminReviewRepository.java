@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface AdminReviewRepository extends JpaRepository<Review, Long> {
@@ -14,5 +16,7 @@ public interface AdminReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r FROM Review r WHERE r.show=true")
     Page<Review> findByShow(Pageable pageable);
+
+    List<Review> findAllByShow(boolean show);
 
 }

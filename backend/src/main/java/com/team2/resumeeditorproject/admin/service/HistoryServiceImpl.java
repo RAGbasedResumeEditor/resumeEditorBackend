@@ -10,11 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -240,6 +238,32 @@ public class HistoryServiceImpl implements HistoryService{
 
         // 날짜별로 정렬된 맵 반환
         return new TreeMap<>(dailyRegistrations);
+    }
+
+    /* 월별 회원가입 집계 */
+    @Override
+    public Map<LocalDate, Integer> getMonthlyUserRegistrations(YearMonth yearMonth) {
+        Map<LocalDate, Integer> monthlySignupData = new TreeMap<>();
+
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
+
+        List<User> signupList = userRepository.findByInDateBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+
+        // 해당 월의 각 날짜에 대한 회원가입 데이터 집계
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            final LocalDate currentDate = date;
+
+            // 해당 날짜에 대한 회원가입 수 계산
+            int signupCount = (int) signupList.stream()
+                    .filter(user -> {
+                        LocalDate userDate = user.getInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                        return userDate.isEqual(currentDate);
+                    })
+                    .count();
+            monthlySignupData.put(currentDate, signupCount);
+        }
+        return monthlySignupData;
     }
 
     /* 총 첨삭 수 */

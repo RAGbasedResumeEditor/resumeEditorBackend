@@ -17,7 +17,7 @@ import java.sql.Date;
 @Getter
 @Entity
 @Table(name="resume_board")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class ResumeBoard {
     @Id

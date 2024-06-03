@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -78,6 +80,34 @@ public class AdminController {
         }
     }
 
+    // 월별 접속자 집계
+    @GetMapping("/user/traffic/monthly")
+    public ResponseEntity<Map<String, Object>> getMonthlyTrafficStatistics(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> startDate){
+        try {
+            Map<String, Object> result = new LinkedHashMap<>();
+
+            YearMonth start = startDate.orElse(YearMonth.now()); // startDate가 주어지지 않으면 현재 달로 설정
+            LocalDate startLocalDate = start.atDay(1);
+            LocalDate endLocalDate = start.atEndOfMonth();
+
+            Map<LocalDate, Integer> dailyTrafficData = trafficService.getTrafficData(startLocalDate, endLocalDate);
+
+            // 트래픽 데이터가 없는 날짜에는 0을 설정
+            for (LocalDate date = startLocalDate; !date.isAfter(endLocalDate); date = date.plusDays(1)) {
+                dailyTrafficData.putIfAbsent(date, 0);
+            }
+
+            Map<LocalDate, Integer> sortedDailyTrafficData = new TreeMap<>(dailyTrafficData);
+
+            result.put("traffic_data", sortedDailyTrafficData);
+
+            return createResponse(result);
+        } catch (Exception e) {
+            return createBadReqResponse(e.getMessage());
+        }
+    }
+
     // 일별 회원가입 집계
     @GetMapping("/user/signup")
     public ResponseEntity<Map<String,Object>> getSignupStatistics(
@@ -102,6 +132,25 @@ public class AdminController {
 
             return createResponse(result);
         }catch(Exception e){
+            return createBadReqResponse(e.getMessage());
+        }
+    }
+
+    // 월별 회원가입 집계
+    @GetMapping("/user/signup/monthly")
+    public ResponseEntity<Map<String, Object>> getMonthlySignupStatistics(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
+        try {
+            Map<String, Object> result = new LinkedHashMap<>();
+
+            YearMonth selectedYearMonth = yearMonth != null ? yearMonth : YearMonth.now();
+
+            Map<LocalDate, Integer> monthlySignupData = historyService.getMonthlyUserRegistrations(selectedYearMonth);
+
+            result.put("signup_data", monthlySignupData);
+
+            return createResponse(result);
+        } catch (Exception e) {
             return createBadReqResponse(e.getMessage());
         }
     }

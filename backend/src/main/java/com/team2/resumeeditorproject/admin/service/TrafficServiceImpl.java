@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,27 @@ public class TrafficServiceImpl implements TrafficService{
     // 일별 접속자 집계
     @Override
     public Map<LocalDate, Integer> getTrafficData(LocalDate startDate, LocalDate endDate) {
+        Map<LocalDate, Integer> trafficData = new HashMap<>();
+
+        List<Traffic> trafficList = trafficRepository.findByInDateBetween(startDate, endDate);
+
+        // 시작일부터 종료일까지의 각 날짜에 대한 트래픽 데이터 집계
+        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
+            final LocalDate currentDate = date;
+
+            // 해당 날짜에 대한 방문자 수 계산
+            int visitCount = trafficList.stream()
+                    .filter(traffic -> traffic.getInDate().isEqual(currentDate))
+                    .mapToInt(Traffic::getVisitCount)
+                    .sum();
+            trafficData.put(date, visitCount);
+        }
+
+        return trafficData;
+    }
+
+    @Override
+    public Map<LocalDate, Integer> getMonthlyTrafficData(LocalDate startDate, LocalDate endDate) {
         Map<LocalDate, Integer> trafficData = new HashMap<>();
 
         List<Traffic> trafficList = trafficRepository.findByInDateBetween(startDate, endDate);

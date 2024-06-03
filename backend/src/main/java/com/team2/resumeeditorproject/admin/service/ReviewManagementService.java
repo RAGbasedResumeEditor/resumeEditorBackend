@@ -7,4 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ReviewManagementService {
     @Transactional(readOnly = true)
     Page<Review> getAllShows(int page);
+
+    void selectReview(Long rvNum);
 }

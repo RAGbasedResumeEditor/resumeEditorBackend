@@ -6,19 +6,17 @@ import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
-import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.resume.service.ResumeService;
 import com.team2.resumeeditorproject.exception.BadRequestException;
-import com.team2.resumeeditorproject.user.domain.Occupation;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
-import com.team2.resumeeditorproject.user.service.OccupationService;
+import com.team2.resumeeditorproject.user.service.OccupationListService;
 import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +34,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -70,7 +65,7 @@ public class UserController extends HttpServlet {
     private ModelMapper modelMapper;
 
     @Autowired
-    private OccupationService occupationService;
+    private OccupationListService occupationService;
 
 
     public static String getUsername() {
@@ -80,6 +75,7 @@ public class UserController extends HttpServlet {
     }
 
     // 직종 목록 가져오기
+    /*
     @GetMapping("/user/occupations")
     public ResponseEntity<Map<String,Object>> getAllOccupations() {
         Map<String, Object> response = new HashMap<>();
@@ -89,6 +85,7 @@ public class UserController extends HttpServlet {
         response.put("occupations", occupations);
         return ResponseEntity.ok(Map.of("response", response, "status", "Success"));
     }
+     */
 
     //회원가입
     @PostMapping(value="/signup")

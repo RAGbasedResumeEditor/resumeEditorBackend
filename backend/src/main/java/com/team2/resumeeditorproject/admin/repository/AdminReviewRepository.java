@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AdminReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query("SELECT r FROM Review r WHERE r.show=1 ORDER BY r.w_date DESC")
+    @Query("SELECT r FROM Review r WHERE r.show=true")
     Page<Review> findByShow(Pageable pageable);
 
 }

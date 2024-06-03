@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -23,11 +24,16 @@ import static com.team2.resumeeditorproject.admin.service.ResponseHandler.create
 @RequiredArgsConstructor
 public class ReviewManagementController {
 
-    private final ReviewManagementService reviewManagementService;
+    private final ReviewManagementService reviewService;
 
     @GetMapping("/review/show")
     public ResponseEntity<Map<String, Object>> getShowReviews(@RequestParam("page") int page){
-            Page<Review> rvList =reviewManagementService.getAllShows(page);
+
+            if(page<0){
+                page=0;
+            }
+
+            Page<Review> rvList =reviewService.getAllShows(page);
             int totalPage=rvList.getTotalPages();
 
             List<ReviewDTO> rvDtoList = new ArrayList<>();
@@ -43,5 +49,12 @@ public class ReviewManagementController {
             }
 
         return createPagedResponse(totalPage,rvDtoList);
+    }
+
+    @PostMapping("/select")
+    public ResponseEntity<?> selectReview(@RequestParam("rvNum") Long rvNum) {
+        reviewService.selectReview(rvNum);
+        return ResponseEntity.ok("Review selected successfully");
+
     }
 }

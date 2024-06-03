@@ -20,7 +20,6 @@ public class Review {
     private int rating;
     private int mode;
     private Date w_date;
-
-    @Column(name = "'show'")
-    private boolean show;
+    @Column(name="`show`")
+    private boolean show = false;
 }

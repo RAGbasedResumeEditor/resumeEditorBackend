@@ -30,17 +30,17 @@ public class ReviewManagementController {
             Page<Review> rvList =reviewManagementService.getAllShows(page);
             int totalPage=rvList.getTotalPages();
 
-        List<ReviewDTO> rvDtoList = new ArrayList<>();
-        for (Review rv : rvList) {
-            ReviewDTO rvDto = new ReviewDTO();
-            rvDto.setRv_num(rv.getRv_num());
-            rvDto.setU_num(rv.getU_num());
-            rvDto.setContent(rv.getContent());
-            rvDto.setRating(rv.getRating());
-            rvDto.setMode(rv.getMode());
-            rvDto.setW_date(rv.getW_date());
-            rvDtoList.add(rvDto);
-        }
+            List<ReviewDTO> rvDtoList = new ArrayList<>();
+            for (Review rv : rvList) {
+                ReviewDTO rvDto = new ReviewDTO();
+                rvDto.setRv_num(rv.getRv_num());
+                rvDto.setU_num(rv.getU_num());
+                rvDto.setContent(rv.getContent());
+                rvDto.setRating(rv.getRating());
+                rvDto.setMode(rv.getMode());
+                rvDto.setW_date(rv.getW_date());
+                rvDtoList.add(rvDto);
+            }
 
         return createPagedResponse(totalPage,rvDtoList);
     }

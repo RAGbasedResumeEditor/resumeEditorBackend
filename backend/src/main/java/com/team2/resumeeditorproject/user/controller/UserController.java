@@ -12,11 +12,13 @@ import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.resume.service.ResumeService;
 import com.team2.resumeeditorproject.exception.BadRequestException;
+import com.team2.resumeeditorproject.user.domain.Occupation;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
+import com.team2.resumeeditorproject.user.service.OccupationService;
 import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
@@ -66,11 +69,25 @@ public class UserController extends HttpServlet {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private OccupationService occupationService;
+
 
     public static String getUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return userDetails.getUsername();
+    }
+
+    // 직종 목록 가져오기
+    @GetMapping("/user/occupations")
+    public ResponseEntity<Map<String,Object>> getAllOccupations() {
+        Map<String, Object> response = new HashMap<>();
+        List<String> occupations = occupationService.getAllOccupations().stream()
+                .map(Occupation::getOccupation)
+                .collect(Collectors.toList());
+        response.put("occupations", occupations);
+        return ResponseEntity.ok(Map.of("response", response, "status", "Success"));
     }
 
     //회원가입

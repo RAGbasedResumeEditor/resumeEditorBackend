@@ -18,6 +18,14 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<Review> getAllReviews(int page){
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Review> pageResult = reviewRepository.findAll(pageable);
+        return pageResult;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<Review> getAllShows(int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("rv_num").descending());
         Page<Review> pageResult = reviewRepository.findByShow(pageable);

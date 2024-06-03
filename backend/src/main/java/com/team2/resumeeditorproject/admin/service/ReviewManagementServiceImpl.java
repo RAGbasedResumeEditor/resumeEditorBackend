@@ -1,20 +1,42 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import com.team2.resumeeditorproject.admin.domain.Review;
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ReviewManagementServiceImpl implements ReviewManagementService{
+@RequiredArgsConstructor
+public class ReviewManagementServiceImpl implements  ReviewManagementService {
 
-    @Autowired
-    AdminReviewRepository reviewRepository;
+    private final AdminReviewRepository reviewRepository;
 
     @Override
-    public void selectReview(Long rvNum) {
-        reviewRepository.findById(rvNum).ifPresent(review -> {
-            review.setShow(true);
-            reviewRepository.save(review);
-        });
+    @Transactional(readOnly = true)
+    public Page<Review> getAllReviews(int page){
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Review> pageResult = reviewRepository.findAll(pageable);
+        return pageResult;
     }
-}
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Review> getAllShows(int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("rv_num").descending());
+        Page<Review> pageResult = reviewRepository.findByShow(pageable);
+        return pageResult;
+    }
+
+        @Override
+        public void selectReview (Long rvNum){
+            reviewRepository.findById(rvNum).ifPresent(review -> {
+                review.setShow(true);
+                reviewRepository.save(review);
+            });
+        }
+    }

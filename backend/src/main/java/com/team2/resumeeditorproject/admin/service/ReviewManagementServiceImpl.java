@@ -1,9 +1,7 @@
 package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
-
 import com.team2.resumeeditorproject.exception.BadRequestException;
-
 import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,7 +41,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     @Override
     @Transactional(readOnly = true)
     public Page<Review> getAllReviews(int page){
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("rvNum").descending());
         Page<Review> pageResult = reviewRepository.findAll(pageable);
         return pageResult;
     }

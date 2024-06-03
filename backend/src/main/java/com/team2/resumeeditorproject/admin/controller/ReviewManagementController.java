@@ -1,9 +1,9 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.team2.resumeeditorproject.admin.dto.ReviewDTO;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.review.domain.Review;
-import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -13,21 +13,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createPagedResponse;
 
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/review")
 @RequiredArgsConstructor
 public class ReviewManagementController {
 
     private final ReviewManagementService reviewService;
 
-    @GetMapping("/review/list")
+    @GetMapping("/list")
     public ResponseEntity<Map<String,Object>> getAllReviews(@RequestParam("page") int page){
         if(page<0){
             page=0;
@@ -39,8 +37,8 @@ public class ReviewManagementController {
         List<ReviewDTO> rvDtoList = new ArrayList<>();
         for (Review rv : rvList) {
             ReviewDTO rvDto = new ReviewDTO();
-            rvDto.setRvNum(rv.getRvNum());
-            rvDto.setUNum(rv.getUNum());
+            rvDto.setRv_num(rv.getRvNum());
+            rvDto.setU_num(rv.getUNum());
             rvDto.setContent(rv.getContent());
             rvDto.setRating(rv.getRating());
             rvDto.setMode(rv.getMode());
@@ -56,7 +54,7 @@ public class ReviewManagementController {
         return createPagedResponse(totalPage,rvDtoList);
     }
 
-    @GetMapping("/review/list/show")
+    @GetMapping("/list/show")
     public ResponseEntity<Map<String, Object>> getShowReviews(@RequestParam("page") int page){
 
             if(page<0){
@@ -69,8 +67,8 @@ public class ReviewManagementController {
             List<ReviewDTO> rvDtoList = new ArrayList<>();
             for (Review rv : rvList) {
                 ReviewDTO rvDto = new ReviewDTO();
-                rvDto.setRvNum(rv.getRvNum());
-                rvDto.setUNum(rv.getUNum());
+                rvDto.setRv_num(rv.getRvNum());
+                rvDto.setU_num(rv.getUNum());
                 rvDto.setContent(rv.getContent());
                 rvDto.setRating(rv.getRating());
                 rvDto.setMode(rv.getMode());
@@ -87,9 +85,24 @@ public class ReviewManagementController {
     }
 
     @PostMapping("/select")
-    public ResponseEntity<?> selectReview(@RequestParam("rvNum") Long rvNum) {
-        reviewService.selectReview(rvNum);
-        return ResponseEntity.ok("Review selected successfully");
-
+    public ResponseEntity<Map<String, Object>> selectReview(@RequestParam("rvNum") Long rvNum) {
+        try {
+            Map<String, Object> response = new HashMap<>();
+            if (reviewService.selectReview(rvNum)) {
+                response.put("response", "Review selected successfully");
+                response.put("status", "success");
+            } else {
+                response.put("response", "Already selected");
+                response.put("status", "fail");
+            }
+            response.put("time", new Date());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("response", "Failed to selected : " + e.getMessage());
+            errorResponse.put("time", new Date());
+            errorResponse.put("status", "Fail");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 }

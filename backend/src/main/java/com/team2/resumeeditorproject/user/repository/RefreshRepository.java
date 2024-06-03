@@ -24,7 +24,6 @@ public interface RefreshRepository extends JpaRepository<Refresh, Long> {
     // 만료 토큰 삭제
     @Transactional
     @Modifying
-    @Query(value = "DELETE FROM refresh r WHERE " +
-            "STR_TO_DATE(r.expiration, '%Y-%m-%d %H:%i:%s') <= NOW()", nativeQuery = true)
+    @Query(value = "DELETE FROM refresh WHERE STR_TO_DATE(expiration, '%Y-%m-%d %H:%i:%s') <= NOW() LIMIT 100", nativeQuery = true)
     void deleteExpiredTokens();
 }

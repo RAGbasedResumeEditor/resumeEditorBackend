@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +25,13 @@ import static com.team2.resumeeditorproject.admin.service.ResponseHandler.create
 
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/review")
 @RequiredArgsConstructor
 public class ReviewManagementController {
 
     private final ReviewManagementService reviewService;
 
-    @GetMapping("/review/list")
+    @GetMapping("/list")
     public ResponseEntity<Map<String,Object>> getAllReviews(@RequestParam("page") int page){
         if(page<0){
             page=0;
@@ -56,7 +60,7 @@ public class ReviewManagementController {
         return createPagedResponse(totalPage,rvDtoList);
     }
 
-    @GetMapping("/review/list/show")
+    @GetMapping("/list/show")
     public ResponseEntity<Map<String, Object>> getShowReviews(@RequestParam("page") int page){
 
             if(page<0){
@@ -87,6 +91,26 @@ public class ReviewManagementController {
     }
 
     @PostMapping("/select")
+    public ResponseEntity<Map<String, Object>> selectReview(@RequestParam("rvNum") Long rvNum) {
+        try {
+            Map<String, Object> response = new HashMap<>();
+            if (reviewService.selectReview(rvNum)) {
+                response.put("response", "Review selected successfully");
+                response.put("status", "success");
+            } else {
+                response.put("response", "Already selected");
+                response.put("status", "fail");
+            }
+            response.put("time", new Date());
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("response", "Failed to selected : "+ e.getMessage());
+            errorResponse.put("time", new Date());
+            errorResponse.put("status", "Fail");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
     public ResponseEntity<?> selectReview(@RequestParam("rvNum") Long rvNum) {
         reviewService.selectReview(rvNum);
         return ResponseEntity.ok("Review selected successfully");

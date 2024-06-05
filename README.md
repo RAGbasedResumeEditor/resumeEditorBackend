@@ -95,7 +95,8 @@
 
 ![reditor_admin_userlist](https://github.com/MinjoonHK/resumeEditorFrontend/assets/108560916/a54416a3-f7be-49d4-bc9d-194b15c900a8)
 ### [어드민 유저통계](#어드민-유저통계)
-<p>실시간으로 변하는 방문자 수를 traffic 분석을 통해 확인하고, Spring Scheduler를 활용하여 저장된 데이터를 통해 고객의 유입 통계를 확인할 수 있습니다.</p>
+<p>실시간으로 변하는 방문자 수를 traffic 분석을 통해 확인합니다.</p> 
+</p>Spring Scheduler를 활용하여 저장된 데이터를 통해 고객의 유입 통계를 확인할 수 있습니다.</p>
 <p>이렇게 저장한 정보를 시각화하여 고객 페르소나를 분석합니다.</p>
 
 ![reditor_admin_userstat](https://github.com/MinjoonHK/resumeEditorFrontend/assets/108560916/39be7a93-d9f6-47b9-96c0-becff1de0c4d)

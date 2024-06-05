@@ -149,7 +149,7 @@
 
 ### 신아진
 <ul>
-  <li><a href="https://github.com/JavaBackEnd21st/resumeEditorBackend/wiki/BE-%E2%80%90-Spring-Security,-JWTT">BE-Spring Security, JWT</a></li>
+  <li><a href="https://github.com/JavaBackEnd21st/resumeEditorBackend/wiki/BE-%E2%80%90-Spring-Security,-JWT">BE-Spring Security, JWT</a></li>
   <li><a href="https://github.com/JavaBackEnd21st/resumeEditorBackend/wiki/BE-%E2%80%90-%EC%BD%94%EB%93%9C-%EB%A6%AC%ED%8C%A9%ED%86%A0%EB%A7%81-%EB%B0%8F-%EB%B2%84%EA%B7%B8-%EC%88%98%EC%A0%95">BE-코드 리팩토링 및 버그 수정</a></li>
 </ul>
 

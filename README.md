@@ -141,7 +141,11 @@
 
 
 ### 박민준
-
+<ul>
+  
+  <li><a href="https://github.com/MinjoonHK/resumeEditorFrontend/wiki/FE-%E2%80%90-UX-%EA%B0%9C%EC%84%A0">FE-UX개선</a></li>
+  <li><a href="https://github.com/MinjoonHK/resumeEditorFrontend/wiki/FE-%E2%80%90-%EC%84%B1%EB%8A%A5-%EC%B5%9C%EC%A0%81%ED%99%94%EC%97%90-%EB%8C%80%ED%95%B4">FE-성능 최적화</li>
+</ul>
 
 ### 신아진
 

@@ -20,8 +20,17 @@
 <p>5명 모두 취업(이직)준비생으로 이루어진 팀이었기에 모두 자기소개서에 대한 관심이 많았습니다.</p>
 <p>좋은 자기소개서를 작성하기 위해 다양한 첨삭 서비스를 이용해 보았지만 결과는 만족스럽지 못하였습니다.</p>
 <p>이러한 부분을 저희가 배운 기술을 활용하여 직접 개선해 보고자 해당 프로젝트를 시작하게 되었습니다.</p>
-</br>
-</br>
+
+## ⏲️ 개발 기간
+
+2024.04 - 2024.06
+
+## 👪팀 멤버
+
+|    김상휘    |    박민준    |    신아진    |    박연경    |    안은비    |
+|:------------:|:------------:|:------------:|:------------:|:------------:|
+|<a href="https://github.com/creatub"><img src="https://avatars.githubusercontent.com/u/157783929?s=70&v=4" width="70"/></a>              |<a href="https://github.com/minjoonHK"><img src="https://avatars.githubusercontent.com/u/108560916?v=4" width="70"/></a>               | <a href="https://github.com/aaajinnn"><img src="https://avatars.githubusercontent.com/u/120112210?s=70&v=4" width="70"/></a>             |<a href="https://github.com/yg0826"> <img src="https://avatars.githubusercontent.com/u/145968727?s=70&v=4" width="70"/></a> | <a href="https://github.com/ibnuena"><img src="https://avatars.githubusercontent.com/u/71430096?s=70&v=4" width="70"/></a> |
+| 팀장 / AI    | 팀원 / Frontend | 팀원 / Backend | 팀원 / Backend | 팀원 / Backend |
 
 
 ## 📷 주요기능 소개 (❗ gif 로딩이 느릴수 있으니 조금만 기다려주세요 ❗)
@@ -71,22 +80,6 @@
 ![reditor_landing](https://github.com/MinjoonHK/resumeEditorFrontend/assets/108560916/2669efa6-b87a-40a3-bb7d-dab9d3c9d314)
 
 
-## ⏲️ 개발 기간
-
-2024.04 - 2024.06
-
-## 👪팀 멤버
-
-|    김상휘    |    박민준    |    신아진    |    박연경    |    안은비    |
-|:------------:|:------------:|:------------:|:------------:|:------------:|
-|<a href="https://github.com/creatub"><img src="https://avatars.githubusercontent.com/u/157783929?s=70&v=4" width="70"/></a>              |<a href="https://github.com/minjoonHK"><img src="https://avatars.githubusercontent.com/u/108560916?v=4" width="70"/></a>               | <a href="https://github.com/aaajinnn"><img src="https://avatars.githubusercontent.com/u/120112210?s=70&v=4" width="70"/></a>             |<a href="https://github.com/yg0826"> <img src="https://avatars.githubusercontent.com/u/145968727?s=70&v=4" width="70"/></a> | <a href="https://github.com/ibnuena"><img src="https://avatars.githubusercontent.com/u/71430096?s=70&v=4" width="70"/></a> |
-| 팀장 / AI    | 팀원 / Frontend | 팀원 / Backend | 팀원 / Backend | 팀원 / Backend |
-
-## 🏠 레포지토리
-
-<a href="https://github.com/MinjoonHK/resumeEditorFrontend">프론트엔드 레포지토리</a><br/>
-<a href="https://github.com/JavaBackEnd21st/resumeEditorBackend">백엔드 레포지토리</a><br/>
-<a href="https://github.com/JavaBackEnd21st/resume_gpt_qdrant">AI 레포지토리</a><br/>
 
 ## 🏛️ 프로젝트 아키텍처
   ![reditor_architecture2](https://github.com/MinjoonHK/resumeEditorFrontend/assets/108560916/9e4adc18-e1b2-46b6-b1a2-1b0b7735ff50)
@@ -107,3 +100,10 @@
   <li>Deploy: Vercel, CloudType</li>
   <li>Collaboration: Github, Slack, Notion, Swagger@2.0.2, Figjam, Kakao Oven </li>
 </ul>
+
+
+## 🏠 레포지토리
+
+<a href="https://github.com/MinjoonHK/resumeEditorFrontend">프론트엔드 레포지토리</a><br/>
+<a href="https://github.com/JavaBackEnd21st/resumeEditorBackend">백엔드 레포지토리</a><br/>
+<a href="https://github.com/JavaBackEnd21st/resume_gpt_qdrant">AI 레포지토리</a><br/>

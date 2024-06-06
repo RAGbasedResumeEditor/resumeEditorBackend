@@ -156,7 +156,7 @@
 </ul>
 
 ### 박연경
-
+<ul><li><a href="https://github.com/JavaBackEnd21st/resumeEditorBackend/wiki/BE-%E2%80%90-Signup-Verification">Signup-Verification</a></li></ul>
 
 ### 안은비
 

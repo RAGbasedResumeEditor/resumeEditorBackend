@@ -138,7 +138,9 @@
 ## 🛠트러블 슈팅 & 기술적 경험
 
 ### 김상휘
-
+<ul>
+  <li><a href="https://github.com/JavaBackEnd21st/resume_gpt_qdrant/wiki/RAG-%E2%80%90-GPT-API-Trouble-Shooting-List-and-Thinkers">RAG기반 GPT 서비스</a></li>
+</ul>
 
 ### 박민준
 <ul>

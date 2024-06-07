@@ -147,7 +147,7 @@
   
   <li><a href="https://github.com/MinjoonHK/resumeEditorFrontend/wiki/FE-%E2%80%90-UX-%EA%B0%9C%EC%84%A0">FE-UX개선</a></li>
   <li><a href="https://github.com/MinjoonHK/resumeEditorFrontend/wiki/FE-%E2%80%90-%EC%84%B1%EB%8A%A5-%EC%B5%9C%EC%A0%81%ED%99%94%EC%97%90-%EB%8C%80%ED%95%B4">FE-성능 최적화</li>
-    <li><a href="https://github.com/JavaBackEnd21st/resumeEditorBackend/wiki/FE-%E2%80%90-JWT-%EC%99%80-Axios-Instance"></a>FE-Axios Instance와 JWT에 대해</li>
+    <li><a href="https://github.com/JavaBackEnd21st/resumeEditorBackend/wiki/FE-%E2%80%90-JWT-%EC%99%80-Axios-Instance">FE-Axios Instance와 JWT에 대해</a></li>
 </ul>
 
 ### 신아진

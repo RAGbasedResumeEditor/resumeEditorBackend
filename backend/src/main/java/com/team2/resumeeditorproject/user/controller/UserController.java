@@ -2,15 +2,15 @@ package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.exception.DelDateException;
-import com.team2.resumeeditorproject.resume.domain.Occupation;
-import com.team2.resumeeditorproject.resume.domain.Resume;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
-import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
+import com.team2.resumeeditorproject.resume.domain.*;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
+import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
 import com.team2.resumeeditorproject.resume.repository.OccupationRepository;
+import com.team2.resumeeditorproject.resume.repository.ResumeGuideRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
+import com.team2.resumeeditorproject.resume.service.ResumeGuideService;
 import com.team2.resumeeditorproject.resume.service.ResumeService;
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.user.domain.User;
@@ -67,6 +67,11 @@ public class UserController extends HttpServlet {
     @Autowired
     private OccupationRepository occupationRepository;
 
+    @Autowired
+    private ResumeGuideRepository resumeGuideRepository;
+
+    @Autowired
+    private ResumeGuideService resumeGuideService;
 
     public static String getUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -408,6 +413,102 @@ public class UserController extends HttpServlet {
             response.put("time", today);
             response.put("status", "Fail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 자소서 가이드 목록 조회
+    @GetMapping("/user/guide-list")
+    public ResponseEntity<Map<String, Object>> resumeGuideList(
+            @RequestParam("page") int page) throws AuthenticationException {
+        String username = getUsername();
+        Long uNum = userService.showUser(username).getUNum();
+        int size = 5; // 한 페이지에 보여줄 게시글 수
+        Map<String, Object> response = new HashMap<>();
+        Date today = new Date();
+
+        try {
+            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
+
+            // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ResumeGuide> resultsPage = resumeGuideService.getResumeGuidesByUNum(uNum, pageable);
+
+            if (resultsPage.getTotalElements() == 0) { // 게시글이 없는 경우
+                response.put("response", "게시글이 없습니다.");
+            } else { // 게시글이 있는 경우
+                if (page > resultsPage.getTotalPages() - 1) { // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    page = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(page, size);
+                    resultsPage = resumeGuideService.getResumeGuidesByUNum(uNum, pageable);
+                }
+
+                List<Map<String, Object>> formattedResults = new ArrayList<>();
+
+                for (ResumeGuide resumeGuide : resultsPage.getContent()) {
+                    Map<String, Object> formattedResult = new HashMap<>();
+
+                    // 첫 번째 요소 g_num
+                    Long gNum = resumeGuide.getGNum();
+                    formattedResult.put("No", gNum); //자소서 번호
+
+                    // 두 번째 요소 company
+                    String company = resumeGuide.getCompany();
+                    formattedResult.put("company", company);
+
+                    // 세 번째 요소 occupation
+                    String occupation = resumeGuide.getOccupation();
+                    formattedResult.put("occupation", occupation);
+
+                    formattedResults.add(formattedResult);
+                }
+                response.put("response", formattedResults);
+            }
+            response.put("time", today);
+            response.put("status", "Success");
+            response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch (Exception e) {
+            response.put("response", "server error : guide list Fail [" + e.getMessage() + "]");
+            response.put("time", today);
+            response.put("status", "Fail");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 자소서 가이드 상세 페이지
+    @GetMapping("/user/guide-list/{gNum}")
+    public ResponseEntity<Map<String, Object>> getResumeGuideDetail(@PathVariable("gNum") Long gNum) {
+        Map<String, Object> response = new HashMap<>();
+        Date today = new Date();
+
+        try {
+            // 특정 gNum에 해당하는 자기소개서 가이드를 조회
+            ResumeGuide resumeGuide = resumeGuideService.getResumeGuideByGNum(gNum);
+
+            if (resumeGuide == null) {
+                throw new Exception("Resume guide with gNum " + gNum + " not found");
+            }
+
+            // 조회된 자기소개서 가이드의 정보를 response에 담기
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("g_num", resumeGuide.getGNum());
+            responseData.put("u_num", resumeGuide.getUNum());
+            responseData.put("company", resumeGuide.getCompany());
+            responseData.put("occupation", resumeGuide.getOccupation());
+            responseData.put("content", resumeGuide.getContent());
+
+            response.put("response", responseData);
+            response.put("time", today);
+            response.put("status", "Success");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("response", "Server error: " + e.getMessage());
+            response.put("time", today);
+            response.put("status", "Fail");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

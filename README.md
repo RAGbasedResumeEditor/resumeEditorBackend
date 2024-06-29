@@ -116,7 +116,7 @@
 <ul>
   <li>Front-end: React.js@18.2.0, TypeScript, Redux Toolkit@9.1.0, Antd</li>
   <li>Back-end: Spring Boot, Spring Security, Hibernate</li>
-  <li>AI: ChatGPT API, Qdrant, Flask</li>
+  <li>AI: GPT API, Qdrant, Flask</li>
   <li>Env: Node.js@v18.17.0, JAVA 17</li>
   <li>Build: Vite, Gradle</li>
   <li>IDE: VScode, IntelliJ</li>

@@ -20,8 +20,13 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+// TODO : import할 때 와일드카드는 사용하지 않는 것이 좋음
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
+// TODO : 통계가 admin의 하위역할이 맞는지 생각해볼 필요가 있음
+// TODO : 통계결과를 전달하는데 AdminController는 목적과 명칭이 맞지 않음
+// TODO : 클래스 크기가 커서 소규모 역할에 맞게 클래스를 분리하는게 좋아보임 /user, /rank 단위로
+// TODO : 단문자, 약어사용은 지양, 약어를 꼭 사용하고싶다면 일관성있게
 @Controller
 @RequestMapping("/admin/stat")
 @RequiredArgsConstructor
@@ -31,6 +36,19 @@ public class AdminController {
     private final HistoryService historyService;
     private final TrafficService trafficService;
 
+
+    // TODO : 불필요한 주석은 제거
+    // TODO : 목적에 맞는 메서드명 사용
+    // TODO : Map<String, Object>를 리턴하는 것은 지양하고 각각 DTO 클래스로 변경하는 것이 좋음
+    // TODO : DTO로 변경시 메서드를 분할해야한다면 그게 맞음
+    // TODO : 컨트롤러에서 비즈니스적인 분기문은 적절하지 않음, 차라리 service를 감싸는 service클래스를 하나 더 만드는 것이 적절해보임
+    // TODO : parameter도 DTO로 받는 것이 적절해보임
+    // TODO : createResponse로 감싸기 위해 Map을 사용한 듯 한데 안티패턴임 GetMapping을 /admin/stat/user/count, /admin/stat/user/gender 등으로 쪼개는게 맞아보임
+    // TODO : createResponse는 createOkResponse처럼 명확한 이름으로 변경하는 것이 좋음
+    // TODO : 왜 Cnt, Req만 약어인지?
+    // TODO : 에러메시지도 상수로 관리, 또는 ENUM으로
+    // TODO : ) {, ){, = 주변공백 일관성있게 수정
+    // TODO : 아무리 단순한 코드이더라도 (g) 와 같은 단문자 변수는 지양
     /* 유저 정보에 관한 통계 */
     @GetMapping("/user")
     public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name="group", required=false) String group,
@@ -52,6 +70,11 @@ public class AdminController {
             return action.apply(group);
     }
 
+    // TODO : 위와 마찬가지로 파라미터, 리턴값은 DTO로 사용하는 것이 좋음
+    // TODO : 일별 접속자 집계와 getTrafficStatistics 는 의미가 다른듯 함
+    // TODO : 트래픽통계인지 접속자통계인지 명확히 할 필요가 있어보임, 트래픽통계라면 트래픽이 user 하위일 필요가 없고 접속자 통계라면 traffic 보다는 access가 더 적절해보임
+    // TODO : exception의 메시지를 다이렉트로 api 사용자에게 전달하는 것은 좋은 방법이 아님
+    // TODO : LocalDate.now()는 따로 빼는게 좋음, 미세한차이더라도 83라인의 NOW()와 84라인의 NOW()가 값이 다르므로
     // 일별 접속자 집계
     @GetMapping("/user/traffic")
     public ResponseEntity<Map<String,Object>> getTrafficStatistics(
@@ -80,6 +103,7 @@ public class AdminController {
         }
     }
 
+    // TODO : 컨트롤러에서 비즈니스로직을 전개하는 것은 지양
     // 월별 접속자 집계
     @GetMapping("/user/traffic/monthly")
     public ResponseEntity<Map<String, Object>> getMonthlyTrafficStatistics(
@@ -108,6 +132,9 @@ public class AdminController {
         }
     }
 
+    // TODO : rest api 설계시 규칙들이 있는데 찾아보면 좋을 듯
+    // TODO : rest api를 염두하지 않는 설계더라도 url 규칙은 지키는 게 좋음
+    // TODO : } catch (Exception exception) { 공백은 지키는게 좋음
     // 일별 회원가입 집계
     @GetMapping("/user/signup")
     public ResponseEntity<Map<String,Object>> getSignupStatistics(
@@ -168,6 +195,8 @@ public class AdminController {
             return action.apply(group);
     }
 
+
+    // TODO : url에 대문자는 사용하지 않는 것이 좋음 /resume-edit
     /* 자소서 첨삭 이용에 관한 통계 */
     @GetMapping("/resumeEdit")
     public ResponseEntity<Map<String, Object>> getResumeEditCountByStatus(@RequestParam(name="group", required = false) String group,
@@ -230,6 +259,8 @@ public class AdminController {
         }
     }
 
+    // TODO : 위도 마찬가지지만 e 같은 단문자 사용은 지양
+    // TODO : catch 에서 하는일이 동일한데 IllegalArgumentException과 Exception을 나눠야하는지?
     @GetMapping("/resume/weekly")
     public ResponseEntity<Map<String,Object>> getEditStatByWeekly(@RequestParam(name="month", required = false) String month){
         try {

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
-
+// TODO : 미구현된 클래스는 develop, master 등 브런치에 머징하지 않는것이 좋음
 @RestController
 @RequestMapping("/admin/history")
 @RequiredArgsConstructor

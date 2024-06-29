@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.admin.config;
 
+// TODO : 사용하지 않는 import는 제거
 import com.team2.resumeeditorproject.admin.domain.Traffic;
 import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
@@ -20,6 +21,7 @@ import java.util.Map;
 @Configuration
 @EnableScheduling
 @RequiredArgsConstructor
+// TODO : 비즈니스로직이 들어간 클래스에 Config라는 명칭은 적절하지 않고 통계스케줄러, 트래픽스케줄러 같은 이름으로 변경하는 것이 좋아보임
 public class SchedulerConfig {
 
     private final HistoryService historyService;
@@ -28,8 +30,14 @@ public class SchedulerConfig {
     private final UserRepository userRepository;
     private final TrafficService trafficService;
 
+    // TODO: 사용하지 않는 의존성은 제거
     private final TrafficInterceptor trafficInterceptor;
 
+    // TODO : 불필요한 주석은 제거
+    // TODO : "0 59 23 * * ?" 같은 문자열은 상수로 관리, ENUM으로 해도 좋음
+    // TODO : 메서드 명칭은 동사로 시작하고 목적에 맞는 명칭으로 ex) saveCorrectionCount
+    // TODO : Exception을 잡을거면 명확하게
+    // TODO : e.printStackTrace()는 log로 대체, System.out.println()을 사용하지 않는 이유와 같음
     // 첨삭수 traffic 테이블에 저장
     @Scheduled(cron = "0 59 23 * * ?") // 매일 오후 11시 59분 0초에 실행
     public void scheduleTrafficSave() {
@@ -41,6 +49,8 @@ public class SchedulerConfig {
         }
     }
 
+    // TODO : 어떤 리턴값이나 파라미터를 Map<String, Object> 으로 전달하는 것은 지양
+    // TODO : 목적에 맞는 메서드명칭을 사용, 전반적으로 수정이 필요할듯 함
     // 트래픽 수집 및 저장
     @Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Seoul")  // 매일 새벽2시에 실행
     public void scheduleStatisticsSave() {
@@ -52,6 +62,7 @@ public class SchedulerConfig {
         }
     }
 
+    // TODO : 불필요한 주석은 제거 : 특히 develop, master, release와 같은 브런치들에 이런 것들이 포함되지 않도록 주의
     /*
     // 트래픽 리셋
     @Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행
@@ -75,6 +86,8 @@ public class SchedulerConfig {
     }
 
     // ROLE_BLACKLIST 회원 60일 후 ROLE_USER로 변경 후 del_date null
+    // TODO : zone 지정여부는 일관성있게 하는 것이 좋음
+    // TODO : zone을 지정하지 않았을 때 기본값이 어떻게 세팅되는지 유의
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
     public void updateRoleForBlacklist() {
         try {

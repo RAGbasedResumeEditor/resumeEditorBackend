@@ -5,6 +5,7 @@ import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
 import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
+// TODO : 미사용 import는 제거
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createBadReqResponse;
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createResponse;
 
+// TODO adminController에서 언급한것들과 동일
 @Controller
 @RequestMapping("/landing")
 @RequiredArgsConstructor

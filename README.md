@@ -18,7 +18,8 @@
 1. [프로젝트 소개](#프로젝트-소개)
 2. [개발 기간](#개발-기간)
 3. [팀 멤버](#팀-멤버)
-4. [주요기능 소개](#주요기능-소개)
+4. [프로젝트 아키텍처](#프로젝트-아키텍처)
+5. [주요기능 소개](#주요기능-소개)
    - [자기소개서 가이드](#자기소개서-가이드)
    - [자기소개서 첨삭](#자기소개서-첨삭)
    - [글 리스트 조회](#글-리스트-조회)
@@ -27,7 +28,6 @@
    - [어드민 유저관리](#어드민-유저관리)
    - [어드민 유저통계](#어드민-유저통계)
    - [랜딩페이지](#랜딩페이지)
-5. [프로젝트 아키텍처](#프로젝트-아키텍처)
 6. [개발 환경](#개발-환경)
 7. [레포지토리](#레포지토리)
 8. [트러블 슈팅 & 기술적 경험](#트러블-슈팅--기술적-경험)
@@ -56,7 +56,9 @@
 |<a href="https://github.com/creatub"><img src="https://avatars.githubusercontent.com/u/157783929?s=70&v=4" width="70"/></a>              |<a href="https://github.com/minjoonHK"><img src="https://avatars.githubusercontent.com/u/108560916?v=4" width="70"/></a>               | <a href="https://github.com/aaajinnn"><img src="https://avatars.githubusercontent.com/u/120112210?s=70&v=4" width="70"/></a>             |<a href="https://github.com/yg0826"> <img src="https://avatars.githubusercontent.com/u/145968727?s=70&v=4" width="70"/></a> | <a href="https://github.com/ibnuena"><img src="https://avatars.githubusercontent.com/u/71430096?s=70&v=4" width="70"/></a> |
 | 팀장 / AI    | 팀원 / Frontend | 팀원 / Backend | 팀원 / Backend | 팀원 / Backend |
 
-
+## 🏛프로젝트 아키텍처
+  ![reditor_architecture2](https://github.com/JavaBackEnd21st/resumeEditorBackend/assets/157783929/6dd1ceb4-7baf-44cb-aaf3-54de850a25fd)
+  
 ## 📷주요기능 소개
 
 ### ❗ gif 로딩이 느릴수 있으니 조금만 기다려주세요 ❗
@@ -106,10 +108,6 @@
 
 ![reditor_landing](https://github.com/MinjoonHK/resumeEditorFrontend/assets/108560916/2669efa6-b87a-40a3-bb7d-dab9d3c9d314)
 
-
-
-## 🏛프로젝트 아키텍처
-  ![reditor_architecture2](https://github.com/MinjoonHK/resumeEditorFrontend/assets/108560916/9e4adc18-e1b2-46b6-b1a2-1b0b7735ff50)
 
 ## ⚙개발 환경
 

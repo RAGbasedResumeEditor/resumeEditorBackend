@@ -27,7 +27,6 @@ public class SchedulerConfig {
     private final UserManagementService userManagementService;
     private final UserRepository userRepository;
     private final TrafficService trafficService;
-
     private final TrafficInterceptor trafficInterceptor;
 
     // 첨삭수 traffic 테이블에 저장

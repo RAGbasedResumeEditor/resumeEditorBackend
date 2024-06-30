@@ -2,7 +2,6 @@ package com.team2.resumeeditorproject.admin.service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.Date;
 import java.util.Map;
 
 public interface HistoryService {

@@ -4,25 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.domain.Refresh;
 import com.team2.resumeeditorproject.user.domain.User;
-import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
+import com.team2.resumeeditorproject.user.dto.RefreshDTO;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
@@ -30,7 +25,6 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -133,10 +127,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
+        RefreshDTO refreshDTO = new RefreshDTO();
+        refreshDTO.setUsername(username);
+        refreshDTO.setRefresh(refresh);
+        refreshDTO.setExpiration(date);
+
+        // Refresh 엔티티로 변환
         Refresh refreshEntity = new Refresh();
-        refreshEntity.setUsername(username);
-        refreshEntity.setRefresh(refresh);
-        refreshEntity.setExpiration(date);
+        refreshEntity.setUsername(refreshDTO.getUsername());
+        refreshEntity.setRefresh(refreshDTO.getRefresh());
+        refreshEntity.setExpiration(refreshDTO.getExpiration());
 
         refreshRepository.save(refreshEntity);
         //=>토큰을 생성하고 난 이후에 값 저장

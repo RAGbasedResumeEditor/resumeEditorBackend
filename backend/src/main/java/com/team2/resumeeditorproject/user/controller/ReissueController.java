@@ -3,6 +3,7 @@ package com.team2.resumeeditorproject.user.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.user.Jwt.JWTUtil;
 import com.team2.resumeeditorproject.user.domain.Refresh;
+import com.team2.resumeeditorproject.user.dto.RefreshDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -109,10 +110,16 @@ public class ReissueController {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
+        RefreshDTO refreshDTO = new RefreshDTO();
+        refreshDTO.setUsername(username);
+        refreshDTO.setRefresh(refresh);
+        refreshDTO.setExpiration(date);
+
+        // Refresh 엔티티로 변환
         Refresh refreshEntity = new Refresh();
-        refreshEntity.setUsername(username);
-        refreshEntity.setRefresh(refresh);
-        refreshEntity.setExpiration(date);
+        refreshEntity.setUsername(refreshDTO.getUsername());
+        refreshEntity.setRefresh(refreshDTO.getRefresh());
+        refreshEntity.setExpiration(refreshDTO.getExpiration());
 
         refreshRepository.save(refreshEntity);
         //=>토큰을 생성하고 난 이후에 값 저장

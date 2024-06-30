@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import java.util.List;
 import java.util.Map;
 
 //통계 관련 service

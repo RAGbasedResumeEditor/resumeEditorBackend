@@ -3,18 +3,20 @@ package com.team2.resumeeditorproject.admin.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.domain.History;
 import com.team2.resumeeditorproject.admin.domain.Traffic;
-import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
+
+import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
 import com.team2.resumeeditorproject.admin.repository.*;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,9 @@ public class HistoryServiceImpl implements HistoryService{
     private final TrafficService trafficService;
 
     private final ObjectMapper objectMapper;
+
+    private final ModelMapper modelMapper;
+
     private final AdminService adminService;
 
     /* 통계 수집 */
@@ -80,22 +85,26 @@ public class HistoryServiceImpl implements HistoryService{
     public void saveStatistics(Map<String, Object> statistics) {
         // Statistics 저장 로직
         try {
-            History history = new History();
-            history.setTraffic((int) statistics.get("traffic"));
-            history.setEdit_count((int) statistics.get("edit_count"));
-            history.setUser_mode(objectMapper.writeValueAsString(statistics.get("user_mode")));
-            history.setUser_status(objectMapper.writeValueAsString(statistics.get("user_status")));
-            history.setUser_gender(objectMapper.writeValueAsString(statistics.get("user_gender")));
-            history.setUser_age(objectMapper.writeValueAsString(statistics.get("user_age")));
-            history.setUser_occu(objectMapper.writeValueAsString(statistics.get("user_occu")));
-            history.setUser_comp(objectMapper.writeValueAsString(statistics.get("user_comp")));
-            history.setUser_wish(objectMapper.writeValueAsString(statistics.get("user_wish")));
-            history.setEdit_mode(objectMapper.writeValueAsString(statistics.get("edit_mode")));
-            history.setEdit_status(objectMapper.writeValueAsString(statistics.get("edit_status")));
-            history.setEdit_age(objectMapper.writeValueAsString(statistics.get("edit_age")));
-            history.setEdit_date(objectMapper.writeValueAsString(statistics.get("edit_date")));
-            history.setEdit_occu(objectMapper.writeValueAsString(statistics.get("edit_occu")));
-            history.setEdit_comp(objectMapper.writeValueAsString(statistics.get("edit_comp")));
+
+            HistoryDTO historyDTO = new HistoryDTO();
+            historyDTO.setTraffic((int) statistics.get("traffic"));
+            historyDTO.setEdit_count((int) statistics.get("edit_count"));
+            historyDTO.setUser_mode(objectMapper.writeValueAsString(statistics.get("user_mode")));
+            historyDTO.setUser_status(objectMapper.writeValueAsString(statistics.get("user_status")));
+            historyDTO.setUser_gender(objectMapper.writeValueAsString(statistics.get("user_gender")));
+            historyDTO.setUser_age(objectMapper.writeValueAsString(statistics.get("user_age")));
+            historyDTO.setUser_occu(objectMapper.writeValueAsString(statistics.get("user_occu")));
+            historyDTO.setUser_comp(objectMapper.writeValueAsString(statistics.get("user_comp")));
+            historyDTO.setUser_wish(objectMapper.writeValueAsString(statistics.get("user_wish")));
+            historyDTO.setEdit_mode(objectMapper.writeValueAsString(statistics.get("edit_mode")));
+            historyDTO.setEdit_status(objectMapper.writeValueAsString(statistics.get("edit_status")));
+            historyDTO.setEdit_age(objectMapper.writeValueAsString(statistics.get("edit_age")));
+            historyDTO.setEdit_date(objectMapper.writeValueAsString(statistics.get("edit_date")));
+            historyDTO.setEdit_occu(objectMapper.writeValueAsString(statistics.get("edit_occu")));
+            historyDTO.setEdit_comp(objectMapper.writeValueAsString(statistics.get("edit_comp")));
+            historyDTO.setW_date(new java.util.Date());
+
+            History history = modelMapper.map(historyDTO, History.class);
 
             // 어제의 날짜를 계산하여 traffic_date 컬럼에 저장
             LocalDate yesterday = LocalDate.now().minusDays(1);

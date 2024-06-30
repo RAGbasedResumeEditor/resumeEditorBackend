@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -72,6 +75,35 @@ public class UserManagementController {
     public ResponseEntity<Map<String, Object>> getUserList(
             @RequestParam(defaultValue = "0", name = "page") int page) {
 
+
+        try {
+            //String role = "ROLE_USER";
+            int size = 20;
+
+            // 음수값이라면 0 페이지로 이동
+            if (page < 0) {
+                page = 0;
+            }
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<User> userList = userManagementService.getAllUsersPaged(pageable);
+
+            // page 가 totalPages 보다 높다면 마지막 페이지로 이동
+            if (page >= userList.getTotalPages()) {
+                page = userList.getTotalPages() - 1;
+                pageable = PageRequest.of(page, size);
+                userList = userManagementService.getAllUsersPaged(pageable);
+            }
+
+            return createResponse(userList);
+
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("response", "server error " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
         //String role = "ROLE_USER";
         int size = 20;
 
@@ -92,6 +124,7 @@ public class UserManagementController {
         }
 
         return createResponse(userList);
+
     }
 
     /* 회원 검색 */
@@ -100,6 +133,20 @@ public class UserManagementController {
             @RequestParam(required = false, name = "group") String group,
             @RequestParam(required = false, name = "keyword") String keyword,
             @RequestParam(defaultValue = "0", name = "page") int page) {
+
+
+        try {
+            //String role = "ROLE_USER";
+            int size = 20;
+
+            // 음수값이라면 0 페이지로 이동
+            if (page < 0) {
+                page = 0;
+            }
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<User> userList;
 
         //String role = "ROLE_USER";
         int size = 20;
@@ -122,13 +169,34 @@ public class UserManagementController {
         if (page >= userList.getTotalPages()) {
             page = userList.getTotalPages() - 1;
             pageable = PageRequest.of(page, size);
+
             if (group != null && keyword != null) {
                 userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
             } else {
                 userList = userManagementService.getAllUsersPaged(pageable);
             }
+
+
+            // page 가 totalPages 보다 높다면 마지막 페이지로 이동
+            if (page >= userList.getTotalPages()) {
+                page = userList.getTotalPages() - 1;
+                pageable = PageRequest.of(page, size);
+                if (group != null && keyword != null) {
+                    userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
+                } else {
+                    userList = userManagementService.getAllUsersPaged(pageable);
+                }
+            }
+            return createResponse(userList);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("response", "server error" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
         }
         return createResponse(userList);
+
     }
 
     /* 회원 탈퇴 */

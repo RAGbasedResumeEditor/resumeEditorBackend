@@ -1,9 +1,12 @@
 package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.domain.Traffic;
+import com.team2.resumeeditorproject.admin.dto.TrafficDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
 import com.team2.resumeeditorproject.admin.repository.TrafficRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,14 +22,13 @@ public class TrafficServiceImpl implements TrafficService{
 
     private final TrafficRepository trafficRepository;
     private final AdminResumeRepository resumeRepository;
+    private final ModelMapper modelMapper;
 
     // 트래픽 저장
     @Override
-    public void saveTraffic(int visitCount, int editCount) {
-        Traffic traffic = new Traffic();
-        traffic.setVisitCount(visitCount);
-        traffic.setEditCount(editCount);
-        traffic.setInDate(LocalDate.now().minusDays(1)); // 어제 날짜로 저장);
+    public void saveTraffic(TrafficDTO trafficDTO) {
+        Traffic traffic = modelMapper.map(trafficDTO, Traffic.class);
+        traffic.setInDate(LocalDate.now().minusDays(1)); // 어제 날짜로 설정
         trafficRepository.save(traffic);
     }
 

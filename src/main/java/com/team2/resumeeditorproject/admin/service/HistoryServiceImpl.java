@@ -3,17 +3,20 @@ package com.team2.resumeeditorproject.admin.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.domain.History;
 import com.team2.resumeeditorproject.admin.domain.Traffic;
+
 import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
 import com.team2.resumeeditorproject.admin.repository.*;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +30,9 @@ public class HistoryServiceImpl implements HistoryService{
     private final TrafficService trafficService;
 
     private final ObjectMapper objectMapper;
+
     private final ModelMapper modelMapper;
+
     private final AdminService adminService;
 
     /* 통계 수집 */
@@ -80,6 +85,7 @@ public class HistoryServiceImpl implements HistoryService{
     public void saveStatistics(Map<String, Object> statistics) {
         // Statistics 저장 로직
         try {
+
             HistoryDTO historyDTO = new HistoryDTO();
             historyDTO.setTraffic((int) statistics.get("traffic"));
             historyDTO.setEdit_count((int) statistics.get("edit_count"));

@@ -111,7 +111,8 @@
 
 ## ⚙개발 환경
 
-![reditor_techstack](https://github.com/MinjoonHK/resumeEditorFrontend/assets/108560916/12504f9b-7c8c-4f52-ae25-68178cab348c)
+![reditor_techstack](https://github.com/JavaBackEnd21st/resumeEditorBackend/assets/120112210/8d86aa2c-5567-4123-b1ae-4de646f573b7)
+
 
 <ul>
   <li>Front-end: React.js@18.2.0, TypeScript, Redux Toolkit@9.1.0, Antd</li>

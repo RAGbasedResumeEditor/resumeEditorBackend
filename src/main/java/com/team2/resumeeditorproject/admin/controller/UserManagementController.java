@@ -104,27 +104,6 @@ public class UserManagementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 
-        //String role = "ROLE_USER";
-        int size = 20;
-
-        // 음수값이라면 0 페이지로 이동
-        if(page<0){
-            page=0;
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<User> userList = userManagementService.getAllUsersPaged(pageable);
-
-        // page 가 totalPages 보다 높다면 마지막 페이지로 이동
-        if(page >= userList.getTotalPages()){
-            page=userList.getTotalPages() - 1;
-            pageable = PageRequest.of(page, size);
-            userList = userManagementService.getAllUsersPaged(pageable);
-        }
-
-        return createResponse(userList);
-
     }
 
     /* 회원 검색 */
@@ -148,39 +127,17 @@ public class UserManagementController {
 
             Page<User> userList;
 
-        //String role = "ROLE_USER";
-        int size = 20;
-
-        // 음수값이라면 0 페이지로 이동
-        if(page<0){
-            page=0;
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<User> userList;
-        if(group !=null && keyword !=null){
-            userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
-        }else{
-             userList = userManagementService.getAllUsersPaged(pageable);
-        }
-
-        // page 가 totalPages 보다 높다면 마지막 페이지로 이동
-        if (page >= userList.getTotalPages()) {
-            page = userList.getTotalPages() - 1;
-            pageable = PageRequest.of(page, size);
-
             if (group != null && keyword != null) {
                 userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
             } else {
                 userList = userManagementService.getAllUsersPaged(pageable);
             }
 
-
             // page 가 totalPages 보다 높다면 마지막 페이지로 이동
             if (page >= userList.getTotalPages()) {
                 page = userList.getTotalPages() - 1;
                 pageable = PageRequest.of(page, size);
+
                 if (group != null && keyword != null) {
                     userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
                 } else {
@@ -193,10 +150,6 @@ public class UserManagementController {
             response.put("response", "server error" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
-        }
-        return createResponse(userList);
-
     }
 
     /* 회원 탈퇴 */

@@ -18,8 +18,8 @@ public interface AdminResumeEditRepository extends JpaRepository<ResumeEdit, Lon
     List<ResumeEdit> findByOccupation(String occupation);
 
     // 첨삭 횟수
-    @Query("SELECT COUNT(r) FROM ResumeEdit r WHERE r.u_num = :uNum")
-    int countByUNum(@Param("uNum") long uNum);
+    @Query("SELECT COUNT(r) FROM ResumeEdit r WHERE r.u_num = :u_num")
+    int countByUNum(@Param("u_num") long uNum);
 
     @Query("SELECT COUNT(r) FROM ResumeEdit r")
     int countRecords();

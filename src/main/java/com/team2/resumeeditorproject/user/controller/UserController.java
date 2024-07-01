@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
 
 @Controller
 @RequiredArgsConstructor
@@ -129,7 +129,7 @@ public class UserController extends HttpServlet {
         }
 
         userService.signup(userDto);//회원가입 처리
-        return createResponse("회원가입 성공");
+        return createOkResponse("회원가입 성공");
     }//signup()
 /*
     @PostMapping("/signup/exists/username")
@@ -200,7 +200,7 @@ public class UserController extends HttpServlet {
                 user.setMode(tempUser.getMode());
                 user.setInDate(tempUser.getInDate());
                 user.setDelDate(tempUser.getDelDate());
-            return createResponse(user);
+            return createOkResponse(user);
     }
 
     //회원탈퇴
@@ -217,7 +217,7 @@ public class UserController extends HttpServlet {
                     .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
             refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
 
-            return createResponse( uNum+"번 회원 탈퇴 완료.");
+            return createOkResponse( uNum+"번 회원 탈퇴 완료.");
     }
 
     //회원정보 수정
@@ -228,7 +228,7 @@ public class UserController extends HttpServlet {
         userDto.setUNum(tempUser.getUNum());
 
         userService.updateUser(userDto);//수정 처리
-        return createResponse(getUsername()+" 회원 수정 완료.");
+        return createOkResponse(getUsername()+" 회원 수정 완료.");
     }
 
     // 즐겨찾기 목록 조회

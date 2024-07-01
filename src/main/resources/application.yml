@@ -40,5 +40,5 @@ spring:
       mail.smtp.starttls.enable: true
       mail.smtp.ssl.enable: false
   jwt:
-    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalwelfajsefowie
+    secret: ${JWT_SECRET}
 

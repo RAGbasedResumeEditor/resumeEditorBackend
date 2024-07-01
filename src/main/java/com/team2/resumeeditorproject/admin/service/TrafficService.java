@@ -4,6 +4,7 @@ import com.team2.resumeeditorproject.admin.domain.Traffic;
 import com.team2.resumeeditorproject.admin.dto.TrafficDTO;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Map;
 
 public interface TrafficService {
@@ -12,7 +13,7 @@ public interface TrafficService {
     long getTotalTraffic();
     long getTrafficForCurrentDate();
     Map<LocalDate, Integer> getTrafficData(LocalDate startDate, LocalDate endDate);
-    Map<LocalDate, Integer> getMonthlyTrafficData(LocalDate startDate, LocalDate endDate);
+    Map<YearMonth, Integer> getMonthlyTrafficData(LocalDate startDate, LocalDate endDate);
     void updateEditCountForToday();
 
     //Map<YearMonth, Integer> getMonthlyUserRegistrations(LocalDate startDate, LocalDate endDate);

@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createBadRequestResponse;
 
 @Controller
 @RequiredArgsConstructor
@@ -59,7 +60,7 @@ public class MailController {
         }
 
         mailService.sendEmail(email);
-        return createResponse("인증 코드 전송 성공");
+        return createOkResponse("인증 코드 전송 성공");
     }
 
     @PostMapping("/auth-check")
@@ -71,9 +72,9 @@ public class MailController {
         boolean checked=mailService.checkAuthNum(email, authCode);
 
         if (checked) {
-            return createResponse("인증 성공");
+            return createOkResponse("인증 성공");
         } else {
-            return createBadReqResponse("인증 실패.");
+            return createBadRequestResponse("인증 실패.");
         }
     }
 }

@@ -1,13 +1,10 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
-import com.team2.resumeeditorproject.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,54 +24,13 @@ import java.util.*;
 public class UserManagementController {
 
     private final UserManagementService userManagementService;
-    private final AdminResumeEditRepository adminResumeEditRepository;
     private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
-
-    private ResponseEntity<Map<String, Object>> createResponse(Page<User> userList){
-        List<UserDTO> userDTOList = new ArrayList<>();
-
-        for(User user : userList){
-            long uNum = user.getUNum();
-            int resumeEditCount = adminResumeEditRepository.countByRNum(uNum);
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(user.getUsername());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setGender(user.getGender());
-            userDTO.setBirthDate(user.getBirthDate());
-            userDTO.setCompany(user.getCompany());
-            userDTO.setOccupation(user.getOccupation());
-            userDTO.setWish(user.getWish());
-            userDTO.setStatus(user.getStatus());
-            userDTO.setMode(user.getMode());
-            userDTO.setInDate(user.getInDate());
-            userDTO.setDelDate(user.getDelDate());
-            userDTO.setUNum(user.getUNum());
-            userDTO.setRole(user.getRole());
-            userDTO.setAge(user.getAge());
-
-            // 유저 첨삭횟수
-            userDTO.setResumeEditCount(resumeEditCount);
-
-            userDTOList.add(userDTO);
-        }
-
-        // 전체 페이지 수
-        int totalPages = userList.getTotalPages();
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("response", userDTOList);
-        response.put("totalPages",totalPages);
-
-        return ResponseEntity.ok().body(response);
-    }
 
     /* 회원 목록 */
     @GetMapping("/list")
     public ResponseEntity<Map<String, Object>> getUserList(
             @RequestParam(defaultValue = "0", name = "page") int page) {
-
 
         try {
             //String role = "ROLE_USER";
@@ -86,24 +42,27 @@ public class UserManagementController {
             }
 
             Pageable pageable = PageRequest.of(page, size);
+            Page<UserDTO> userPage = userManagementService.getUserList(pageable);
 
-            Page<User> userList = userManagementService.getAllUsersPaged(pageable);
-
-            // page 가 totalPages 보다 높다면 마지막 페이지로 이동
-            if (page >= userList.getTotalPages()) {
-                page = userList.getTotalPages() - 1;
+            // page가 totalPages보다 크면 마지막 페이지로 이동
+            if (page >= userPage.getTotalPages()) {
+                // 마지막 페이지로 이동
+                page = Math.max(userPage.getTotalPages() - 1, 0);  // totalPages - 1 또는 0
                 pageable = PageRequest.of(page, size);
-                userList = userManagementService.getAllUsersPaged(pageable);
+                userPage = userManagementService.getUserList(pageable);
             }
 
-            return createResponse(userList);
+            Map<String, Object> response = new HashMap<>();
+            response.put("response", userPage.getContent());
+            response.put("totalPages", userPage.getTotalPages());
+
+            return ResponseEntity.ok().body(response);
 
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("response", "server error " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
     }
 
     /* 회원 검색 */
@@ -113,9 +72,7 @@ public class UserManagementController {
             @RequestParam(required = false, name = "keyword") String keyword,
             @RequestParam(defaultValue = "0", name = "page") int page) {
 
-
         try {
-            //String role = "ROLE_USER";
             int size = 20;
 
             // 음수값이라면 0 페이지로 이동
@@ -124,30 +81,36 @@ public class UserManagementController {
             }
 
             Pageable pageable = PageRequest.of(page, size);
+            Page<UserDTO> userPage;
 
-            Page<User> userList;
-
+            // group과 keyword가 있는 경우 검색, 그렇지 않으면 모든 사용자 목록
             if (group != null && keyword != null) {
-                userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
+                userPage = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
             } else {
-                userList = userManagementService.getAllUsersPaged(pageable);
+                userPage = userManagementService.getUserList(pageable);
             }
 
-            // page 가 totalPages 보다 높다면 마지막 페이지로 이동
-            if (page >= userList.getTotalPages()) {
-                page = userList.getTotalPages() - 1;
+            // page가 totalPages보다 크면 마지막 페이지로 이동
+            if (page >= userPage.getTotalPages()) {
+                page = Math.max(userPage.getTotalPages() - 1, 0);  // totalPages - 1 또는 0
                 pageable = PageRequest.of(page, size);
-
+                // 페이지를 새로 요청하여 `userPage`를 업데이트
                 if (group != null && keyword != null) {
-                    userList = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
+                    userPage = userManagementService.searchUsersByGroupAndKeyword(group, keyword, pageable);
                 } else {
-                    userList = userManagementService.getAllUsersPaged(pageable);
+                    userPage = userManagementService.getUserList(pageable);
                 }
             }
-            return createResponse(userList);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("response", userPage.getContent());
+            response.put("totalPages", userPage.getTotalPages());
+
+            return ResponseEntity.ok().body(response);
+
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
-            response.put("response", "server error" + e.getMessage());
+            response.put("response", "server error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

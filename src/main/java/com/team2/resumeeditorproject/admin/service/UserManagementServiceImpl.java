@@ -1,49 +1,65 @@
 package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
 import com.team2.resumeeditorproject.user.domain.User;
+import com.team2.resumeeditorproject.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserManagementServiceImpl implements UserManagementService{
 
     private final AdminUserRepository adminUserRepository;
-    private final AdminResumeEditRepository adminResumeEditRepository;
+
+    private Page<UserDTO> convertToUserDTOPage(Page<Object[]> resultPage) {
+        List<UserDTO> userDTOList = resultPage.getContent().stream().map(record -> {
+            User user = (User) record[0];
+            Long resumeEditCount = (Long) record[1];
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUsername(user.getUsername());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setGender(user.getGender());
+            userDTO.setBirthDate(user.getBirthDate());
+            userDTO.setCompany(user.getCompany());
+            userDTO.setOccupation(user.getOccupation());
+            userDTO.setWish(user.getWish());
+            userDTO.setStatus(user.getStatus());
+            userDTO.setMode(user.getMode());
+            userDTO.setInDate(user.getInDate());
+            userDTO.setDelDate(user.getDelDate());
+            userDTO.setUNum(user.getUNum());
+            userDTO.setRole(user.getRole());
+            userDTO.setAge(user.getAge());
+            userDTO.setResumeEditCount(resumeEditCount.intValue());
+
+            return userDTO;
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(userDTOList, resultPage.getPageable(), resultPage.getTotalElements());
+    }
 
     // 회원 목록 + 페이징
     @Override
-    @Transactional(readOnly = true)
-    public Page<User> getAllUsersPaged(Pageable pageable) {
-        return adminUserRepository.findAll(pageable);
-    }
-
-    // 첨삭 횟수
-    @Override
-    public int getResumeEditCountByRNum(Long uNum) {
-        return adminResumeEditRepository.countByRNum(uNum);
+    public Page<UserDTO> getUserList(Pageable pageable) {
+        Page<Object[]> userPage = adminUserRepository.findUsersWithResumeEditCount(pageable);
+        return convertToUserDTOPage(userPage);
     }
 
     // 그룹, 키워드 검색 + 페이징
     @Override
     @Transactional(readOnly = true)
-    public Page<User> searchUsersByGroupAndKeyword(String group, String keyword, Pageable pageable) {
-        return switch (group) {
-            case "username" -> adminUserRepository.findByUsernameContainingOrderByInDateDesc(keyword, pageable);
-            case "email" -> adminUserRepository.findByEmailContainingOrderByInDateDesc(keyword, pageable);
-            case "company" -> adminUserRepository.findByCompanyContainingOrderByInDateDesc(keyword, pageable);
-            case "occupation" -> adminUserRepository.findByOccupationContainingOrderByInDateDesc(keyword,pageable);
-            case "wish" -> adminUserRepository.findByWishContainingOrderByInDateDesc(keyword,pageable);
-            default -> adminUserRepository.findAll(pageable);
-        };
+    public Page<UserDTO> searchUsersByGroupAndKeyword(String group, String keyword, Pageable pageable) {
+        Page<Object[]> userPage = adminUserRepository.findByGroupAndKeyword(group, keyword, pageable);
+        return convertToUserDTOPage(userPage);
     }
 
     // 회원탈퇴 (del_date 필드에 날짜 추가)

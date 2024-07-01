@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.admin.dto;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -23,4 +24,5 @@ public class HistoryDTO {
     private String edit_occu;
     private String edit_comp;
     private Date w_date;
+    private LocalDate traffic_date;
 }

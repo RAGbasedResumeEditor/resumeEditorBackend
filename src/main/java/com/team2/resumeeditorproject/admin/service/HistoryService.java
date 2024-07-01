@@ -1,12 +1,14 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
+
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Map;
 
 public interface HistoryService {
-    Map<String, Object> collectStatistics();
-    void saveStatistics(Map<String, Object> statistics);
+    HistoryDTO collectStatistics();
+    void saveStatistics(HistoryDTO historyDTO);
 
     Map<String, Object> getTotalTraffic();
     Map<String, Object> getProUserCnt();

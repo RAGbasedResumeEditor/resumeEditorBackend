@@ -58,13 +58,3 @@ dependencies {
 
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
-configurations.all {
-	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-		if (details.requested.group == 'com.google.protobuf') {
-			details.useVersion '3.22.2' // Ensure this is the latest version compatible with all dependencies
-		}
-	}
-}
-tasks.named('test') {
-	useJUnitPlatform()
-}

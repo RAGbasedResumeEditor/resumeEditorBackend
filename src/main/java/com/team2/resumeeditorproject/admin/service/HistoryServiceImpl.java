@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.domain.History;
 import com.team2.resumeeditorproject.admin.domain.Traffic;
@@ -8,6 +9,7 @@ import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
 import com.team2.resumeeditorproject.admin.repository.*;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HistoryServiceImpl implements HistoryService{
 
     private final HistoryRepository historyRepository;
@@ -38,81 +41,59 @@ public class HistoryServiceImpl implements HistoryService{
     /* 통계 수집 */
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> collectStatistics() {
-        Map<String, Object> statistics = new LinkedHashMap<>();
+    public HistoryDTO collectStatistics() {
+        HistoryDTO historyDTO = new HistoryDTO();
 
-        Traffic todayTraffic = trafficRepository.findByInDate(LocalDate.now());
-        if (todayTraffic != null) {
-            statistics.put("traffic", todayTraffic.getVisitCount());
-            statistics.put("edit_count", todayTraffic.getEditCount());
+        try {
+            Traffic todayTraffic = trafficRepository.findByInDate(LocalDate.now());
+            if (todayTraffic != null) {
+                historyDTO.setTraffic(todayTraffic.getVisitCount());
+                historyDTO.setEdit_count(todayTraffic.getEditCount());
+            }
+
+            // 통계 데이터를 Map<String, Object> 형태로 수집
+            historyDTO.setUser_mode(objectMapper.writeValueAsString(getUserMode()));
+            historyDTO.setUser_status(objectMapper.writeValueAsString(getUserStatus()));
+            historyDTO.setUser_gender(objectMapper.writeValueAsString(getUserGender()));
+            historyDTO.setUser_age(objectMapper.writeValueAsString(getUserAge()));
+            historyDTO.setUser_occu(objectMapper.writeValueAsString(getUserOccu().get("ranking_user")));
+            historyDTO.setUser_comp(objectMapper.writeValueAsString(getUserComp().get("ranking_user")));
+            historyDTO.setUser_wish(objectMapper.writeValueAsString(getUserWish().get("ranking_user")));
+            historyDTO.setEdit_mode(objectMapper.writeValueAsString(getEditMode().get("edit_ratio")));
+            historyDTO.setEdit_status(objectMapper.writeValueAsString(getEditStatus().get("edit_ratio")));
+            historyDTO.setEdit_age(objectMapper.writeValueAsString(getEditAge().get("age_edit_ratio")));
+            historyDTO.setEdit_date(objectMapper.writeValueAsString(getEditDate()));
+            historyDTO.setEdit_occu(objectMapper.writeValueAsString(getEditOccu().get("ranking_resumeEdit")));
+            historyDTO.setEdit_comp(objectMapper.writeValueAsString(getEditComp().get("ranking_resumeEdit")));
+            historyDTO.setW_date(new java.util.Date());
+
+        } catch (JsonProcessingException e) {
+            log.error("JSON processing error while collecting statistics", e);
+        } catch (Exception e) {
+            log.error("Error occurred while collecting statistics", e);
         }
-        statistics.put("user_mode", getUserMode());
-        statistics.put("user_status", getUserStatus());
-        statistics.put("user_gender", getUserGender());
-        statistics.put("user_age", getUserAge());
 
-        Map<String, Map<String, Integer>> getRankOccuUser = getUserOccu();
-        statistics.put("user_occu", getRankOccuUser.get("ranking_user"));
-
-        Map<String, Map<String, Integer>> getRankCompUser = getUserComp();
-        statistics.put("user_comp", getRankCompUser.get("ranking_user"));
-
-        Map<String, Map<String, Integer>> getRankWishUser = getUserWish();
-        statistics.put("user_wish", getRankWishUser.get("ranking_user"));
-
-        Map<String, Object> getEditModeRatio = getEditMode();
-        statistics.put("edit_mode", getEditModeRatio.get("edit_ratio"));
-
-        Map<String, Object> getEditStatusRatio = getEditStatus();
-        statistics.put("edit_status", getEditStatusRatio.get("edit_ratio"));
-
-        Map<String, Object> getEditAgeRatio = getEditAge();
-        statistics.put("edit_age", getEditAgeRatio.get("age_edit_ratio"));
-
-        statistics.put("edit_date", getEditDate());
-
-        Map<String, Map<String, Integer>> getRankOccuEdit = getEditOccu();
-        statistics.put("edit_occu", getRankOccuEdit.get("ranking_resumeEdit"));
-
-        Map<String, Map<String, Integer>> getRankCompEdit = getEditComp();
-        statistics.put("edit_comp", getRankCompEdit.get("ranking_resumeEdit"));
-        return statistics;
+        return historyDTO;
     }
 
     /* DB에 저장 */
     @Override
     @Transactional
-    public void saveStatistics(Map<String, Object> statistics) {
+    public void saveStatistics(HistoryDTO historyDTO) {
         // Statistics 저장 로직
         try {
-
-            HistoryDTO historyDTO = new HistoryDTO();
-            historyDTO.setTraffic((int) statistics.get("traffic"));
-            historyDTO.setEdit_count((int) statistics.get("edit_count"));
-            historyDTO.setUser_mode(objectMapper.writeValueAsString(statistics.get("user_mode")));
-            historyDTO.setUser_status(objectMapper.writeValueAsString(statistics.get("user_status")));
-            historyDTO.setUser_gender(objectMapper.writeValueAsString(statistics.get("user_gender")));
-            historyDTO.setUser_age(objectMapper.writeValueAsString(statistics.get("user_age")));
-            historyDTO.setUser_occu(objectMapper.writeValueAsString(statistics.get("user_occu")));
-            historyDTO.setUser_comp(objectMapper.writeValueAsString(statistics.get("user_comp")));
-            historyDTO.setUser_wish(objectMapper.writeValueAsString(statistics.get("user_wish")));
-            historyDTO.setEdit_mode(objectMapper.writeValueAsString(statistics.get("edit_mode")));
-            historyDTO.setEdit_status(objectMapper.writeValueAsString(statistics.get("edit_status")));
-            historyDTO.setEdit_age(objectMapper.writeValueAsString(statistics.get("edit_age")));
-            historyDTO.setEdit_date(objectMapper.writeValueAsString(statistics.get("edit_date")));
-            historyDTO.setEdit_occu(objectMapper.writeValueAsString(statistics.get("edit_occu")));
-            historyDTO.setEdit_comp(objectMapper.writeValueAsString(statistics.get("edit_comp")));
-            historyDTO.setW_date(new java.util.Date());
-
+            // HistoryDTO를 History로 변환
             History history = modelMapper.map(historyDTO, History.class);
 
             // 어제의 날짜를 계산하여 traffic_date 컬럼에 저장
-            LocalDate yesterday = LocalDate.now().minusDays(1);
-            history.setTraffic_date(yesterday);
+            history.setTraffic_date(LocalDate.now().minusDays(1));
+            log.info("Statistics saved successfully for date: {}", history.getTraffic_date());
 
+            // 데이터 저장
             historyRepository.save(history);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while saving statistics", e);
         }
     }
 

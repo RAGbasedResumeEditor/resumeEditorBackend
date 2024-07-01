@@ -1,25 +1,24 @@
 package com.team2.resumeeditorproject.admin.config;
 
-import com.team2.resumeeditorproject.admin.domain.Traffic;
-import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
+import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.TrafficService;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.RefreshService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Configuration
 @EnableScheduling
 @RequiredArgsConstructor
+@Slf4j
 public class SchedulerConfig {
 
     private final HistoryService historyService;
@@ -27,67 +26,61 @@ public class SchedulerConfig {
     private final UserManagementService userManagementService;
     private final UserRepository userRepository;
     private final TrafficService trafficService;
-    private final TrafficInterceptor trafficInterceptor;
 
-    // 첨삭수 traffic 테이블에 저장
+    // 첨삭수 Traffic 테이블에 저장
     @Scheduled(cron = "0 59 23 * * ?") // 매일 오후 11시 59분 0초에 실행
-    public void scheduleTrafficSave() {
+    public void saveEditCount() {
         try {
             // edit_count 업데이트
             trafficService.updateEditCountForToday();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while updating edit count", e);
         }
     }
 
     // 트래픽 수집 및 저장
-    @Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Seoul")  // 매일 새벽2시에 실행
-    public void scheduleStatisticsSave() {
+    @Scheduled(cron = "0 0 2 * * ?") // 매일 새벽2시에 실행
+    public void saveTraffic() {
         try {
-            Map<String, Object> statistics = historyService.collectStatistics();
+            // 통계 수집
+            HistoryDTO statistics = historyService.collectStatistics();
+
+            // 수집한 통계 데이터 저장
             historyService.saveStatistics(statistics);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while saving traffic", e);
         }
     }
-
-    /*
-    // 트래픽 리셋
-    @Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행
-    public void scheduleTrafficReset() {
-        try {
-            trafficInterceptor.resetTrafficCount();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-     */
 
     // 만료 토큰 삭제
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void deleteExpiredTokens() {
         try {
             refreshService.deleteExpiredTokens();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while deleting expired token", e);
         }
     }
 
     // ROLE_BLACKLIST 회원 60일 후 ROLE_USER로 변경 후 del_date null
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * ?")
     public void updateRoleForBlacklist() {
         try {
             userManagementService.updateDelDateForRoleBlacklist();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while updating ROLE_BLACKLIST users to ROLE_USER and setting del_date to null", e);
         }
     }
 
-    //30일 지나면 테이블에서 해당 회원 삭제
-    @Scheduled(cron = "0 0 12 * * *")
+    // 30일 지나면 테이블에서 해당 회원 삭제
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void deleteUserEnd(){
-        userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
+        try {
+            userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
+        }catch(Exception e){
+            log.error("Error occurred while deleting users inactive for 30 days or more", e);
+        }
     }
 
 }

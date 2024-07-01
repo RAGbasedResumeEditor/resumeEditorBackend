@@ -22,9 +22,11 @@ import java.util.function.Function;
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
 
 @Controller
-@RequestMapping("/admin/stat")
+@RequestMapping("/admin/statistics") // - stat -> statistics로 수정
 @RequiredArgsConstructor
 public class AdminController {
+
+    private static final String Invalid_Request_Error_Message = "잘못된 요청입니다.";
 
     private final AdminService adminService;
     private final HistoryService historyService;
@@ -32,35 +34,36 @@ public class AdminController {
 
     /* 유저 정보에 관한 통계 */
     @GetMapping("/user")
-    public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name="group", required=false) String group,
-                                                         @RequestParam(name="occupation", required = false) String occupation,
-                                                         @RequestParam(name="wish", required = false) String wish){
-            Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
-                case "count" -> (g) -> createResponse(adminService.userCnt());
-                case "gender" -> (g) -> createResponse(adminService.genderCnt());
-                case "age" -> (g) -> createResponse(adminService.ageCnt());
-                case "status" -> (g) -> createResponse(adminService.statusCnt());
-                case "mode" -> (g) -> createResponse(adminService.modeCnt());
-                case "occupation" -> (g) -> createResponse(adminService.occupCnt(occupation));
-                case "wish" -> (g) -> createResponse(adminService.wishCnt(wish));
-                case "pro" -> (g) -> createResponse(historyService.getProUserCnt());
-                case "visitTotal" -> (g) -> createResponse(historyService.getTotalTraffic());
-                case "visitToday" -> (g) -> createResponse(historyService.getTrafficForCurrentDate());
-                default -> (g) ->  createBadReqResponse("잘못된 요청입니다.");
-            };
-            return action.apply(group);
+    public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name = "group", required = false) String group,
+                                                         @RequestParam(name = "occupation", required = false) String occupation,
+                                                         @RequestParam(name = "wish", required = false) String wish){
+        Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
+            case "count" -> (g) -> createResponse(adminService.userCnt());
+            case "gender" -> (g) -> createResponse(adminService.genderCnt());
+            case "age" -> (g) -> createResponse(adminService.ageCnt());
+            case "status" -> (g) -> createResponse(adminService.statusCnt());
+            case "mode" -> (g) -> createResponse(adminService.modeCnt());
+            case "occupation" -> (g) -> createResponse(adminService.occupCnt(occupation));
+            case "wish" -> (g) -> createResponse(adminService.wishCnt(wish));
+            case "pro" -> (g) -> createResponse(historyService.getProUserCnt());
+            case "visitTotal" -> (g) -> createResponse(historyService.getTotalTraffic());
+            case "visitToday" -> (g) -> createResponse(historyService.getTrafficForCurrentDate());
+            default -> (g) ->  createBadReqResponse(Invalid_Request_Error_Message); // - 에러메세지 상수로 변경
+        };
+        return action.apply(group); // - 들여쓰기, 띄워쓰기 수정
     }
 
     // 일별 접속자 집계
     @GetMapping("/user/traffic")
-    public ResponseEntity<Map<String,Object>> getTrafficStatistics(
+    public ResponseEntity<Map<String,Object>> getDailyTrafficStatistics( // 메서드명 수정
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate){
         try {
             Map<String, Object> result = new LinkedHashMap<>();
+            LocalDate currentDate = LocalDate.now(); // - 65,66 라인에서 각각 호출 대신 따로 변수로 선언
 
-            LocalDate start = startDate.orElse(LocalDate.now().minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
-            LocalDate end = endDate.orElse(LocalDate.now()); // endDate가 주어지지 않으면 현재 날짜로 설정
+            LocalDate start = startDate.orElse(currentDate.minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
+            LocalDate end = endDate.orElse(currentDate); // endDate가 주어지지 않으면 현재 날짜로 설정
 
             Map<LocalDate, Integer> trafficData = trafficService.getTrafficData(start, end);
 
@@ -162,13 +165,13 @@ public class AdminController {
             Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
                 case "company" -> (g) -> createResponse(adminService.CompResumeCnt(company));
                 case "occupation" -> (g) -> createResponse(adminService.OccupResumeCnt(occupation));
-                default -> (g) ->  createBadReqResponse("잘못된 요청입니다.");
+                default -> (g) ->  createBadReqResponse(Invalid_Request_Error_Message);
             };
             return action.apply(group);
     }
 
     /* 자소서 첨삭 이용에 관한 통계 */
-    @GetMapping("/resumeEdit")
+    @GetMapping("/resume-edit")
     public ResponseEntity<Map<String, Object>> getResumeEditCountByStatus(@RequestParam(name="group", required = false) String group,
                                                                           @RequestParam(name="company", required = false) String company,
                                                                           @RequestParam(name="occupation", required = false) String occupation
@@ -182,7 +185,7 @@ public class AdminController {
                 case "monthly" -> (g) -> createResponse(adminService.resumeCntByMonth()); // 채용시즌(월별)
                 case "weekly" -> (g) -> createResponse(adminService.resumeCntByWeekly()); // 채용시즌(주별)
                 case "daily" -> (g) -> createResponse(adminService.resumeCntByDaily()); // 채용시즌(일별)
-                default -> (g) -> createBadReqResponse("잘못된 요청입니다");
+                default -> (g) -> createBadReqResponse(Invalid_Request_Error_Message);
             };
             return action.apply(group);
     }
@@ -210,7 +213,7 @@ public class AdminController {
             case "editTotal" -> (g) -> createResponse(historyService.getTotalEdit());
             case "editToday" -> (g) -> createResponse(historyService.getRNumForCurrentDate());
             case "boardToday" -> (g) -> createResponse(historyService.getTotalBoardCnt());
-            default -> (g) -> createBadReqResponse("잘못된 요청입니다");
+            default -> (g) -> createBadReqResponse(Invalid_Request_Error_Message);
         };
 
         return action.apply(group);

@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.*;
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createPagedResponse;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/resume")
 @RequiredArgsConstructor
 public class ResumeManagementController {
 
@@ -123,7 +124,7 @@ public class ResumeManagementController {
             }
 
             rmService.deleteResume(rNum);
-            return createResponse(rNum+"번 자소서 삭제 성공");
+            return createOkResponse(rNum+"번 자소서 삭제 성공");
     }
 /*
     //자소서 수정

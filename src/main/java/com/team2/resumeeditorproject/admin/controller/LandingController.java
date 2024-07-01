@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createBadReqResponse;
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createResponse;
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createBadRequestResponse;
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
 
 @Controller
 @RequestMapping("/landing")
@@ -29,14 +29,14 @@ public class LandingController {
     private final HistoryService historyService;
     private final ReviewManagementService reviewService;
 
-    @GetMapping("/stat")
+    @GetMapping("/statistics")
     public ResponseEntity<Map<String,Object>> getStatistics(@RequestParam(name="group", required=false) String group){
         Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
-            case "countUser" -> (g) -> createResponse(adminService.userCnt());
-            case "visitTotal" -> (g) -> createResponse(historyService.getTotalTraffic());
-            case "editTotal" -> (g) -> createResponse(historyService.getTotalEdit());
-            case "boardTotal" -> (g) -> createResponse(historyService.getTotalBoardCnt());
-            default -> (g) ->  createBadReqResponse("잘못된 요청입니다.");
+            case "countUser" -> (g) -> createOkResponse(adminService.userCnt());
+            case "visitTotal" -> (g) -> createOkResponse(historyService.getTotalTraffic());
+            case "editTotal" -> (g) -> createOkResponse(historyService.getTotalEdit());
+            case "boardTotal" -> (g) -> createOkResponse(historyService.getTotalBoardCnt());
+            default -> (g) ->  createBadRequestResponse("잘못된 요청입니다.");
         };
         return action.apply(group);
     }
@@ -49,9 +49,9 @@ public class LandingController {
             Map<String, Object> response = new HashMap<>();
             response.put("review", reviews);
 
-            return createResponse(response);
+            return createOkResponse(response);
         }catch(Exception e){
-            return createBadReqResponse(e.getMessage());
+            return createBadRequestResponse(e.getMessage());
         }
 
     }

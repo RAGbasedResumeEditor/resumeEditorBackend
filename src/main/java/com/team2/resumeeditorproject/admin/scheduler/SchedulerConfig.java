@@ -1,5 +1,6 @@
-package com.team2.resumeeditorproject.admin.config;
+package com.team2.resumeeditorproject.admin.scheduler;
 
+import com.team2.resumeeditorproject.admin.config.CronExpressions;
 import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.TrafficService;
@@ -28,7 +29,7 @@ public class SchedulerConfig {
     private final TrafficService trafficService;
 
     // 첨삭수 Traffic 테이블에 저장
-    @Scheduled(cron = "0 59 23 * * ?") // 매일 오후 11시 59분 0초에 실행
+    @Scheduled(cron = CronExpressions.SAVE_EDIT_COUNT_CRON)
     public void saveEditCount() {
         try {
             // edit_count 업데이트
@@ -39,7 +40,7 @@ public class SchedulerConfig {
     }
 
     // 트래픽 수집 및 저장
-    @Scheduled(cron = "0 0 2 * * ?") // 매일 새벽2시에 실행
+    @Scheduled(cron = CronExpressions.SAVE_TRAFFIC_CRON) // 매일 새벽2시에 실행
     public void saveTraffic() {
         try {
             // 통계 수집
@@ -53,7 +54,7 @@ public class SchedulerConfig {
     }
 
     // 만료 토큰 삭제
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = CronExpressions.DAILY_AT_MIDNIGHT_CRON)
     public void deleteExpiredTokens() {
         try {
             refreshService.deleteExpiredTokens();
@@ -63,7 +64,7 @@ public class SchedulerConfig {
     }
 
     // ROLE_BLACKLIST 회원 60일 후 ROLE_USER로 변경 후 del_date null
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = CronExpressions.DAILY_AT_MIDNIGHT_CRON)
     public void updateRoleForBlacklist() {
         try {
             userManagementService.updateDelDateForRoleBlacklist();
@@ -73,7 +74,7 @@ public class SchedulerConfig {
     }
 
     // 30일 지나면 테이블에서 해당 회원 삭제
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = CronExpressions.DAILY_AT_MIDNIGHT_CRON)
     @Transactional
     public void deleteUserEnd(){
         try {

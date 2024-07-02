@@ -6,13 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ResumeManagementService {
-    Page<ResumeBoard> getResumeBoards(int page);
-
-    Page<Object[]> getAllResumeBoards(Pageable pageable);
-
+    Page<ResumeBoard> getResumeBoards(int pageNo);
+    Page<ResumeBoardDTO> getPagedResumeBoards(Pageable pageable);
     void deleteResume(Long rNum);
-    //void updateResume(ResumeBoardDTO rbDto);
-    Page<ResumeBoard> searchByTitle(String title, int page);
-    Page<ResumeBoard> searchByRating(Float rating, int page);
+    Page<ResumeBoard> searchByTitle(String title, int pageNo);
+    Page<ResumeBoard> searchByRating(Float rating, int pageNo);
     Boolean checkResumeExists(Long rNum);
 }

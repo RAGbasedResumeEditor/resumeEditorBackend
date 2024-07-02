@@ -1,17 +1,14 @@
 package com.team2.resumeeditorproject.user.service;
 
-import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j
@@ -24,20 +21,20 @@ public class UserServiceImpl implements UserService{
 
     //회원가입
     @Override
-    public void signup(UserDTO userDto)   {
+    public void signup(UserDTO userDTO) {
         //회원가입 진행
-        User user=User.builder()
-                .email(userDto.getEmail())
-                .username(userDto.getUsername())
-                .password(bCryptPasswordEncoder.encode(userDto.getPassword()))
+        User user = User.builder()
+                .email(userDTO.getEmail())
+                .username(userDTO.getUsername())
+                .password(bCryptPasswordEncoder.encode(userDTO.getPassword()))
                 .role("ROLE_USER")
-                .birthDate(userDto.getBirthDate())
-                .age(userDto.getAge())
-                .gender(userDto.getGender())
-                .occupation((userDto.getOccupation()))
-                .company(userDto.getCompany())
-                .wish(userDto.getWish())
-                .status(userDto.getStatus())
+                .birthDate(userDTO.getBirthDate())
+                .age(userDTO.getAge())
+                .gender(userDTO.getGender())
+                .occupation((userDTO.getOccupation()))
+                .company(userDTO.getCompany())
+                .wish(userDTO.getWish())
+                .status(userDTO.getStatus())
                 .mode(1)
                 .build();
         userRepository.save(user);
@@ -46,11 +43,12 @@ public class UserServiceImpl implements UserService{
     public Boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
     }
+
     @Override
     public Boolean checkUsernameDuplicate(String username) {
         return userRepository.existsByUsername(username);
     }
-    /* eunbi */
+
     @Override
     @Transactional
     public int updateUserMode(long u_num) {
@@ -70,48 +68,49 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Boolean checkUserExist(Long uNum){
-        Optional<User> user=userRepository.findById(uNum);
-        if(user.isPresent()){
+        Optional<User> user = userRepository.findById(uNum);
+        if (user.isPresent()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
+
     //회원정보 수정
     @Override
     @Transactional
-    public void updateUser(UserDTO userDto) {
-        User user=userRepository.findById(userDto.getUNum()).orElseThrow(()-> new IllegalArgumentException("Invalid user ID"));
-        if (userDto.getGender()!=null) {
-            user.setGender(userDto.getGender());
+    public void updateUser(UserDTO userDTO) {
+        User user = userRepository.findById(userDTO.getUNum()).orElseThrow(()-> new IllegalArgumentException("Invalid user ID"));
+        if (userDTO.getGender() != null) {
+            user.setGender(userDTO.getGender());
         }
 
-        if (userDto.getAge() != null) {
-            user.setAge(userDto.getAge());
+        if (userDTO.getAge() != null) {
+            user.setAge(userDTO.getAge());
         }
 
-        if (userDto.getStatus() != null) {
-            user.setStatus(userDto.getStatus());
+        if (userDTO.getStatus() != null) {
+            user.setStatus(userDTO.getStatus());
         }
 
-        if (userDto.getCompany() != null) {
-            user.setCompany(userDto.getCompany());
+        if (userDTO.getCompany() != null) {
+            user.setCompany(userDTO.getCompany());
         }
 
-        if (userDto.getOccupation() != null) {
-            user.setOccupation(userDto.getOccupation());
+        if (userDTO.getOccupation() != null) {
+            user.setOccupation(userDTO.getOccupation());
         }
 
-        if (userDto.getWish() != null) {
-            user.setWish(userDto.getWish());
+        if (userDTO.getWish() != null) {
+            user.setWish(userDTO.getWish());
         }
 
-        if (userDto.getBirthDate() != null) {
-            user.setBirthDate(userDto.getBirthDate());
+        if (userDTO.getBirthDate() != null) {
+            user.setBirthDate(userDTO.getBirthDate());
         }
 
-        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
-            user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         }
         userRepository.save(user);
     }

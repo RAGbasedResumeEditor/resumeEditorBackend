@@ -5,7 +5,6 @@ import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.domain.Refresh;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.RefreshDTO;
-
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
@@ -14,9 +13,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,7 +26,12 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -53,14 +57,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         //클라이언트 요청에서 username, password 호출
         UserDTO userDTO = new UserDTO();
-        try{
+        try {
             ObjectMapper objectMapper = new ObjectMapper();
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
 
                 userDTO = objectMapper.readValue(messageBody, UserDTO.class);
 
-        }catch(IOException e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         String username = userDTO.getUsername();
@@ -74,7 +78,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override // 인증 성공 시
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException{
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         // 로그인 시 트래픽 카운트 증가
         trafficInterceptor.incrementTrafficCount();
 
@@ -104,7 +108,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("refresh", refresh);
         response.setStatus(HttpStatus.OK.value()); //200
 
-        try(PrintWriter out = response.getWriter()){
+        try(PrintWriter out = response.getWriter()) {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("status", "Success");
             responseBody.put("time", new Date());
@@ -112,8 +116,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writeValue(out, responseBody);
-        }catch(IOException e){
-             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -139,7 +143,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         refreshEntity.setUsername(refreshDTO.getUsername());
         refreshEntity.setRefresh(refreshDTO.getRefresh());
         refreshEntity.setExpiration(refreshDTO.getExpiration());
-
 
         refreshRepository.save(refreshEntity);
         //=>토큰을 생성하고 난 이후에 값 저장

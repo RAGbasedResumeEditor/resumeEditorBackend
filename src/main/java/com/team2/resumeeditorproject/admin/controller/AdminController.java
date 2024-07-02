@@ -35,7 +35,7 @@ public class AdminController {
     @GetMapping("/user")
     public ResponseEntity<Map<String,Object>> getUserCnt(@RequestParam(name="group", required=false) String group,
                                                          @RequestParam(name="occupation", required = false) String occupation,
-                                                         @RequestParam(name="wish", required = false) String wish){
+                                                         @RequestParam(name="wish", required = false) String wish) {
             Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
                 case "count" -> (g) -> createOkResponse(adminService.userCnt());
                 case "gender" -> (g) -> createOkResponse(adminService.genderCnt());
@@ -56,7 +56,7 @@ public class AdminController {
     @GetMapping("/user/access")
     public ResponseEntity<Map<String,Object>> getAccessCount(
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate){
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate) {
         try {
             Map<String, Object> result = new LinkedHashMap<>();
 
@@ -68,15 +68,15 @@ public class AdminController {
             result.put("traffic_data", trafficData);
 
             return createOkResponse(result);
-        }catch(Exception exception){
-            return createBadRequestResponse(exception.getMessage());
+        } catch (Exception e) {
+            return createBadRequestResponse(e.getMessage());
         }
     }
 
     // 월별 접속자 집계
     @GetMapping("/user/access/monthly")
     public ResponseEntity<Map<String, Object>> getMonthlyAccessCount(
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> startDate){
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> startDate) {
         try {
             Map<String, Object> result = new LinkedHashMap<>();
 
@@ -91,8 +91,8 @@ public class AdminController {
             result.put("traffic_data", sortedDailyTrafficData);
 
             return createOkResponse(result);
-        } catch (Exception exception) {
-            return createBadRequestResponse(exception.getMessage());
+        } catch (Exception e) {
+            return createBadRequestResponse(e.getMessage());
         }
     }
 
@@ -100,7 +100,7 @@ public class AdminController {
     @GetMapping("/user/signup")
     public ResponseEntity<Map<String,Object>> getSignupStatistics(
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate){
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate) {
         try {
             Map<String, Object> result = new LinkedHashMap<>();
 
@@ -119,8 +119,8 @@ public class AdminController {
             result.put("signup_data", sortedSignupData);
 
             return createOkResponse(result);
-        }catch(Exception exception){
-            return createBadRequestResponse(exception.getMessage());
+        } catch (Exception e) {
+            return createBadRequestResponse(e.getMessage());
         }
     }
 
@@ -138,8 +138,8 @@ public class AdminController {
             result.put("signup_data", monthlySignupData);
 
             return createOkResponse(result);
-        } catch (Exception exception) {
-            return createBadRequestResponse(exception.getMessage());
+        } catch (Exception e) {
+            return createBadRequestResponse(e.getMessage());
         }
     }
 
@@ -147,7 +147,7 @@ public class AdminController {
     @GetMapping("/board")
     public ResponseEntity<Map<String,Object>> getResumeStatByCompany(@RequestParam(name="group") String group,
                                                                      @RequestParam(name="company", required = false) String company,
-                                                                     @RequestParam(name="occupation", required=false) String occupation){
+                                                                     @RequestParam(name="occupation", required=false) String occupation) {
             Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
                 case "company" -> (g) -> createOkResponse(adminService.CompResumeCnt(company));
                 case "occupation" -> (g) -> createOkResponse(adminService.OccupResumeCnt(occupation));
@@ -178,66 +178,65 @@ public class AdminController {
 
     // 관리자 - 통계 페이지 내에서 각 영역 top 5를 출력한다.
     @GetMapping("/rank/occupation")
-    public ResponseEntity<Map<String, Object>> getOccupRank(){
+    public ResponseEntity<Map<String, Object>> getOccupRank() {
         return createOkResponse(adminService.rankOccup());
     }
 
     @GetMapping("/rank/company")
-    public ResponseEntity<Map<String, Object>> getCompRank(){
+    public ResponseEntity<Map<String, Object>> getCompRank() {
         return createOkResponse(adminService.rankComp());
     }
 
     @GetMapping("/rank/wish")
-    public ResponseEntity<Map<String, Object>> getWishRank(){
+    public ResponseEntity<Map<String, Object>> getWishRank() {
         return createOkResponse(adminService.rankWish());
     }
 
     // 자소서 통계
     @GetMapping("/resume/count")
-    public ResponseEntity<Map<String,Object>> getResumeStat(@RequestParam(name="group", required = false) String group){
+    public ResponseEntity<Map<String,Object>> getResumeStat(@RequestParam(name="group", required = false) String group) {
         Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
             case "editTotal" -> (g) -> createOkResponse(historyService.getTotalEdit());
             case "editToday" -> (g) -> createOkResponse(historyService.getRNumForCurrentDate());
             case "boardToday" -> (g) -> createOkResponse(historyService.getTotalBoardCnt());
             default -> (g) -> createBadRequestResponse("잘못된 요청입니다");
         };
-
         return action.apply(group);
     }
 
     @GetMapping("/resume/monthly")
-    public ResponseEntity<Map<String,Object>> getEditStatByMonthly(){
+    public ResponseEntity<Map<String,Object>> getEditStatByMonthly() {
         try {
             Map<String, Object> result = new LinkedHashMap<>();
 
             result.put("edit_monthly", historyService.getEditByMonthly());
 
             return createOkResponse(result);
-        }catch (Exception exception){
-            return createBadRequestResponse(exception.getMessage());
+        } catch (Exception e) {
+            return createBadRequestResponse(e.getMessage());
         }
     }
 
     @GetMapping("/resume/weekly")
-    public ResponseEntity<Map<String,Object>> getEditStatByWeekly(@RequestParam(name="month", required = false) String month){
+    public ResponseEntity<Map<String,Object>> getEditStatByWeekly(@RequestParam(name="month", required = false) String month) {
         try {
             return createOkResponse(historyService.getEditByWeekly(month));
-        } catch (Exception exception) {
-            return createBadRequestResponse(exception.getMessage());
+        } catch (Exception e) {
+            return createBadRequestResponse(e.getMessage());
         }
     }
 
     @GetMapping("/resume/daily")
     public ResponseEntity<Map<String,Object>> getEditStatByDaily(@RequestParam(value = "startDate", required = false) String startDate,
-                                                                 @RequestParam(value = "endDate", required = false)  String endDate){
+                                                                 @RequestParam(value = "endDate", required = false) String endDate) {
         try {
             Map<String, Object> result = new LinkedHashMap<>();
 
             Map<String, Object> editDaily = historyService.getEditByDaily(startDate, endDate);
             result.put("edit_daily", editDaily);
             return createOkResponse(result);
-        } catch (Exception exception) {
-            return createBadRequestResponse(exception.getMessage());
+        } catch (Exception e) {
+            return createBadRequestResponse(e.getMessage());
         }
     }
 }

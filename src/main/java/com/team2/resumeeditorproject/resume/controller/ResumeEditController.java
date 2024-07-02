@@ -1,24 +1,18 @@
 package com.team2.resumeeditorproject.resume.controller;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.resumeeditorproject.resume.domain.Resume;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
-import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
-import com.team2.resumeeditorproject.resume.dto.ResumeDTO;
-import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
-import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
-import com.team2.resumeeditorproject.resume.service.ResumeService;
+import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
-import com.team2.resumeeditorproject.user.service.UserService;
-import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -71,8 +65,7 @@ public class ResumeEditController {
             response.put("time", today.toString());
             response.put("status", "Success");
             return ResponseEntity.ok(response);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("response", "server error " + e.getMessage());
             errorResponse.put("time", today.toString());

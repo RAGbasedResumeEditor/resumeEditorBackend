@@ -13,7 +13,12 @@ import com.team2.resumeeditorproject.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -121,7 +126,7 @@ public class ResumeGuideController {
     }
 
     @GetMapping("/load/{num}")
-    public ResponseEntity<Map<String, Object>> loadGuide(@PathVariable("num")  Long num) {
+    public ResponseEntity<Map<String, Object>> loadGuide(@PathVariable("num") Long num) {
         Map<String, Object> response = new HashMap<>();
         try {
             Guide existingGuide = guideRepository.findByUNum(num);

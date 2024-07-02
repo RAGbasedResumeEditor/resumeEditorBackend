@@ -40,14 +40,12 @@ public class SchedulerConfig {
     }
 
     // 트래픽 수집 및 저장
-    @Scheduled(cron = CronExpressions.SAVE_TRAFFIC_CRON) // 매일 새벽2시에 실행
+    @Scheduled(cron = CronExpressions.SAVE_TRAFFIC_CRON)
     public void saveTraffic() {
         try {
-            // 통계 수집
-            HistoryDTO statistics = historyService.collectStatistics();
-
             // 수집한 통계 데이터 저장
-            historyService.saveStatistics(statistics);
+            historyService.collectStatistics();
+            log.info("Completed saveTraffic successfully");
         } catch (Exception e) {
             log.error("Error occurred while saving traffic", e);
         }
@@ -76,10 +74,10 @@ public class SchedulerConfig {
     // 30일 지나면 테이블에서 해당 회원 삭제
     @Scheduled(cron = CronExpressions.DAILY_AT_MIDNIGHT_CRON)
     @Transactional
-    public void deleteUserEnd(){
+    public void deleteUserEnd() {
         try {
             userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("Error occurred while deleting users inactive for 30 days or more", e);
         }
     }

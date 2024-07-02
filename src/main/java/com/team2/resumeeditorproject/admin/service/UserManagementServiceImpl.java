@@ -10,7 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +66,7 @@ public class UserManagementServiceImpl implements UserManagementService{
 
     // 회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
-    public void updateUserDeleteDate(Long uNum){
+    public void updateUserDeleteDate(Long uNum) {
         User user = adminUserRepository.findById(uNum)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
         user.setDelDate(new Date()); // 현재 시간으로 탈퇴 날짜 업데이트

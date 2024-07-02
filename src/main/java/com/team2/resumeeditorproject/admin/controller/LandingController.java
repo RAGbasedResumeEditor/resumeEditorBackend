@@ -30,7 +30,7 @@ public class LandingController {
     private final ReviewManagementService reviewService;
 
     @GetMapping("/statistics")
-    public ResponseEntity<Map<String,Object>> getStatistics(@RequestParam(name="group", required=false) String group){
+    public ResponseEntity<Map<String,Object>> getStatistics(@RequestParam(name="group", required=false) String group) {
         Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
             case "countUser" -> (g) -> createOkResponse(adminService.userCnt());
             case "visitTotal" -> (g) -> createOkResponse(historyService.getTotalTraffic());
@@ -50,7 +50,7 @@ public class LandingController {
             response.put("review", reviews);
 
             return createOkResponse(response);
-        }catch(Exception e){
+        } catch (Exception e) {
             return createBadRequestResponse(e.getMessage());
         }
 

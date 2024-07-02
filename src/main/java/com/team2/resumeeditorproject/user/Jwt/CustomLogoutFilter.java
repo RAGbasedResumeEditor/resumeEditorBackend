@@ -7,7 +7,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.GenericFilterBean;
@@ -56,7 +55,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         // 헤더에 refresh토큰이 없을 경우
         if (refresh == null) {
-
             response.getWriter().write("Refresh token does not exist");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //400응답
             return;
@@ -66,7 +64,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-
             //만료가 되었다면 이미 로그아웃된 상태이기 때문에 추가적으로 로그아웃 작업을 진행하지 않음
             response.getWriter().write("You have already been logged out.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -77,7 +74,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
-
             response.getWriter().write("This is not a refresh token.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -87,7 +83,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // DB에 저장되어 있는지 확인
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
-
             response.getWriter().write("You have already been logged out.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -101,7 +96,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         response.setHeader("refresh",null);
         response.setStatus(HttpServletResponse.SC_OK);
 
-        try(PrintWriter out = response.getWriter()){
+        try (PrintWriter out = response.getWriter()) {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("status", "Success");
             responseBody.put("time", new Date());
@@ -109,7 +104,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writeValue(out, responseBody);
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

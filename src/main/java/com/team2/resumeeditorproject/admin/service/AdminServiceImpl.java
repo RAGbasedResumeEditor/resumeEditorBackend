@@ -1,6 +1,9 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.team2.resumeeditorproject.admin.repository.*;
+import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
+import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
+import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
+import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +13,15 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
@@ -22,14 +32,14 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
     private final AdminResumeBoardRepository adResBoardRepository;
     private final AdminResumeRepository adResRepository;
 
-    public static int totalUserCnt(AdminUserRepository adminUserRepository){
+    public static int totalUserCnt(AdminUserRepository adminUserRepository) {
         List<User> users = adminUserRepository.findAll();
         return users.size();
     }
 
     @Override
-    public Map<String, Object> userCnt(){ // 총 회원수
-        Map<String, Object> result=new HashMap<>();
+    public Map<String, Object> userCnt() { // 총 회원수
+        Map<String, Object> result = new HashMap<>();
         result.put("total_user", totalUserCnt(adminRepository));
         return result;
     }
@@ -645,51 +655,6 @@ public class AdminServiceImpl implements AdminService{ //관리자 페이지 통
             return false;
         }
     }
-    /*
-    @Override
-    public Map<String, Object> resumeCntByWeekly() {
-        Map<String, Object> result = new LinkedHashMap<>();
-        List<Object[]> weeklyList = adResRepository.findWeeklyCorrectionCounts();
-
-        Map<String, Map<Integer, Integer>> monthlyData = new LinkedHashMap<>();
-        Map<String, Integer> monthlyTotalCorrections = new LinkedHashMap<>();
-
-        // 월별 총 첨삭 횟수 계산
-        for (Object[] row : weeklyList) {
-            String month = (String) row[0];
-            int weeklyCnt = ((Number) row[2]).intValue();
-            monthlyTotalCorrections.put(month, monthlyTotalCorrections.getOrDefault(month, 0) + weeklyCnt);
-        }
-
-        for (Object[] row : weeklyList) {
-            String month = (String) row[0];
-            int week = ((Number) row[1]).intValue();
-            int weeklyCnt = ((Number) row[2]).intValue();
-
-            // 월별 데이터가 없으면 초기화
-            monthlyData.putIfAbsent(month, new LinkedHashMap<>());
-            monthlyData.get(month).put(week, weeklyCnt);
-        }
-
-        for (Map.Entry<String, Map<Integer, Integer>> entry : monthlyData.entrySet()) {
-            String month = entry.getKey();
-            int totalCorrections = monthlyTotalCorrections.get(month);
-            Map<String, Object> weeklyMap = new LinkedHashMap<>();
-
-            for (Map.Entry<Integer, Integer> weekEntry : entry.getValue().entrySet()) {
-                int week = weekEntry.getKey();
-                int weeklyCnt = weekEntry.getValue();
-                String weeklyRatio = String.format("%.2f%%", ((double) weeklyCnt / totalCorrections) * 100);
-
-                weeklyMap.put(week + "주차 첨삭 횟수", weeklyCnt);
-                weeklyMap.put(week + "주차 첨삭 비율", weeklyRatio);
-            }
-            result.put(month, weeklyMap);
-        }
-
-        return result;
-    }
-    */
 
     /* 채용시즌(일별) 첨삭 횟수 */
     @Override

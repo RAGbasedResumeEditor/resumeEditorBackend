@@ -1,24 +1,31 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.admin.domain.History;
 import com.team2.resumeeditorproject.admin.domain.Traffic;
-
 import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
-import com.team2.resumeeditorproject.admin.repository.*;
+import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
+import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
+import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
+import com.team2.resumeeditorproject.admin.repository.HistoryRepository;
+import com.team2.resumeeditorproject.admin.repository.TrafficRepository;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
@@ -31,24 +38,24 @@ public class HistoryServiceImpl implements HistoryService{
     private final AdminResumeBoardRepository resumeBoardRepository;
     private final TrafficRepository trafficRepository;
     private final TrafficService trafficService;
-
     private final ObjectMapper objectMapper;
-
     private final ModelMapper modelMapper;
-
     private final AdminService adminService;
 
     /* 통계 수집 */
     @Override
     @Transactional(readOnly = true)
-    public HistoryDTO collectStatistics() {
+    public void collectStatistics() {
         HistoryDTO historyDTO = new HistoryDTO();
-
+        log.info("Starting collectStatistics");
         try {
-            Traffic todayTraffic = trafficRepository.findByInDate(LocalDate.now());
-            if (todayTraffic != null) {
-                historyDTO.setTraffic(todayTraffic.getVisitCount());
-                historyDTO.setEdit_count(todayTraffic.getEditCount());
+            // 어제 날짜 가져오기
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            Traffic yesterdayTraffic = trafficRepository.findByInDate(yesterday);
+
+            if (yesterdayTraffic != null) {
+                historyDTO.setTraffic(yesterdayTraffic.getVisitCount());
+                historyDTO.setEdit_count(yesterdayTraffic.getEditCount());
             }
 
             // 통계 데이터를 Map<String, Object> 형태로 수집
@@ -67,39 +74,17 @@ public class HistoryServiceImpl implements HistoryService{
             historyDTO.setEdit_comp(objectMapper.writeValueAsString(getEditComp().get("ranking_resumeEdit")));
             historyDTO.setW_date(new java.util.Date());
 
-        } catch (JsonProcessingException e) {
-            log.error("JSON processing error while collecting statistics", e);
-        } catch (Exception e) {
-            log.error("Error occurred while collecting statistics", e);
-        }
-
-        return historyDTO;
-    }
-
-    /* DB에 저장 */
-    @Override
-    @Transactional
-    public void saveStatistics(HistoryDTO historyDTO) {
-        // Statistics 저장 로직
-        try {
             // HistoryDTO를 History로 변환
             History history = modelMapper.map(historyDTO, History.class);
-
-            // 어제의 날짜를 계산하여 traffic_date 컬럼에 저장
-            history.setTraffic_date(LocalDate.now().minusDays(1));
-            log.info("Statistics saved successfully for date: {}", history.getTraffic_date());
 
             // 데이터 저장
             historyRepository.save(history);
 
-        } catch (Exception e) {
-            log.error("Error occurred while saving statistics", e);
-        }
-    }
+            log.info("Completed collectAndSaveStatistics successfully for date: {}", historyDTO.getTraffic_date());
 
-    private int resumeEditCnt(){
-        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        return resumeRepository.findRNumByCurrentDate(currentDate);
+        } catch (Exception e) {
+            log.error("Error occurred while collecting statistics", e);
+        }
     }
 
     /* 유저별 각 비율 */

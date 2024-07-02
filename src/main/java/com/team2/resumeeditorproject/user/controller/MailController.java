@@ -10,13 +10,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createBadRequestResponse;
+import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,14 +33,13 @@ public class MailController {
     private final UserService userService;
     private final UserRepository userRepository;
 
-
     @PostMapping("/auth-code") // 사용자에게 이메일을 보낸다.
-    public ResponseEntity<Map<String, Object>> mailSend(@RequestBody UserDTO userDto) throws AuthenticationException {
-        String email=userDto.getEmail();
-        if(userRepository.findByEmail(email)!=null){
-            Date delDate=userRepository.findByEmail(email).getDelDate();
+    public ResponseEntity<Map<String, Object>> mailSend(@RequestBody UserDTO userDTO) throws AuthenticationException {
+        String email = userDTO.getEmail();
+        if (userRepository.findByEmail(email) != null){
+            Date delDate = userRepository.findByEmail(email).getDelDate();
             // del_date가 30일 이내인 경우
-            if(delDate!=null) {
+            if (delDate!=null) {
                 // Calendar 인스턴스를 생성하여 delDate로 설정합니다.
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String deleted = dateFormat.format(delDate);
@@ -45,7 +50,7 @@ public class MailController {
                 // 새로운 날짜를 가져옵니다.
                 Date newDate = calendar.getTime();
                 String available = dateFormat.format(newDate);
-                if(delDate.before(newDate)){
+                if (delDate.before(newDate)) {
                     List<String> result=new ArrayList<>();
                     result.add(deleted);
                     result.add(available);
@@ -55,8 +60,8 @@ public class MailController {
 
         }
         // 이미 가입된 email인 경우
-        if(userService.checkEmailDuplicate(userDto.getEmail())){
-            throw new BadRequestException(email+" already exists");
+        if (userService.checkEmailDuplicate(userDTO.getEmail())) {
+            throw new BadRequestException(email + " already exists");
         }
 
         mailService.sendEmail(email);
@@ -64,12 +69,12 @@ public class MailController {
     }
 
     @PostMapping("/auth-check")
-    public ResponseEntity<Map<String, Object>> authCheck(@RequestBody UserDTO userDto) throws AuthenticationException{
+    public ResponseEntity<Map<String, Object>> authCheck(@RequestBody UserDTO userDTO) throws AuthenticationException {
 
-        String email=userDto.getEmail();
-        String authCode=userDto.getAuthCode();
+        String email = userDTO.getEmail();
+        String authCode = userDTO.getAuthCode();
 
-        boolean checked=mailService.checkAuthNum(email, authCode);
+        boolean checked = mailService.checkAuthNum(email, authCode);
 
         if (checked) {
             return createOkResponse("인증 성공");

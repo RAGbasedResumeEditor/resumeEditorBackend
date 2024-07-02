@@ -1,18 +1,20 @@
 package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.exception.DelDateException;
-import com.team2.resumeeditorproject.resume.domain.*;
+import com.team2.resumeeditorproject.resume.domain.Occupation;
+import com.team2.resumeeditorproject.resume.domain.Resume;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
+import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
-import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
 import com.team2.resumeeditorproject.resume.repository.OccupationRepository;
-import com.team2.resumeeditorproject.resume.repository.ResumeGuideRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.resume.service.ResumeGuideService;
 import com.team2.resumeeditorproject.resume.service.ResumeService;
-import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
@@ -32,11 +34,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
 
@@ -68,10 +81,9 @@ public class UserController extends HttpServlet {
     private OccupationRepository occupationRepository;
 
     @Autowired
-    private ResumeGuideRepository resumeGuideRepository;
-
-    @Autowired
     private ResumeGuideService resumeGuideService;
+
+    private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
 
     public static String getUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -81,7 +93,7 @@ public class UserController extends HttpServlet {
 
     // 직종 검색하여 가져오기
     @GetMapping("/signup/load/{occupation}")
-    public ResponseEntity<Map<String, Object>> loadOccupation(@PathVariable("occupation")  String occupation) {
+    public ResponseEntity<Map<String, Object>> loadOccupation(@PathVariable("occupation") String occupation) {
         Map<String, Object> response = new HashMap<>();
         try {
             List<Occupation> existingOccupation = occupationRepository.findByOccupationContaining(occupation);
@@ -101,13 +113,13 @@ public class UserController extends HttpServlet {
 
     //회원가입
     @PostMapping(value="/signup")
-    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDto) throws IOException {
-        String username=userDto.getUsername();
+    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDTO) throws IOException {
+        String username = userDTO.getUsername();
 
         //30일 이내에 탈퇴한 회원 예외 처리
-        User user=userRepository.findByUsername(username);
-        if(user!=null && user.getDelDate()!=null) {
-            Date delDate=user.getDelDate();
+        User user = userRepository.findByUsername(username);
+        if (user != null && user.getDelDate() != null) {
+            Date delDate = user.getDelDate();
             //삭제한 날짜
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String deleted = dateFormat.format(delDate);
@@ -118,65 +130,19 @@ public class UserController extends HttpServlet {
             Date newDate = calendar.getTime();
             String available = dateFormat.format(newDate);
 
-            List<String> result=new ArrayList<>();
+            List<String> result = new ArrayList<>();
             result.add(deleted);
             result.add(available);
             throw new DelDateException(result);
         }
         //존재하는 username 예외 처리
-        if(userService.checkUsernameDuplicate(username)){
-            throw new BadRequestException(username+" already exists.");
+        if (userService.checkUsernameDuplicate(username)) {
+            throw new BadRequestException(username + " already exists.");
         }
 
-        userService.signup(userDto);//회원가입 처리
+        userService.signup(userDTO);//회원가입 처리
         return createOkResponse("회원가입 성공");
     }//signup()
-/*
-    @PostMapping("/signup/exists/username")
-    public ResponseEntity<Map<String,Object>> checkUsernameDuplicate(HttpServletRequest req) throws AuthenticationException {
-             UserDTO userDto=new UserDTO();
-            try{
-                ObjectMapper objectMapper=new ObjectMapper();
-                ServletInputStream inputStream=req.getInputStream();
-                String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-                userDto=objectMapper.readValue(messageBody, UserDTO.class);
-            }catch(IOException e){
-                throw new RuntimeException(e);
-            }
-            String username=userDto.getUsername();
-        
-            Map<String,Object> response=new HashMap<>();
-            Map<String,Object> errorResponse=new HashMap<>();
-            try{
-                boolean result=userService.checkUsernameDuplicate(username); // 중복 시 true
-                response.put("status","Success");
-                response.put("result",result+"");
-                response.put("time", new Date());
-                response.put("response", "Username 중복 여부 확인 성공");
-                return ResponseEntity.ok(response);
-            }catch(Exception e){
-                errorResponse.put("status","Fail");
-                errorResponse.put("time",new Date());
-                errorResponse.put("response", "서버 오류입니다.");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-            }
-    }
-
-    @PostMapping("/signup/exists/email")
-    public ResponseEntity<Map<String,Object>> checkEmailDuplicate(@RequestBody UserDTO userDto){
-        Map<String,Object> response=new HashMap<>();
-        Map<String,Object> errorResponse=new HashMap<>();
-        try{
-            boolean result= userService.checkEmailDuplicate(userDto.getEmail());
-            response.put("isEmailExists",result);
-            return ResponseEntity.ok(response);
-        }catch(Exception e){
-            errorResponse.put("status","Fail");
-            errorResponse.put("time",new Date());
-            errorResponse.put("response", "서버 오류입니다.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-    }*/
 
     //회원조회
     @PostMapping("/user/search")
@@ -184,8 +150,8 @@ public class UserController extends HttpServlet {
 
             String username = getUsername();
 
-            User tempUser=userService.showUser(username);
-            UserDTO user=new UserDTO();
+            User tempUser = userService.showUser(username);
+            UserDTO user = new UserDTO();
                 user.setUNum(tempUser.getUNum());
                 user.setEmail(tempUser.getEmail());
                 user.setUsername((tempUser.getUsername()));
@@ -204,10 +170,8 @@ public class UserController extends HttpServlet {
     }
 
     //회원탈퇴
-    @PostMapping("/user/delete")
-    public ResponseEntity<Map<String, Object>> deleteUser(@RequestBody UserDTO userDto) throws AuthenticationException {
-
-            Long uNum =userDto.getUNum();
+    @DeleteMapping("/user/{uNum}")
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("uNum") Long uNum) throws AuthenticationException {
 
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
             userManagementService.updateUserDeleteDate(uNum);
@@ -217,45 +181,45 @@ public class UserController extends HttpServlet {
                     .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
             refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
 
-            return createOkResponse( uNum+"번 회원 탈퇴 완료.");
+            return createOkResponse(uNum+"번 회원 탈퇴 완료.");
     }
 
     //회원정보 수정
-    @PostMapping("/user/update")
-    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDto) throws AuthenticationException{
-        String username= getUsername();
-        User tempUser=userService.showUser(username);
-        userDto.setUNum(tempUser.getUNum());
+    @PatchMapping("/user")
+    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDTO) throws AuthenticationException {
+        String username = getUsername();
+        User tempUser = userService.showUser(username);
+        userDTO.setUNum(tempUser.getUNum());
 
-        userService.updateUser(userDto);//수정 처리
+        userService.updateUser(userDTO);//수정 처리
         return createOkResponse(getUsername()+" 회원 수정 완료.");
     }
 
     // 즐겨찾기 목록 조회
-    @GetMapping("user/bookmark")
-    public ResponseEntity<Map<String, Object>> showBookmark(@RequestParam("page") int page) throws AuthenticationException {
+    @GetMapping("/user/bookmark")
+    public ResponseEntity<Map<String, Object>> showBookmark(@RequestParam("pageNo") int pageNo) throws AuthenticationException {
         String username = getUsername();
         Long uNum = userService.showUser(username).getUNum();
-        int size = 5; // 한 페이지에 보여줄 게시글 수
+        int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
 
         try{
             // 즐겨찾기한 목록 보여주기
             // 로그인한 user의 u_num과 일치하는 항목을 bookmark 테이블에서 찾고, 그에 해당하는 r_num으로 목록 불러오기
-            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
+            pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(pageNo, size);
             Page<Object[]> resultsPage = resumeBoardService.getBookmarkList(uNum, pageable);
 
             if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
                 response.put("response", "게시글이 없습니다.");
             }
             else { // 게시글이 있는 경우
-                if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                    page = resultsPage.getTotalPages() - 1;
-                    pageable = PageRequest.of(page, size);
+                if(pageNo > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    pageNo = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(pageNo, size);
                     resultsPage = resumeBoardService.getBookmarkList(uNum, pageable);
                 }
 
@@ -290,7 +254,7 @@ public class UserController extends HttpServlet {
 
             return new ResponseEntity<>(response, HttpStatus.OK);
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("response", "server error : bookmark list Fail " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
@@ -299,28 +263,28 @@ public class UserController extends HttpServlet {
     }
 
     // 첨삭 기록 목록 조회
-    @GetMapping("user/edit-list")
-    public ResponseEntity<Map<String, Object>> resumeEditList(@RequestParam("page") int page) throws AuthenticationException {
+    @GetMapping("/user/edit-list")
+    public ResponseEntity<Map<String, Object>> resumeEditList(@RequestParam("pageNo") int pageNo) throws AuthenticationException {
         String username = getUsername();
         Long uNum = userService.showUser(username).getUNum();
-        int size = 5; // 한 페이지에 보여줄 게시글 수
+        int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
 
         try{
-            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
+            pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(pageNo, size);
             Page<Object[]> resultsPage = resumeService.myPageEditList(uNum, pageable);
 
             if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
                 response.put("response", "게시글이 없습니다.");
             }
             else { // 게시글이 있는 경우
-                if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                    page = resultsPage.getTotalPages() - 1;
-                    pageable = PageRequest.of(page, size);
+                if(pageNo > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    pageNo = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(pageNo, size);
                     resultsPage = resumeService.myPageEditList(uNum, pageable);
                 }
 
@@ -355,7 +319,7 @@ public class UserController extends HttpServlet {
 
             return new ResponseEntity<>(response, HttpStatus.OK);
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("response", "server error : bookmark list Fail " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
@@ -364,7 +328,7 @@ public class UserController extends HttpServlet {
     }
 
     // 첨삭 기록 상세페이지
-    @GetMapping("user/edit-list/{num}") // ** re null값인것 처리
+    @GetMapping("/user/edit-list/{num}") // ** re null값인것 처리
     public ResponseEntity<Map<String, Object>> getResumeBoard(@PathVariable("num")  Long num) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
@@ -419,26 +383,26 @@ public class UserController extends HttpServlet {
     // 자소서 가이드 목록 조회
     @GetMapping("/user/guide-list")
     public ResponseEntity<Map<String, Object>> resumeGuideList(
-            @RequestParam("page") int page) throws AuthenticationException {
+            @RequestParam("pageNo") int pageNo) throws AuthenticationException {
         String username = getUsername();
         Long uNum = userService.showUser(username).getUNum();
-        int size = 5; // 한 페이지에 보여줄 게시글 수
+        int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
 
         try {
-            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
+            pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(pageNo, size);
             Page<ResumeGuide> resultsPage = resumeGuideService.getResumeGuidesByUNum(uNum, pageable);
 
             if (resultsPage.getTotalElements() == 0) { // 게시글이 없는 경우
                 response.put("response", "게시글이 없습니다.");
             } else { // 게시글이 있는 경우
-                if (page > resultsPage.getTotalPages() - 1) { // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                    page = resultsPage.getTotalPages() - 1;
-                    pageable = PageRequest.of(page, size);
+                if (pageNo > resultsPage.getTotalPages() - 1) { // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    pageNo = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(pageNo, size);
                     resultsPage = resumeGuideService.getResumeGuidesByUNum(uNum, pageable);
                 }
 

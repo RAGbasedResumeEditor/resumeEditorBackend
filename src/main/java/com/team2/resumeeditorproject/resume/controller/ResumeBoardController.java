@@ -9,26 +9,35 @@ import com.team2.resumeeditorproject.resume.dto.RatingDTO;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import com.team2.resumeeditorproject.resume.repository.BookmarkRepository;
 import com.team2.resumeeditorproject.resume.repository.RatingRepository;
+import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeEditRepository;
 import com.team2.resumeeditorproject.resume.service.BookmarkService;
 import com.team2.resumeeditorproject.resume.service.RatingService;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
-import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
-import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * resumeBoardController 자소서 게시판 컨트롤러
@@ -68,6 +77,8 @@ public class ResumeBoardController {
     @Autowired
     private UserService userService;
 
+    private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
+
     public static String getUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -76,26 +87,26 @@ public class ResumeBoardController {
 
     /* 게시글 목록 */
     @GetMapping("/list")
-    public ResponseEntity<Map<String, Object>> getAllResumeBoards(@RequestParam("page") int page) {
-        int size = 5; // 한 페이지에 보여줄 게시글 수
+    public ResponseEntity<Map<String, Object>> getAllResumeBoards(@RequestParam("pageNo") int pageNo) {
+        int size = SIZE_OF_PAGE;
 
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
 
         try {
-            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
+            pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(pageNo, size);
             Page<Object[]> resultsPage = resumeBoardService.getAllResumeBoards(pageable);
 
-            if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
+            if (resultsPage.getTotalElements() == 0) { // 게시글이 없는 경우
                 response.put("response", "게시글이 없습니다.");
             }
             else { // 게시글이 있는 경우
-                if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                    page = resultsPage.getTotalPages() - 1;
-                    pageable = PageRequest.of(page, size);
+                if (pageNo > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    pageNo = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(pageNo, size);
                     resultsPage = resumeBoardService.getAllResumeBoards(pageable);
                 }
 
@@ -133,9 +144,7 @@ public class ResumeBoardController {
             }
             response.put("time", today);
             response.put("status", "Success");
-//            response.put("currentPage", resultsPage.getNumber()); // 현재 페이지
-//            response.put("totalItems", resultsPage.getTotalElements()); // 총 게시글 수
-            response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
+            response.put("totalPages", resultsPage.getTotalPages());
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -162,7 +171,7 @@ public class ResumeBoardController {
             }
 
             ResumeEdit resumeEdit = resumeEditRepository.findById(num).orElse(null);
-            if(resumeEdit == null){
+            if (resumeEdit == null) {
                 throw new Exception(" - ResumeEdit with num " + num + " not found");
             }
 
@@ -194,9 +203,7 @@ public class ResumeBoardController {
             String username = userRepository.findUsernameByUNum(u_num);
             responseData.put("username", username);
 
-
             responseData.put("item", resumeEdit.getItem());
-
 
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
@@ -209,25 +216,25 @@ public class ResumeBoardController {
 
     /* 게시글 검색 */
     @GetMapping("/list/search")
-    public ResponseEntity<Map<String, Object>> search(@RequestParam("keyword") String keyword, @RequestParam("page") int page) {
-        int size = 5; // 한 페이지에 보여줄 게시글 수
+    public ResponseEntity<Map<String, Object>> search(@RequestParam("keyword") String keyword, @RequestParam("pageNo") int pageNo) {
+        int size = SIZE_OF_PAGE;
 
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
-            page = (page < 0) ? 0 : page; // 페이지가 음수인 경우 첫 페이지로 이동하게
+            pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(pageNo, size);
             Page<Object[]> resultsPage = resumeBoardService.searchBoard(keyword, pageable);
 
             if(resultsPage.getTotalElements() == 0){ // 검색 게시글이 없는 경우
                 response.put("response", "검색 결과가 없습니다.");
             }
             else { // 게시글이 있는 경우
-                if(page > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                    page = resultsPage.getTotalPages() - 1;
-                    pageable = PageRequest.of(page, size);
+                if (pageNo > resultsPage.getTotalPages() - 1) { // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
+                    pageNo = resultsPage.getTotalPages() - 1;
+                    pageable = PageRequest.of(pageNo, size);
                     resultsPage = resumeBoardService.getAllResumeBoards(pageable);
                 }
 
@@ -273,10 +280,10 @@ public class ResumeBoardController {
 
     /* 별점 주기 */
     @PostMapping("/rating")
-    public ResponseEntity<Map<String, Object>> setRating(@RequestBody RatingDTO ratingDTO){
+    public ResponseEntity<Map<String, Object>> setRating(@RequestBody RatingDTO ratingDTO) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
-        try{
+        try {
             long r_num = ratingDTO.getRNum();
 
             ResumeBoard resumeBoard = resumeBoardRepository.findById(r_num).orElse(null);
@@ -288,11 +295,11 @@ public class ResumeBoardController {
 
             int isRated = ratingService.ratingCount(ratingDTO.getRNum(), ratingDTO.getUNum());
 
-            if(isRated>0){ // 이미 별점을 줬다면
+            if (isRated > 0) { // 이미 별점을 줬다면
                 throw new Exception(" - 이미 별점을 준 게시글");
             }
 
-            if(ratingDTO.getRating()<0 || ratingDTO.getRating()>5){ // 별점 범위를 벗어나는 경우
+            if (ratingDTO.getRating() < 0 || ratingDTO.getRating() > 5){ // 별점 범위를 벗어나는 경우
                 throw new Exception(" - 별점 범위 초과");
             }
 
@@ -305,26 +312,26 @@ public class ResumeBoardController {
 
             // resume_board의 rating_count(게시글 별점 수) 증가
             // 현재(증가 전) rating_count
-            ResumeBoardDTO rbDto = resumeBoardService.getResumeBoardForRating(ratingDTO.getRNum());
-            int beforeRatingCount = rbDto.getRating_count();
-            float beforeRating = rbDto.getRating();
+            ResumeBoardDTO resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getRNum());
+            int beforeRatingCount = resumeBoardDTO.getRating_count();
+            float beforeRating = resumeBoardDTO.getRating();
 
             // 평균 별점.. (현재 평균 별점*현재 별점 준 사람 수 + 지금 주는 별점)/총 별점 준 사람 수
-            float avgRating = (beforeRating*beforeRatingCount + ratingDTO.getRating()) / (beforeRatingCount+1);
+            float avgRating = (beforeRating * beforeRatingCount + ratingDTO.getRating()) / (beforeRatingCount + 1);
 
             // resume_board의 rating_count, rating 업데이트
             int ratingCountUpdate = resumeBoardService.updateRatingCount(ratingDTO.getRNum(), beforeRatingCount+1, avgRating);
 
             // 증가한 rating_count 가져오기
-            rbDto = resumeBoardService.getResumeBoardForRating(ratingDTO.getRNum());
+            resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getRNum());
 
-            float afterRating = (float) Math.round(rbDto.getRating() * 10) /10;
+            float afterRating = (float) Math.round(resumeBoardDTO.getRating() * 10) /10;
 
             result.put("rating", afterRating);
-            result.put("rating_count", rbDto.getRating_count());
+            result.put("rating_count", resumeBoardDTO.getRating_count());
 
             return new ResponseEntity<>(result, HttpStatus.OK); // 업데이트 된 평균 별점/별점수 반환
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("response", "server error : rating Fail " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
@@ -334,14 +341,14 @@ public class ResumeBoardController {
 
     /* 별점 확인 */
     @GetMapping("/rating/{num}")
-    public ResponseEntity<Map<String, Object>> getRating(@PathVariable("num")  Long num) {
+    public ResponseEntity<Map<String, Object>> getRating(@PathVariable("num") Long num) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         String username = getUsername();
         Long uNum = userService.showUser(username).getUNum();
         float result = 0;
 
-        try{
+        try {
             ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
             if (resumeBoard == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
@@ -362,7 +369,7 @@ public class ResumeBoardController {
             response.put("status", "Success");
 
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("response", "server error " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
@@ -380,13 +387,13 @@ public class ResumeBoardController {
         try {
             List<Object[]> resultsPage = null;
 
-            if(group.equals("read_num")) {
+            if (group.equals("read_num")) {
                 resultsPage = resumeBoardService.getBoardRankingReadNum();
             }
-            else if(group.equals("rating")){
+            else if (group.equals("rating")) {
                 resultsPage = resumeBoardService.getBoardRankingRating();
             }
-            else{ // read_num 또는 rating이 아닌 경우
+            else { // read_num 또는 rating이 아닌 경우
                 throw new Exception("랭킹 정렬 조건은 read_num 또는 rating만 가능합니다.");
             }
             List<Map<String, Object>> formattedResults = new ArrayList<>();
@@ -448,7 +455,7 @@ public class ResumeBoardController {
             response.put("status", "Success");
 
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("response", "server error " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");
@@ -466,7 +473,7 @@ public class ResumeBoardController {
         Long uNum = userService.showUser(username).getUNum();
         String result = "";
 
-        try{
+        try {
             ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
             if (resumeBoard == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
@@ -475,10 +482,10 @@ public class ResumeBoardController {
             // 즐겨찾기 여부 확인
             Bookmark bookmark = bookmarkRepository.findByRNumAndUNum(num, uNum);
 
-            if(bookmark == null){
+            if (bookmark == null) {
                 result = "false"; // 즐겨찾기 안했음
             }
-            else{
+            else {
                 result = "true"; // 이미 즐겨찾기 했음
             }
 
@@ -487,7 +494,7 @@ public class ResumeBoardController {
             response.put("status", "Success");
 
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("response", "server error " + e.getMessage());
             response.put("time", today);
             response.put("status", "Fail");

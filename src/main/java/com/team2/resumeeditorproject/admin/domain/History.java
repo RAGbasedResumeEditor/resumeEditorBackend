@@ -1,6 +1,11 @@
 package com.team2.resumeeditorproject.admin.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -8,7 +13,7 @@ import java.util.Date;
 
 @Entity
 @Data
-@Table(name="history")
+@Table(name = "history")
 public class History {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +64,6 @@ public class History {
     @Column(nullable = false, updatable = false, insertable = false, columnDefinition = "timestamp default current_timestamp")
     private Date w_date;
 
+    @Column(name = "traffic_date", unique = true, nullable = false)
     private LocalDate traffic_date;
-
 }

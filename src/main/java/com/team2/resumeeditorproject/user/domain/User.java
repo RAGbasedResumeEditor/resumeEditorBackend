@@ -1,23 +1,29 @@
 package com.team2.resumeeditorproject.user.domain;
 
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-import org.hibernate.sql.ast.Clause;
 
 import java.util.Date;
 import java.util.List;
 
-//@Where(clause="del_date is null")
 @Getter
 @Setter
 @Entity
 @Table(name="User")
 @SQLDelete(sql = "UPDATE user SET del_date = current_timestamp WHERE u_num = ?") // soft delete
-//@Where(clause="del_date is null")
 @NoArgsConstructor
 @DynamicUpdate
 public class User {

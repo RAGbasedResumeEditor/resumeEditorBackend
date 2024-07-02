@@ -1,13 +1,10 @@
 package com.team2.resumeeditorproject.user.service;
 
-import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.domain.Verification;
-import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.repository.VerificationRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-//import org.apache.http.auth.AUTH;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,9 +16,9 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MailServiceImpl implements MailService{ // 인증코드를 생성하고 이메일을 보내는 서비스
+public class MailServiceImpl implements MailService { // 인증코드를 생성하고 이메일을 보내는 서비스
 
-    private final VerificationRepository vRepository;
+    private final VerificationRepository verificationRepository;
     private final JavaMailSender mailSender; // 메일을 보내기 위한 인터페이스
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -29,17 +26,17 @@ public class MailServiceImpl implements MailService{ // 인증코드를 생성�
     private static String AUTHNUM;
 
     @Override
-    public boolean checkAuthNum(String email,String authCode){
-        Verification verification = vRepository.findByEmail(email);
-        if(verification!=null && verification.getCode().equals(authCode) && new Date().before(verification.getExpiresAt())){
+    public boolean checkAuthNum(String email,String authCode) {
+        Verification verification = verificationRepository.findByEmail(email);
+        if (verification != null && verification.getCode().equals(authCode) && new Date().before(verification.getExpiresAt())) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     @Override
-    public String createUuid(){
+    public String createUuid() {
         UUID temp = UUID.randomUUID();
         String strTemp = temp.toString();
         return strTemp.substring(0,11);
@@ -47,7 +44,7 @@ public class MailServiceImpl implements MailService{ // 인증코드를 생성�
 
     @Override
     public void sendEmail(String email) { //메일을 어디서 어디로 보내고 인증 번호를 어떤 html 형식으로 보내는지 작성한다.
-        AUTHNUM=createUuid(); // 인증 코드 생성
+        AUTHNUM = createUuid(); // 인증 코드 생성
         toEmail = email; // 인증번호 받을 이메일 주소
         String title = "[Reditor] verify your email"; // 이메일 제목
         String content =                                    //html 형식으로 작성
@@ -82,12 +79,12 @@ public class MailServiceImpl implements MailService{ // 인증코드를 생성�
         // 5분 후의 시간을 가져옵니다.
         Date futureTime = calendar.getTime();
 
-        if(vRepository.findByEmail(toM)!=null){
-            Verification verification= vRepository.findByEmail(toM);
+        if (verificationRepository.findByEmail(toM)!=null) {
+            Verification verification= verificationRepository.findByEmail(toM);
             verification.setCode(AUTHNUM);
             verification.setCreatedAt(currentTime);
             verification.setExpiresAt(futureTime);
-            vRepository.save(verification);
+            verificationRepository.save(verification);
             return;
         }
 
@@ -97,6 +94,6 @@ public class MailServiceImpl implements MailService{ // 인증코드를 생성�
                 .createdAt(currentTime)
                 .expiresAt(futureTime)
                 .build();
-        vRepository.save(verification);
+        verificationRepository.save(verification);
     }
 }

@@ -1,7 +1,12 @@
 package com.team2.resumeeditorproject.user.config;
 
 import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
-import com.team2.resumeeditorproject.user.Jwt.*;
+import com.team2.resumeeditorproject.user.Jwt.CustomAuthenticationFailureHandler;
+import com.team2.resumeeditorproject.user.Jwt.CustomAuthenticationProvider;
+import com.team2.resumeeditorproject.user.Jwt.CustomLogoutFilter;
+import com.team2.resumeeditorproject.user.Jwt.JWTFilter;
+import com.team2.resumeeditorproject.user.Jwt.JWTUtil;
+import com.team2.resumeeditorproject.user.Jwt.LoginFilter;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,9 +31,6 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    //특정한 메서드를 빈을 등록해 시큐리티 설정을 할 수 있음
-
-    //------------------------------------------------
     //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;

@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createPagedResponse;
-
 
 @Controller
 @RequestMapping("/admin/review")
@@ -26,62 +29,60 @@ public class ReviewManagementController {
     private final ReviewManagementService reviewService;
 
     @GetMapping("/list")
-    public ResponseEntity<Map<String,Object>> getAllReviews(@RequestParam("page") int page){
-        if(page<0){
-            page=0;
+    public ResponseEntity<Map<String,Object>> getAllReviews(@RequestParam("pageNo") int pageNo) {
+        if (pageNo < 0) {
+            pageNo = 0;
         }
 
-        Page<Review> rvList=reviewService.getAllReviews(page);
-        int totalPage=rvList.getTotalPages();
+        Page<Review> reviewList = reviewService.getPagedReviews(pageNo);
+        int totalPage=reviewList.getTotalPages();
 
-        List<ReviewDTO> rvDtoList = new ArrayList<>();
-        for (Review rv : rvList) {
-            ReviewDTO rvDto = new ReviewDTO();
-            rvDto.setRv_num(rv.getRvNum());
-            rvDto.setU_num(rv.getUNum());
-            rvDto.setContent(rv.getContent());
-            rvDto.setRating(rv.getRating());
-            rvDto.setMode(rv.getMode());
-            rvDto.setW_date(rv.getW_date());
-            rvDto.setShow(rv.isShow());
-            rvDtoList.add(rvDto);
+        List<ReviewDTO> reviewDTOList = new ArrayList<>();
+        for (Review review : reviewList) {
+            ReviewDTO reviewDTO = new ReviewDTO();
+            reviewDTO.setRv_num(review.getRvNum());
+            reviewDTO.setU_num(review.getUNum());
+            reviewDTO.setContent(review.getContent());
+            reviewDTO.setRating(review.getRating());
+            reviewDTO.setMode(review.getMode());
+            reviewDTO.setW_date(review.getW_date());
+            reviewDTO.setShow(review.isShow());
+            reviewDTOList.add(reviewDTO);
         }
 
-        if(rvDtoList.isEmpty()){
+        if (reviewDTOList.isEmpty()) {
             throw new BadRequestException("후기가 존재하지 않습니다.");
         }
 
-        return createPagedResponse(totalPage,rvDtoList);
+        return createPagedResponse(totalPage, reviewDTOList);
     }
 
     @GetMapping("/list/show")
-    public ResponseEntity<Map<String, Object>> getShowReviews(@RequestParam("page") int page){
-
-            if(page<0){
-                page=0;
+    public ResponseEntity<Map<String, Object>> getShowReviews(@RequestParam("pageNo") int pageNo) {
+            if (pageNo < 0) {
+                pageNo = 0;
             }
 
-            Page<Review> rvList =reviewService.getAllShows(page);
-            int totalPage=rvList.getTotalPages();
+            Page<Review> reviewList = reviewService.getAllShows(pageNo);
+            int totalPage = reviewList.getTotalPages();
 
-            List<ReviewDTO> rvDtoList = new ArrayList<>();
-            for (Review rv : rvList) {
-                ReviewDTO rvDto = new ReviewDTO();
-                rvDto.setRv_num(rv.getRvNum());
-                rvDto.setU_num(rv.getUNum());
-                rvDto.setContent(rv.getContent());
-                rvDto.setRating(rv.getRating());
-                rvDto.setMode(rv.getMode());
-                rvDto.setW_date(rv.getW_date());
-                rvDto.setShow(rv.isShow());
-                rvDtoList.add(rvDto);
+            List<ReviewDTO> reviewDTOList = new ArrayList<>();
+            for (Review review : reviewList) {
+                ReviewDTO reviewDTO = new ReviewDTO();
+                reviewDTO.setRv_num(review.getRvNum());
+                reviewDTO.setU_num(review.getUNum());
+                reviewDTO.setContent(review.getContent());
+                reviewDTO.setRating(review.getRating());
+                reviewDTO.setMode(review.getMode());
+                reviewDTO.setW_date(review.getW_date());
+                reviewDTO.setShow(review.isShow());
+                reviewDTOList.add(reviewDTO);
             }
 
-            if(rvDtoList.isEmpty()){
+            if (reviewDTOList.isEmpty()) {
                 throw new BadRequestException("후기가 존재하지 않습니다.");
             }
-
-        return createPagedResponse(totalPage,rvDtoList);
+        return createPagedResponse(totalPage,reviewDTOList);
     }
 
     @PostMapping("/select")

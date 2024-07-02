@@ -1,14 +1,23 @@
 package com.team2.resumeeditorproject.review.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Setter
 @Getter
 @Entity
-@Table(name="review")
+@Table(name = "review")
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 public class Review {
@@ -16,12 +25,16 @@ public class Review {
     @Column(nullable = false, name = "rv_num")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rvNum;
+
     @Column(nullable = false, name = "u_num")
     private Long UNum;
+
     private String content;
     private int rating;
     private int mode;
+
     @Column(name = "`show`")
     private boolean show;
+
     private Date w_date;
 }

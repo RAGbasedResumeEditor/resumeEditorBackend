@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ReviewManagementService {
     boolean selectReview(Long rvNum);
-    Page<Review> getAllReviews(int page);
-    Page<Review> getAllShows(int page);
+    Page<Review> getPagedReviews(int pageNo);
+    Page<Review> getAllShows(int pageNo);
     List<Review> getVisibleReviews();
 }

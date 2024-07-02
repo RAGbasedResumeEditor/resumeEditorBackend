@@ -7,8 +7,8 @@ import java.time.YearMonth;
 import java.util.Map;
 
 public interface HistoryService {
-    HistoryDTO collectStatistics();
-    void saveStatistics(HistoryDTO historyDTO);
+    void collectStatistics();
+    //void saveStatistics(HistoryDTO historyDTO);
 
     Map<String, Object> getTotalTraffic();
     Map<String, Object> getProUserCnt();

@@ -23,6 +23,6 @@ public class ResumeBoardDTO {
     private String title;
 
     //for admin
-    private int page;
+    private int pageNo;
     private int size;
 }

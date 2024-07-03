@@ -56,6 +56,7 @@ public class HistoryServiceImpl implements HistoryService{
             if (yesterdayTraffic != null) {
                 historyDTO.setTraffic(yesterdayTraffic.getVisitCount());
                 historyDTO.setEdit_count(yesterdayTraffic.getEditCount());
+                historyDTO.setTraffic_date(yesterdayTraffic.getInDate());
             }
 
             // 통계 데이터를 Map<String, Object> 형태로 수집

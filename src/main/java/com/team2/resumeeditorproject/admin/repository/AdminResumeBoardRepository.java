@@ -9,17 +9,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdminResumeBoardRepository extends JpaRepository<ResumeBoard, Long> {
-
     Page<ResumeBoard> findByTitleContaining(String title, Pageable pageable);
     Page<ResumeBoard> findByRatingBetween(Float rating1, Float rating2, Pageable pageable);
     Page<ResumeBoard> findAll(Pageable pageable);
 
     @Query(value = "SELECT rb, rb.title, r.w_date, u.username " +
-           // ", ROW_NUMBER() OVER (ORDER BY rb.RNum ASC) AS num " +
             "FROM ResumeBoard rb " +
             "JOIN Resume r ON rb.RNum = r.r_num " +
             "JOIN User u ON r.u_num = u.uNum")
-          //  "ORDER BY num DESC")
     Page<Object[]> findAllResumeBoards(Pageable pageable);
-
 }

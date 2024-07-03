@@ -5,7 +5,6 @@ import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
 import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,10 +31,10 @@ public class LandingController {
     @GetMapping("/statistics")
     public ResponseEntity<Map<String,Object>> getStatistics(@RequestParam(name="group", required=false) String group) {
         Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
-            case "countUser" -> (g) -> createOkResponse(adminService.userCnt());
-            case "visitTotal" -> (g) -> createOkResponse(historyService.getTotalTraffic());
-            case "editTotal" -> (g) -> createOkResponse(historyService.getTotalEdit());
-            case "boardTotal" -> (g) -> createOkResponse(historyService.getTotalBoardCnt());
+            case "countUser" -> (g) -> createOkResponse(adminService.getUserCount());
+            case "visitTotal" -> (g) -> createOkResponse(historyService.getTotalVisitCount());
+            case "editTotal" -> (g) -> createOkResponse(historyService.getTotalEditCount());
+            case "boardTotal" -> (g) -> createOkResponse(historyService.getTotalBoardCount());
             default -> (g) ->  createBadRequestResponse("잘못된 요청입니다.");
         };
         return action.apply(group);

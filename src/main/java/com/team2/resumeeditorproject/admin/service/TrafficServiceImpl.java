@@ -35,19 +35,19 @@ public class TrafficServiceImpl implements TrafficService{
 
     // 현재 날짜에 저장
     @Override
-    public Traffic getTraffic(LocalDate date) {
+    public Traffic updateTrafficForToday(LocalDate date) {
         return trafficRepository.findByInDate(date);
     }
 
     // 총 방문자 수
     @Override
-    public long getTotalTraffic() {
+    public long getTotalVisitCount() {
         return trafficRepository.sumAllTraffic();
     }
 
     // 오늘 방문자 수
     @Override
-    public long getTrafficForCurrentDate() {
+    public long getVisitCountForToday() {
         Traffic todayTraffic = trafficRepository.findByInDate(LocalDate.now());
         return todayTraffic != null ? todayTraffic.getVisitCount() : 0;
     }
@@ -109,7 +109,7 @@ public class TrafficServiceImpl implements TrafficService{
 
     // 오늘 첨삭 수 저장
     @Override
-    public void updateEditCountForToday() {
+    public void saveEditCountForToday() {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         // 당일 첨삭 수
         int editCount = resumeRepository.findRNumByCurrentDate(currentDate);

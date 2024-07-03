@@ -1,7 +1,6 @@
-package com.team2.resumeeditorproject.admin.scheduler;
+package com.team2.resumeeditorproject.common.scheduler;
 
-import com.team2.resumeeditorproject.admin.config.CronExpressions;
-import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
+import com.team2.resumeeditorproject.common.util.CronExpressions;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.TrafficService;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
@@ -9,18 +8,16 @@ import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.RefreshService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-@Configuration
 @EnableScheduling
 @RequiredArgsConstructor
 @Slf4j
-public class SchedulerConfig {
+public class ApplicationScheduler {
 
     private final HistoryService historyService;
     private final RefreshService refreshService;
@@ -29,18 +26,18 @@ public class SchedulerConfig {
     private final TrafficService trafficService;
 
     // 첨삭수 Traffic 테이블에 저장
-    @Scheduled(cron = CronExpressions.SAVE_EDIT_COUNT_CRON)
+    @Scheduled(cron = CronExpressions.DAILY_AT_23_59_CRON)
     public void saveEditCount() {
         try {
             // edit_count 업데이트
-            trafficService.updateEditCountForToday();
+            trafficService.saveEditCountForToday();
         } catch (Exception e) {
             log.error("Error occurred while updating edit count", e);
         }
     }
 
     // 트래픽 수집 및 저장
-    @Scheduled(cron = CronExpressions.SAVE_TRAFFIC_CRON)
+    @Scheduled(cron = CronExpressions.DAILY_AT_02_00_CRON )
     public void saveTraffic() {
         try {
             // 수집한 통계 데이터 저장

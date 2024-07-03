@@ -3,32 +3,31 @@ package com.team2.resumeeditorproject.admin.service;
 import java.util.Map;
 
 //통계 관련 service
+// 통계에 맞는 클래스명으로 변경 예정
 public interface AdminService {
+    Map<String, Object> getUserCount();
+    Map<String, Object> getGenderCount();
+    Map<String, Object> getOccupationCount(String occupation);
+    Map<String, Object> getWishCount(String wish);
 
-    Map<String, Object> userCnt();
-    Map<String, Object> genderCnt();
-    Map<String, Object> occupCnt(String occupation);
-    Map<String, Object> wishCnt(String wish);
+    Map<String, Map<String, Integer>> getOccupationRank();
+    Map<String, Map<String, Integer>> getCompanyRank();
+    Map<String, Map<String, Integer>> getWishRank();
 
-    Map<String, Map<String, Integer>> rankOccup();
-    Map<String, Map<String, Integer>> rankComp();
-    Map<String, Map<String, Integer>> rankWish();
+    Map<String, Object> getAgeCount();
+    Map<String, Object> getStatusCount();
+    Map<String, Object> getModeCount();
 
-    Map<String, Object> ageCnt();
-    Map<String, Object> statusCnt();
-    Map<String, Object> modeCnt();
+    Map<String, Object> getResumeCountByCompany(String company);
+    Map<String, Object> getResumeCountByOccupation(String occupation);
 
-    Map<String, Object> CompResumeCnt(String company);
-    Map<String, Object> OccupResumeCnt(String occupation);
+    Map<String, Object> getResumeEditCountByStatus();
+    Map<String, Object> getResumeEditCountByOccupation(String occupation);
+    Map<String, Object> getResumeEditCountByCompany(String company);
+    Map<String, Object> getResumeEditCountByAge();
+    Map<String, Object> getResumeEditCountByMode();
 
-    Map<String, Object> resumeEditCntByStatus();
-    Map<String, Object> resumeEditCntByOccup(String occupation);
-    Map<String, Object> resumeEditCntByComp(String company);
-    Map<String, Object> resumeEditCntByAge();
-    Map<String, Object> resumeEditCntByMode();
-
-    Map<String, Object> resumeCntByMonth();
-    Map<String, Object> resumeCntByDaily();
-    Map<String, Object> resumeCntByWeekly();
-
+    Map<String, Object> getMonthlyResumeEditCount();
+    Map<String, Object> getDailyResumeEditCount();
+    Map<String, Object> getWeeklyResumeEditCount();
 }

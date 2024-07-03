@@ -9,12 +9,10 @@ import java.util.Map;
 
 public interface TrafficService {
     void saveTraffic(TrafficDTO trafficDTO);
-    Traffic getTraffic(LocalDate date);
-    long getTotalTraffic();
-    long getTrafficForCurrentDate();
+    Traffic updateTrafficForToday(LocalDate date);
+    long getTotalVisitCount();
+    long getVisitCountForToday();
     Map<LocalDate, Integer> getTrafficData(LocalDate startDate, LocalDate endDate);
     Map<YearMonth, Integer> getMonthlyTrafficData(LocalDate startDate, LocalDate endDate);
-    void updateEditCountForToday();
-
-    //Map<YearMonth, Integer> getMonthlyUserRegistrations(LocalDate startDate, LocalDate endDate);
+    void saveEditCountForToday();
 }

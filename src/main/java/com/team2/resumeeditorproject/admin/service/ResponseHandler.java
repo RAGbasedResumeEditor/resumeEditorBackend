@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ResponseHandler {
 
-    public static ResponseEntity<Map<String, Object>> createOkResponse(Object msg){
+    public static ResponseEntity<Map<String, Object>> createOkResponse(Object msg) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", "Success");
         response.put("response", msg);
@@ -31,7 +31,7 @@ public class ResponseHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    public static ResponseEntity<Map<String, Object>> createServerErrResponse(){
+    public static ResponseEntity<Map<String, Object>> createServerErrResponse() {
         Map<String,Object> errorResponse=new HashMap<>();
         errorResponse.put("status","Fail");
         errorResponse.put("time",new Date());

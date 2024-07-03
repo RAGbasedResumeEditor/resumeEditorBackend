@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface AdminResumeEditRepository extends JpaRepository<ResumeEdit, Long> {
-
     // 유저 첨삭횟수
     @Query("SELECT COUNT(re) FROM ResumeEdit re WHERE re.u_num = :u_num")
     int countByRNum(@Param("u_num") Long uNum);

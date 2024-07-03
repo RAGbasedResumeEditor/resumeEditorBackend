@@ -37,8 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (role.equals("ROLE_BLACKLIST") && !userDetails.isEnabled()) {
             LocalDateTime localDateTime = userDetails.getReactivationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             String blackListedDate = localDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
-            throw new UserBlacklistedException("blacklisted "+blackListedDate);
-//            throw new UserBlacklistedException("blacklisted");
+            throw new UserBlacklistedException("blacklisted " + blackListedDate);
         }
 
         return userDetails;

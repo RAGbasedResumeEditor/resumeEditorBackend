@@ -5,16 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-
 
 @Repository
 public interface AdminUserRepository extends JpaRepository<User, Long> {
@@ -43,9 +39,6 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
             + "(:group = 'wish' AND u.wish LIKE %:keyword%) "
             + "GROUP BY u ORDER BY u.inDate DESC")
     Page<Object[]> findByGroupAndKeyword(@Param("group") String group, @Param("keyword") String keyword, Pageable pageable);
-
-    // 회원 탈퇴
-    List<User> findByRoleAndDelDateBefore(String role, Date date);
 
     // ROLE_USER 조회
     @Query("SELECT u FROM User u WHERE u.role = :role")

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 @Repository
 public interface AdminReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAll(Pageable pageable);
@@ -18,5 +17,4 @@ public interface AdminReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByShow(Pageable pageable);
 
     List<Review> findAllByShow(boolean show);
-
 }

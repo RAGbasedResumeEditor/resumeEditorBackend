@@ -71,8 +71,8 @@ public class HistoryServiceImpl implements HistoryService{
             historyDTO.setEdit_status(objectMapper.writeValueAsString(getEditStatus().get("edit_ratio")));
             historyDTO.setEdit_age(objectMapper.writeValueAsString(getEditAge().get("age_edit_ratio")));
             historyDTO.setEdit_date(objectMapper.writeValueAsString(getEditDate()));
-            historyDTO.setEdit_occu(objectMapper.writeValueAsString(getEditOccu().get("ranking_resumeEdit")));
-            historyDTO.setEdit_comp(objectMapper.writeValueAsString(getEditComp().get("ranking_resumeEdit")));
+            historyDTO.setEdit_occu(objectMapper.writeValueAsString(getEditOccupation().get("ranking_resumeEdit")));
+            historyDTO.setEdit_comp(objectMapper.writeValueAsString(getEditCompany().get("ranking_resumeEdit")));
             historyDTO.setW_date(new java.util.Date());
 
             // HistoryDTO를 History로 변환
@@ -90,59 +90,59 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 유저별 각 비율 */
     private Map<String, Object> getUserMode() {
-        return adminService.modeCnt();
+        return adminService.getModeCount();
     }
 
     private Map<String, Object> getUserStatus(){
-        return adminService.statusCnt();
+        return adminService.getStatusCount();
     }
 
     private Map<String, Object> getUserGender(){
-        return adminService.genderCnt();
+        return adminService.getGenderCount();
     }
 
     private Map<String, Object> getUserAge(){
-        return adminService.ageCnt();
+        return adminService.getAgeCount();
     }
 
     private Map<String, Map<String, Integer>> getUserOccu(){
-        return adminService.rankOccup();
+        return adminService.getOccupationRank();
     }
 
     private Map<String, Map<String, Integer>> getUserComp(){
-        return adminService.rankComp();
+        return adminService.getCompanyRank();
     }
 
     private Map<String, Map<String, Integer>> getUserWish(){
-        return  adminService.rankWish();
+        return  adminService.getWishRank();
     }
 
     /* OO별 첨삭 비율 */
     private Map<String, Object> getEditMode() {
-        return adminService.resumeEditCntByMode();
+        return adminService.getResumeEditCountByMode();
     }
 
     private Map<String, Object> getEditStatus() {
-        return adminService.resumeEditCntByStatus();
+        return adminService.getResumeEditCountByStatus();
     }
 
     private Map<String, Object> getEditAge() {
-        return adminService.resumeEditCntByAge();
+        return adminService.getResumeEditCountByAge();
     }
 
     private Map<String, Object> getEditDate() {
         Map<String, Object> result = new LinkedHashMap<>();
 
         // 월별 첨삭 비율 가져오기
-        Map<String, Object> monthlyData = adminService.resumeCntByMonth();
+        Map<String, Object> monthlyData = adminService.getMonthlyResumeEditCount();
         Map<String, Object> monthlyRatios = (Map<String, Object>) monthlyData.get("edit_ratio");
 
         // 주차별 첨삭 비율 가져오기
-        Map<String, Object> weeklyData = adminService.resumeCntByWeekly();
+        Map<String, Object> weeklyData = adminService.getWeeklyResumeEditCount();
         Map<String, Object> weeklyRatios = (Map<String, Object>) weeklyData.get("edit_ratio");
 
         // 일별 첨삭 비율 가져오기
-        Map<String, Object> dailyData = adminService.resumeCntByDaily();
+        Map<String, Object> dailyData = adminService.getDailyResumeEditCount();
         Map<String, Object> dailyRatios = (Map<String, Object>) dailyData.get("edit_ratio");
 
         // 통합 결과 생성
@@ -153,19 +153,19 @@ public class HistoryServiceImpl implements HistoryService{
         return result;
     }
 
-    private Map<String, Map<String, Integer>> getEditOccu() {
-        return adminService.rankOccup();
+    private Map<String, Map<String, Integer>> getEditOccupation() {
+        return adminService.getOccupationRank();
     }
 
-    private Map<String, Map<String, Integer>> getEditComp() {
-        return adminService.rankComp();
+    private Map<String, Map<String, Integer>> getEditCompany() {
+        return adminService.getCompanyRank();
     }
 
     // ---------------------------------------------
     // 통계 데이터 출력
     /* 프로 유저 수 */
     @Override
-    public Map<String, Object> getProUserCnt() {
+    public Map<String, Object> getProUserCount() {
         Map<String, Object> result = new HashMap<>();
 
         int proUser = userRepository.findByMode(2).size();
@@ -177,26 +177,17 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 총 방문자 수 */
     @Override
-    public Map<String, Object> getTotalTraffic() {
+    public Map<String, Object> getTotalVisitCount() {
         Map<String, Object> result = new HashMap<>();
-        long totalTraffic = trafficService.getTotalTraffic();
+        long totalTraffic = trafficService.getTotalVisitCount();
         result.put("total_visit", totalTraffic);
-        return result;
-    }
-
-    /* 오늘 방문자 수 */
-    @Override
-    public Map<String, Object> getTrafficForCurrentDate() {
-        Map<String, Object> result = new HashMap<>();
-        long todayTrafficFromDb = trafficService.getTrafficForCurrentDate();
-        result.put("today_visit", todayTrafficFromDb);
         return result;
     }
 
 
     /* 일별 회원가입 집계 */
     @Override
-    public Map<LocalDate, Integer> getDailyUserRegistrations(LocalDate startDate, LocalDate endDate) {
+    public Map<LocalDate, Integer> getDailySignupUser(LocalDate startDate, LocalDate endDate) {
         // startDate를 LocalDateTime으로 변환
         LocalDateTime startDateTime = startDate.atStartOfDay();
 
@@ -218,7 +209,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 월별 회원가입 집계 */
     @Override
-    public Map<LocalDate, Integer> getMonthlyUserRegistrations(YearMonth yearMonth) {
+    public Map<LocalDate, Integer> getMonthlySignupUser(YearMonth yearMonth) {
         Map<LocalDate, Integer> monthlySignupData = new TreeMap<>();
 
         LocalDate startDate = yearMonth.atDay(1);
@@ -244,7 +235,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 총 첨삭 수 */
     @Override
-    public Map<String, Object> getTotalEdit() {
+    public Map<String, Object> getTotalEditCount() {
         Map<String, Object> result = new LinkedHashMap<>();
 
         long editCount = resumeRepository.count();
@@ -256,7 +247,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 오늘 첨삭 수 */
     @Override
-    public Map<String, Object> getRNumForCurrentDate() {
+    public Map<String, Object> getEditCountForCurrentDate() {
         Map<String, Object> result = new LinkedHashMap<>();
 
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -270,7 +261,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 총 게시글 수 */
     @Override
-    public Map<String, Object> getTotalBoardCnt() {
+    public Map<String, Object> getTotalBoardCount() {
         Map<String, Object> result = new HashMap<>();
 
         long totalBoardCnt = resumeBoardRepository.count();
@@ -281,7 +272,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 월별 첨삭 집계 */
     @Override
-    public Map<String, Object> getEditByMonthly() {
+    public Map<String, Object> getMonthlyEditStatistics() {
         Map<String, Object> result = new LinkedHashMap<>();
         Map<String, Integer> editCounts = new LinkedHashMap<>();
         Map<String, Double> editRatios = new LinkedHashMap<>();
@@ -313,11 +304,11 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 주별 첨삭 집계 */
     @Override
-    public Map<String, Object> getEditByWeekly(String month) {
+    public Map<String, Object> getWeeklyEditCount(String month) {
         Map<String, Object> result = new LinkedHashMap<>();
 
         // 월별 첨삭 데이터 가져오기
-        Map<String, Object> editMonthly = adminService.resumeCntByMonth();
+        Map<String, Object> editMonthly = adminService.getMonthlyResumeEditCount();
 
         // month가 null 또는 빈 값일 경우 현재 달로 설정
         if (month == null || month.isEmpty()) {
@@ -362,8 +353,8 @@ public class HistoryServiceImpl implements HistoryService{
 
     /* 일별 첨삭 집계 */
     @Override
-    public Map<String, Object> getEditByDaily(String startDate, String endDate) {
-        Map<String, Object> editDaily = adminService.resumeCntByDaily();
+    public Map<String, Object> getDailyEditCount(String startDate, String endDate) {
+        Map<String, Object> editDaily = adminService.getDailyResumeEditCount();
         Map<String, Object> result = new LinkedHashMap<>();
 
         // startDate와 endDate가 주어지지 않은 경우 현재 날짜를 기준으로 -6(총 7일)의 데이터를 설정

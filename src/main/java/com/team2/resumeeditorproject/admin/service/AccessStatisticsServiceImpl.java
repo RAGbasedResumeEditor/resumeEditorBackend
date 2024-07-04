@@ -1,8 +1,8 @@
 package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.domain.Traffic;
-import com.team2.resumeeditorproject.admin.dto.response.AccessDataResponse;
-import com.team2.resumeeditorproject.admin.dto.response.MonthlyAccessDataResponse;
+import com.team2.resumeeditorproject.admin.dto.response.DailyAccessStatisticsResponse;
+import com.team2.resumeeditorproject.admin.dto.response.MonthlyAccessStatisticsResponse;
 import com.team2.resumeeditorproject.admin.repository.TrafficRepository;
 import com.team2.resumeeditorproject.common.util.DateRange;
 import com.team2.resumeeditorproject.common.util.MonthRange;
@@ -24,7 +24,7 @@ public class AccessStatisticsServiceImpl implements AccessStatisticsService {
 
     // 일별 접속자 집계
     @Override
-    public AccessDataResponse getDailyAccessStatistics(DateRange dateRange) {
+    public DailyAccessStatisticsResponse getDailyAccessStatistics(DateRange dateRange) {
         Map<LocalDate, Integer> trafficData = new HashMap<>();
         List<LocalDate> dates = dateRange.getDates();
         try {
@@ -39,7 +39,7 @@ public class AccessStatisticsServiceImpl implements AccessStatisticsService {
             dates.forEach(date -> trafficData.putIfAbsent(date, 0));
 
             Map<LocalDate, Integer> sortedDailyTrafficData = new TreeMap<>(trafficData);
-            return new AccessDataResponse(sortedDailyTrafficData);
+            return new DailyAccessStatisticsResponse(sortedDailyTrafficData);
         } catch (Exception exception) {
             throw new RuntimeException("Failed to fetch daily access statistics", exception);
         }
@@ -47,7 +47,7 @@ public class AccessStatisticsServiceImpl implements AccessStatisticsService {
 
     // 월별 접속자 집계
     @Override
-    public MonthlyAccessDataResponse getMonthlyAccessStatistics(MonthRange monthRange) {
+    public MonthlyAccessStatisticsResponse getMonthlyAccessStatistics(MonthRange monthRange) {
         Map<YearMonth, Integer> monthlyTrafficData = new HashMap<>();
         try {
             List<YearMonth> months = monthRange.getMonths();
@@ -72,7 +72,7 @@ public class AccessStatisticsServiceImpl implements AccessStatisticsService {
             }
 
             Map<YearMonth, Integer> sortedMonthlyTrafficData = new TreeMap<>(monthlyTrafficData);
-            return new MonthlyAccessDataResponse(sortedMonthlyTrafficData);
+            return new MonthlyAccessStatisticsResponse(sortedMonthlyTrafficData);
 
         } catch (Exception exception) {
             throw new RuntimeException("Failed to fetch monthly access statistics", exception);

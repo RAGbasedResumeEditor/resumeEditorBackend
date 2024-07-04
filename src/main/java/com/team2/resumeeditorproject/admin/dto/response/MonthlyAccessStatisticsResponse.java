@@ -6,10 +6,10 @@ import java.time.YearMonth;
 import java.util.Map;
 
 @Data
-public class MonthlyAccessDataResponse {
+public class MonthlyAccessStatisticsResponse {
     private Map<YearMonth, Integer> trafficData;
 
-    public MonthlyAccessDataResponse(Map<YearMonth, Integer> trafficData) {
+    public MonthlyAccessStatisticsResponse(Map<YearMonth, Integer> trafficData) {
         this.trafficData = trafficData;
     }
 }

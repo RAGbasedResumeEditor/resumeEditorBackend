@@ -6,10 +6,10 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @Data
-public class AccessDataResponse {
+public class DailyAccessStatisticsResponse {
     private Map<LocalDate, Integer> trafficData;
 
-    public AccessDataResponse(Map<LocalDate, Integer> trafficData) {
+    public DailyAccessStatisticsResponse(Map<LocalDate, Integer> trafficData) {
         this.trafficData = trafficData;
     }
 }

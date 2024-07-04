@@ -9,7 +9,6 @@ import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.admin.repository.HistoryRepository;
 import com.team2.resumeeditorproject.admin.repository.TrafficRepository;
-import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,15 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
@@ -182,55 +177,6 @@ public class HistoryServiceImpl implements HistoryService{
         long totalTraffic = trafficService.getTotalVisitCount();
         result.put("total_visit", totalTraffic);
         return result;
-    }
-
-
-    /* 일별 회원가입 집계 */
-    @Override
-    public Map<LocalDate, Integer> getDailySignupUser(LocalDate startDate, LocalDate endDate) {
-        // startDate를 LocalDateTime으로 변환
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-
-        // endDate를 다음 날의 시작으로 LocalDateTime으로 변환
-        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
-
-        // userRepository.findByInDateBetween() 메서드에 LocalDateTime 인스턴스를 전달
-        List<User> users = userRepository.findByInDateBetween(startDateTime, endDateTime);
-
-        Map<LocalDate, Integer> dailyRegistrations = new HashMap<>();
-        for (User user : users) {
-            LocalDate registrationDate = user.getInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            dailyRegistrations.merge(registrationDate, 1, Integer::sum);
-        }
-
-        // 날짜별로 정렬된 맵 반환
-        return new TreeMap<>(dailyRegistrations);
-    }
-
-    /* 월별 회원가입 집계 */
-    @Override
-    public Map<LocalDate, Integer> getMonthlySignupUser(YearMonth yearMonth) {
-        Map<LocalDate, Integer> monthlySignupData = new TreeMap<>();
-
-        LocalDate startDate = yearMonth.atDay(1);
-        LocalDate endDate = yearMonth.atEndOfMonth();
-
-        List<User> signupList = userRepository.findByInDateBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
-
-        // 해당 월의 각 날짜에 대한 회원가입 데이터 집계
-        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-            final LocalDate currentDate = date;
-
-            // 해당 날짜에 대한 회원가입 수 계산
-            int signupCount = (int) signupList.stream()
-                    .filter(user -> {
-                        LocalDate userDate = user.getInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                        return userDate.isEqual(currentDate);
-                    })
-                    .count();
-            monthlySignupData.put(currentDate, signupCount);
-        }
-        return monthlySignupData;
     }
 
     /* 총 첨삭 수 */

@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -56,7 +56,7 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     List<User> findByOccupation(String occupation);
     List<User> findByCompany(String company);
 
-    List<User> findByInDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<User> findByInDateBetween(Date startDate, Date endDate);
 }
 
 

@@ -4,6 +4,7 @@ import com.team2.resumeeditorproject.admin.dto.response.AccessDataResponse;
 import com.team2.resumeeditorproject.admin.dto.response.AgeCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.GenderCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.ModeCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.MonthlyAccessDataResponse;
 import com.team2.resumeeditorproject.admin.dto.response.OccupationCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.ProUserCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.StatusCountResponse;
@@ -16,6 +17,7 @@ import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.TrafficService;
 import com.team2.resumeeditorproject.admin.service.UserStatisticsService;
 import com.team2.resumeeditorproject.common.util.DateRange;
+import com.team2.resumeeditorproject.common.util.MonthRange;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -106,26 +108,12 @@ public class UserStatisticsController {
 
     // 월별 접속자 집계
     @GetMapping("/access/monthly")
-    public ResponseEntity<Map<String, Object>> getMonthlyAccessStatistics(
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> endDate) {
-        try {
-            Map<String, Object> result = new LinkedHashMap<>();
-
-            YearMonth start = startDate.orElse(YearMonth.now()); // startDate가 주어지지 않으면 현재 달로 설정
-            LocalDate startLocalDate = start.atDay(1);
-            LocalDate endLocalDate = start.atEndOfMonth();
-
-            Map<YearMonth, Integer> dailyTrafficData = trafficService.getMonthlyTrafficData(startLocalDate, endLocalDate);
-
-            Map<YearMonth, Integer> sortedDailyTrafficData = new TreeMap<>(dailyTrafficData);
-
-            result.put("traffic_data", sortedDailyTrafficData);
-
-            return createOkResponse(result);
-        } catch (Exception e) {
-            return createBadRequestResponse(e.getMessage());
-        }
+    public ResponseEntity<MonthlyAccessDataResponse> getMonthlyAccessStatistics(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth endDate) {
+        MonthRange monthRange = MonthRange.of(startDate, endDate);
+        MonthlyAccessDataResponse response = accessStatisticsService.getMonthlyAccessStatistics(monthRange);
+        return ResponseEntity.ok(response);
     }
 
     // 일별 회원가입 집계

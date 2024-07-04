@@ -60,7 +60,7 @@ public class AdminServiceImpl implements AdminService { //관리자 페이지 �
     @Override
     public Map<String,Object> getOccupationCount(String occupation) {
         int userCount = totalUserCount(adminUserRepository);
-        double occupationRatio = ((double) adminUserRepository.findByOccupation(occupation).size() /userCount) * 100;
+        double occupationRatio = ((double) adminUserRepository.findByOccupation(occupation).size() / userCount) * 100;
 
         Map<String,Object> result = new HashMap<>();
         result.put(occupation,Math.round(occupationRatio * 100.0) / 100.0);

@@ -1,7 +1,15 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.dto.UserStatisticsResponse;
-import com.team2.resumeeditorproject.admin.service.AdminService;
+import com.team2.resumeeditorproject.admin.dto.response.AgeCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.GenderCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.ModeCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.OccupationCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.ProUserCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.StatusCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.UserCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.VisitTodayCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.VisitTotalCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.WishCountResponse;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.TrafficService;
 import com.team2.resumeeditorproject.admin.service.UserStatisticsService;
@@ -9,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,32 +32,66 @@ import static com.team2.resumeeditorproject.admin.service.ResponseHandler.create
 import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
 
 @RestController
-@RequestMapping("/admin/statistics") // /admin 지우기
+@RequestMapping("/admin/statistics/user") // /admin 지우기
 @RequiredArgsConstructor
 public class UserStatisticsController {
 
-    private static final String Invalid_Request_Error_Message = "잘못된 요청입니다.";
-
-    private final AdminService adminService;
     private final HistoryService historyService;
     private final TrafficService trafficService;
     private final UserStatisticsService userStatisticsService;
 
-    // 유저 정보에 관한 통계
-    @GetMapping("/user/{group}")
-    public ResponseEntity<UserStatisticsResponse> getUserStatistics(@PathVariable String group,
-                                                                @RequestParam(name="occupation", required = false) String occupation,
-                                                                @RequestParam(name="wish", required = false) String wish) {
-        try {
-            UserStatisticsResponse response = userStatisticsService.getUserStatistics(group, occupation, wish);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    @GetMapping("/count")
+    public ResponseEntity<UserCountResponse> getUserCount() {
+        return ResponseEntity.ok(userStatisticsService.getUserCount());
+    }
+
+    @GetMapping("/gender")
+    public ResponseEntity<GenderCountResponse> getGenderCount() {
+        return ResponseEntity.ok(userStatisticsService.getGenderCount());
+    }
+
+    @GetMapping("/age")
+    public ResponseEntity<AgeCountResponse> getAgeCount() {
+        return ResponseEntity.ok(userStatisticsService.getAgeCount());
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<StatusCountResponse> getStatusCount() {
+        return ResponseEntity.ok(userStatisticsService.getStatusCount());
+    }
+
+    @GetMapping("/mode")
+    public ResponseEntity<ModeCountResponse> getModeCount() {
+        return ResponseEntity.ok(userStatisticsService.getModeCount());
+    }
+
+    @GetMapping("/occupation")
+    public ResponseEntity<OccupationCountResponse> getOccupationCount(@RequestParam(name = "occupation") String occupation) {
+        return ResponseEntity.ok(userStatisticsService.getOccupationCount(occupation));
+    }
+
+    @GetMapping("/wish")
+    public ResponseEntity<WishCountResponse> getWishCount(@RequestParam(name = "wish") String wish) {
+        return ResponseEntity.ok(userStatisticsService.getWishCount(wish));
+    }
+
+    @GetMapping("/pro")
+    public ResponseEntity<ProUserCountResponse> getProUserCount() {
+        return ResponseEntity.ok(userStatisticsService.getProUserCount());
+    }
+
+    @GetMapping("/visitTotal")
+    public ResponseEntity<VisitTotalCountResponse> getTotalVisitCount() {
+        return ResponseEntity.ok(userStatisticsService.getTotalVisitCount());
+    }
+
+    @GetMapping("/visitToday")
+    public ResponseEntity<VisitTodayCountResponse> getVisitTodayCount() {
+        return ResponseEntity.ok(userStatisticsService.getVisitTodayCount());
     }
 
     // 일별 접속자 집계
-    @GetMapping("/user/access")
+    @GetMapping("/access")
     public ResponseEntity<Map<String,Object>> getDailyAccessStatistics(
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate) {
@@ -72,7 +113,7 @@ public class UserStatisticsController {
     }
 
     // 월별 접속자 집계
-    @GetMapping("/user/access/monthly")
+    @GetMapping("/access/monthly")
     public ResponseEntity<Map<String, Object>> getMonthlyAccessStatistics(
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> startDate) {
         try {
@@ -95,7 +136,7 @@ public class UserStatisticsController {
     }
 
     // 일별 회원가입 집계
-    @GetMapping("/user/signup")
+    @GetMapping("/signup")
     public ResponseEntity<Map<String,Object>> getDailySignupStatistics(
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate) {
@@ -123,7 +164,7 @@ public class UserStatisticsController {
     }
 
     // 월별 회원가입 집계
-    @GetMapping("/user/signup/monthly")
+    @GetMapping("/signup/monthly")
     public ResponseEntity<Map<String, Object>> getMonthlySignupStatistics(
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
         try {

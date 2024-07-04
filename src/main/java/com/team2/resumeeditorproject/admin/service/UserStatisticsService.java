@@ -22,5 +22,4 @@ public interface UserStatisticsService {
     ProUserCountResponse getProUserCount();
     VisitTotalCountResponse getTotalVisitCount();
     VisitTodayCountResponse getVisitTodayCount();
-
 }

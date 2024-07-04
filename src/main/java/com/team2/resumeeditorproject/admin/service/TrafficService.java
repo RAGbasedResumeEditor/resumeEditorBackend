@@ -12,7 +12,7 @@ public interface TrafficService {
     Traffic updateTrafficForToday(LocalDate date);
     long getTotalVisitCount();
     long getVisitCountForToday();
-    Map<LocalDate, Integer> getTrafficData(LocalDate startDate, LocalDate endDate);
+
     Map<YearMonth, Integer> getMonthlyTrafficData(LocalDate startDate, LocalDate endDate);
     void saveEditCountForToday();
 }

@@ -4,9 +4,9 @@ import com.team2.resumeeditorproject.admin.domain.Traffic;
 import com.team2.resumeeditorproject.admin.dto.TrafficDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
 import com.team2.resumeeditorproject.admin.repository.TrafficRepository;
+import com.team2.resumeeditorproject.common.util.DateRange;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,6 +24,7 @@ public class TrafficServiceImpl implements TrafficService{
     private final TrafficRepository trafficRepository;
     private final AdminResumeRepository resumeRepository;
     private final ModelMapper modelMapper;
+    private DateRange dateRange;
 
     // 트래픽 저장
     @Override
@@ -50,33 +51,6 @@ public class TrafficServiceImpl implements TrafficService{
     public long getVisitCountForToday() {
         Traffic todayTraffic = trafficRepository.findByInDate(LocalDate.now());
         return todayTraffic != null ? todayTraffic.getVisitCount() : 0;
-    }
-
-    // 일별 접속자 집계
-    @Override
-    public Map<LocalDate, Integer> getTrafficData(LocalDate startDate, LocalDate endDate) {
-        Map<LocalDate, Integer> trafficData = new HashMap<>();
-
-        List<Traffic> trafficList = trafficRepository.findByInDateBetween(startDate, endDate);
-
-        // 시작일부터 종료일까지의 각 날짜에 대한 트래픽 데이터 집계
-        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
-            final LocalDate currentDate = date;
-
-            // 해당 날짜에 대한 방문자 수 계산
-            int visitCount = trafficList.stream()
-                    .filter(traffic -> traffic.getInDate().isEqual(currentDate))
-                    .mapToInt(Traffic::getVisitCount)
-                    .sum();
-            trafficData.put(date, visitCount);
-        }
-
-        // 접속자 데이터가 없는 날짜에는 0을 설정
-        for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
-            trafficData.putIfAbsent(date, 0);
-        }
-
-        return trafficData;
     }
 
     // 월별 접속자 집계

@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.team2.resumeeditorproject.admin.dto.response.AccessDataResponse;
 import com.team2.resumeeditorproject.admin.dto.response.AgeCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.GenderCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.ModeCountResponse;
@@ -10,9 +11,11 @@ import com.team2.resumeeditorproject.admin.dto.response.UserCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.VisitTodayCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.VisitTotalCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.WishCountResponse;
+import com.team2.resumeeditorproject.admin.service.AccessStatisticsService;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.TrafficService;
 import com.team2.resumeeditorproject.admin.service.UserStatisticsService;
+import com.team2.resumeeditorproject.common.util.DateRange;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +42,7 @@ public class UserStatisticsController {
     private final HistoryService historyService;
     private final TrafficService trafficService;
     private final UserStatisticsService userStatisticsService;
+    private final AccessStatisticsService accessStatisticsService;
 
     @GetMapping("/count")
     public ResponseEntity<UserCountResponse> getUserCount() {
@@ -92,30 +96,19 @@ public class UserStatisticsController {
 
     // 일별 접속자 집계
     @GetMapping("/access")
-    public ResponseEntity<Map<String,Object>> getDailyAccessStatistics(
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") Optional<LocalDate> endDate) {
-        try {
-            Map<String, Object> result = new LinkedHashMap<>();
-            LocalDate currentDate = LocalDate.now();
-
-            LocalDate start = startDate.orElse(currentDate.minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
-            LocalDate end = endDate.orElse(currentDate); // endDate가 주어지지 않으면 현재 날짜로 설정
-
-            Map<LocalDate, Integer> trafficData = trafficService.getTrafficData(start, end);
-
-            result.put("traffic_data", trafficData);
-
-            return createOkResponse(result);
-        } catch (Exception e) {
-            return createBadRequestResponse(e.getMessage());
-        }
+    public ResponseEntity<AccessDataResponse> getDailyAccessStatistics(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") LocalDate endDate) {
+        DateRange dateRange = DateRange.of(startDate, endDate);
+        AccessDataResponse response = accessStatisticsService.getDailyAccessStatistics(dateRange);
+        return ResponseEntity.ok(response);
     }
 
     // 월별 접속자 집계
     @GetMapping("/access/monthly")
     public ResponseEntity<Map<String, Object>> getMonthlyAccessStatistics(
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> startDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> endDate) {
         try {
             Map<String, Object> result = new LinkedHashMap<>();
 
@@ -123,9 +116,9 @@ public class UserStatisticsController {
             LocalDate startLocalDate = start.atDay(1);
             LocalDate endLocalDate = start.atEndOfMonth();
 
-            Map<LocalDate, Integer> dailyTrafficData = trafficService.getTrafficData(startLocalDate, endLocalDate);
+            Map<YearMonth, Integer> dailyTrafficData = trafficService.getMonthlyTrafficData(startLocalDate, endLocalDate);
 
-            Map<LocalDate, Integer> sortedDailyTrafficData = new TreeMap<>(dailyTrafficData);
+            Map<YearMonth, Integer> sortedDailyTrafficData = new TreeMap<>(dailyTrafficData);
 
             result.put("traffic_data", sortedDailyTrafficData);
 
@@ -143,8 +136,9 @@ public class UserStatisticsController {
         try {
             Map<String, Object> result = new LinkedHashMap<>();
 
-            LocalDate start = startDate.orElse(LocalDate.now().minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
-            LocalDate end = endDate.orElse(LocalDate.now()); // endDate가 주어지지 않으면 현재 날짜로 설정
+            LocalDate currentDate = LocalDate.now();
+            LocalDate start = startDate.orElse(currentDate.minusDays(6)); // startDate가 주어지지 않으면 현재 날짜로부터 7일 전으로 설정
+            LocalDate end = endDate.orElse(currentDate); // endDate가 주어지지 않으면 현재 날짜로 설정
 
             Map<LocalDate, Integer> signupData = historyService.getDailySignupUser(start, end);
 

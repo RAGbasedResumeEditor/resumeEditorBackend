@@ -1,5 +1,7 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.team2.resumeeditorproject.admin.dto.request.DailyStatisticsRequest;
+import com.team2.resumeeditorproject.admin.dto.request.MonthlyStatisticsRequest;
 import com.team2.resumeeditorproject.admin.dto.response.AccessDataResponse;
 import com.team2.resumeeditorproject.admin.dto.response.AgeCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.GenderCountResponse;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -99,9 +102,8 @@ public class UserStatisticsController {
     // 일별 접속자 집계
     @GetMapping("/access")
     public ResponseEntity<AccessDataResponse> getDailyAccessStatistics(
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") LocalDate startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yy-MM-dd") LocalDate endDate) {
-        DateRange dateRange = DateRange.of(startDate, endDate);
+            @ModelAttribute DailyStatisticsRequest request) {
+        DateRange dateRange = request.toDateRange();
         AccessDataResponse response = accessStatisticsService.getDailyAccessStatistics(dateRange);
         return ResponseEntity.ok(response);
     }
@@ -109,9 +111,8 @@ public class UserStatisticsController {
     // 월별 접속자 집계
     @GetMapping("/access/monthly")
     public ResponseEntity<MonthlyAccessDataResponse> getMonthlyAccessStatistics(
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth endDate) {
-        MonthRange monthRange = MonthRange.of(startDate, endDate);
+            @ModelAttribute MonthlyStatisticsRequest request) {
+        MonthRange monthRange = request.toMonthRange();
         MonthlyAccessDataResponse response = accessStatisticsService.getMonthlyAccessStatistics(monthRange);
         return ResponseEntity.ok(response);
     }

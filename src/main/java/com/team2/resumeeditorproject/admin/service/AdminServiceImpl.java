@@ -33,8 +33,7 @@ public class AdminServiceImpl implements AdminService { //관리자 페이지 �
     private final AdminResumeRepository adminResumeRepository;
 
     static int totalUserCount(AdminUserRepository adminUserRepository) {
-        List<User> users = adminUserRepository.findAll(); // count~ 쿼리로 변경 예정
-        return users.size();
+        return adminUserRepository.countUsers(); // count~ 쿼리로 변경
     }
 
     /* 총 회원수 */

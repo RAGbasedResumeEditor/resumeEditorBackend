@@ -14,9 +14,14 @@ import java.util.List;
 
 @Repository
 public interface AdminUserRepository extends JpaRepository<User, Long> {
+    // 사용자 수 조회
+    @Query("SELECT COUNT(user) FROM User user")
+    int countUsers();
+
     // 회원 조회 + 페이징
     @EntityGraph(attributePaths = {"resumeEdits"})
-    Page<User> findAll(Pageable pageable);
+    @Query("SELECT user FROM User user")
+    Page<User> findAllUsersWithResumeEdits(Pageable pageable);
 
     // 회원 정보 + 첨삭 횟수
     @Query("SELECT u, COUNT(re) FROM User u LEFT JOIN u.resumeEdits re GROUP BY u ORDER BY u.inDate DESC")

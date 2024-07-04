@@ -1,4 +1,4 @@
-package com.team2.resumeeditorproject.admin.service;
+package com.team2.resumeeditorproject.common.util;
 
 import org.springframework.http.ResponseEntity;
 

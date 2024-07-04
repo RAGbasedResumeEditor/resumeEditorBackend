@@ -17,7 +17,6 @@ import com.team2.resumeeditorproject.admin.dto.response.VisitTodayCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.VisitTotalCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.WishCountResponse;
 import com.team2.resumeeditorproject.admin.service.AccessStatisticsService;
-import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.SignupStatisticsService;
 import com.team2.resumeeditorproject.admin.service.UserStatisticsService;
 import com.team2.resumeeditorproject.common.util.DateRange;
@@ -34,8 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/statistics/user") // /admin 지우기
 @RequiredArgsConstructor
 public class UserStatisticsController {
-
-    private final HistoryService historyService;
+    
     private final UserStatisticsService userStatisticsService;
     private final AccessStatisticsService accessStatisticsService;
     private final SignupStatisticsService signupStatisticsService;

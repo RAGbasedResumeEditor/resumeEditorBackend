@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Map;
 
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
+import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOkResponse;
 
 @Controller
 @RequestMapping("/admin/statistics") // /admin 지우기

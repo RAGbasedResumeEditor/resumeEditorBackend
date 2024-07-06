@@ -1,5 +1,8 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.team2.resumeeditorproject.admin.dto.response.AgeCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.GenderCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.ModeCountResponse;
@@ -10,6 +13,8 @@ import com.team2.resumeeditorproject.admin.dto.response.UserCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.VisitTodayCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.VisitTotalCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.WishCountResponse;
+import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +26,16 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     private final HistoryService historyService;
     private final TrafficService trafficService;
 
+    private final AdminUserRepository adminUserRepository;
+
     @Override
-    public UserCountResponse getUserCount() {
-        return new UserCountResponse(adminService.getUserCount());
+    public int getUserCount() {
+        return adminUserRepository.countUsers();
     }
 
     @Override
-    public GenderCountResponse getGenderCount() {
-        return new GenderCountResponse(adminService.getGenderCount());
+    public int getUserCountByGender(char gender) {
+        return adminUserRepository.findByGender(gender).size();
     }
 
     @Override

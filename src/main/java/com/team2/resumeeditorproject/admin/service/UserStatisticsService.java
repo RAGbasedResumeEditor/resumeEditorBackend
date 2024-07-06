@@ -12,7 +12,7 @@ import com.team2.resumeeditorproject.admin.dto.response.VisitTotalCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.WishCountResponse;
 
 public interface UserStatisticsService {
-    UserCountResponse getUserCount();
+    int getUserCount();
     GenderCountResponse getGenderCount();
     AgeCountResponse getAgeCount();
     StatusCountResponse getStatusCount();

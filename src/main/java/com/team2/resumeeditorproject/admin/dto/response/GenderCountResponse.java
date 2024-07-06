@@ -1,14 +1,14 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.Map;
 
-@Data
+@Builder
+@Getter
 public class GenderCountResponse {
-    private Map<String, Object> genderCount;
-
-    public GenderCountResponse(Map<String, Object> genderCount) {
-        this.genderCount = genderCount;
-    }
+    private int male;
+    private int female;
 }

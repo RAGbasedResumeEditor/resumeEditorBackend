@@ -40,12 +40,19 @@ public class UserStatisticsController {
 
     @GetMapping("/count")
     public ResponseEntity<UserCountResponse> getUserCount() {
-        return ResponseEntity.ok(userStatisticsService.getUserCount());
+        return ResponseEntity.ok()
+                .body(UserCountResponse.builder()
+                        .totalCount(userStatisticsService.getUserCount())
+                        .build());
     }
 
     @GetMapping("/gender")
-    public ResponseEntity<GenderCountResponse> getGenderCount() {
-        return ResponseEntity.ok(userStatisticsService.getGenderCount());
+    public ResponseEntity<GenderCountResponse> getUserCountByGender() {
+        return ResponseEntity.ok()
+                .body(GenderCountResponse.builder()
+                        .male(userStatisticsService.getUserCountByGender('M'))
+                        .female(userStatisticsService.getUserCountByGender('F'))
+                        .build());
     }
 
     @GetMapping("/age")

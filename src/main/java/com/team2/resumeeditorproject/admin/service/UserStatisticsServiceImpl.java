@@ -11,10 +11,6 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class UserStatisticsServiceImpl implements UserStatisticsService {
 
-    private final AdminService adminService;
-    private final HistoryService historyService;
-    private final TrafficService trafficService;
-
     private final AdminUserRepository adminUserRepository;
     private final TrafficRepository trafficRepository;
 

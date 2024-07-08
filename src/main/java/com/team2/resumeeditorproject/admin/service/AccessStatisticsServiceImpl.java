@@ -39,7 +39,9 @@ public class AccessStatisticsServiceImpl implements AccessStatisticsService {
             dates.forEach(date -> trafficData.putIfAbsent(date, 0));
 
             Map<LocalDate, Integer> sortedDailyTrafficData = new TreeMap<>(trafficData);
-            return new DailyAccessStatisticsResponse(sortedDailyTrafficData);
+            return DailyAccessStatisticsResponse.builder()
+                    .trafficData(sortedDailyTrafficData)
+                    .build();
         } catch (Exception exception) {
             throw new RuntimeException("Failed to fetch daily access statistics", exception);
         }

@@ -1,14 +1,11 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-import java.util.Map;
-
-@Data
+@Builder
+@Getter
 public class WishCountResponse {
-    private Map<String, Object> wishCount;
-
-    public WishCountResponse(Map<String, Object> wishCount) {
-        this.wishCount = wishCount;
-    }
+    private String wish;
+    private int count;
 }

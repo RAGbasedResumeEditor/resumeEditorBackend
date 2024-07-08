@@ -1,14 +1,10 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-import java.util.Map;
-
-@Data
+@Builder
+@Getter
 public class ProUserCountResponse {
-    private Map<String, Object> proUserCount;
-
-    public ProUserCountResponse(Map<String, Object> proUserCount) {
-        this.proUserCount = proUserCount;
-    }
+    private int pro;
 }

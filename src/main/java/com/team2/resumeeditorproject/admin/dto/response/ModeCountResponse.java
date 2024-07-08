@@ -1,14 +1,11 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-import java.util.Map;
-
-@Data
+@Builder
+@Getter
 public class ModeCountResponse {
-    private Map<String, Object> modeCount;
-
-    public ModeCountResponse(Map<String, Object> modeCount) {
-        this.modeCount = modeCount;
-    }
+    private int mode1;
+    private int mode2;
 }

@@ -1,14 +1,11 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-import java.util.Map;
-
-@Data
+@Builder
+@Getter
 public class OccupationCountResponse {
-    private Map<String, Object> occupationCount;
-
-    public OccupationCountResponse(Map<String, Object> occupationCount) {
-        this.occupationCount = occupationCount;
-    }
+    private String occupation;
+    private int count;
 }

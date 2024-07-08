@@ -56,43 +56,75 @@ public class UserStatisticsController {
     }
 
     @GetMapping("/age")
-    public ResponseEntity<AgeCountResponse> getAgeCount() {
-        return ResponseEntity.ok(userStatisticsService.getAgeCount());
+    public ResponseEntity<AgeCountResponse> getUserCountByAge() {
+        return ResponseEntity.ok()
+                .body(AgeCountResponse.builder()
+                        .count20s(userStatisticsService.getUserCountByAgeGroup(20, 29))
+                        .count30s(userStatisticsService.getUserCountByAgeGroup(30, 39))
+                        .count40s(userStatisticsService.getUserCountByAgeGroup(40, 49))
+                        .count50s(userStatisticsService.getUserCountByAgeGroup(50, 59))
+                        .count60Plus(userStatisticsService.getUserCountByAgeGroup(60, Integer.MAX_VALUE))
+                        .build());
     }
 
     @GetMapping("/status")
-    public ResponseEntity<StatusCountResponse> getStatusCount() {
-        return ResponseEntity.ok(userStatisticsService.getStatusCount());
+    public ResponseEntity<StatusCountResponse> getUserCountByStatus() {
+        return ResponseEntity.ok()
+                .body(StatusCountResponse.builder()
+                        .status1(userStatisticsService.getUserCountByStatus(1))
+                        .status2(userStatisticsService.getUserCountByStatus(2))
+                        .build());
     }
 
     @GetMapping("/mode")
-    public ResponseEntity<ModeCountResponse> getModeCount() {
-        return ResponseEntity.ok(userStatisticsService.getModeCount());
+    public ResponseEntity<ModeCountResponse> getUserCountByMode() {
+        return ResponseEntity.ok()
+                .body(ModeCountResponse.builder()
+                        .mode1(userStatisticsService.getUserCountByMode(1))
+                        .mode2(userStatisticsService.getUserCountByMode(2))
+                        .build());
     }
 
     @GetMapping("/occupation")
-    public ResponseEntity<OccupationCountResponse> getOccupationCount(@RequestParam(name = "occupation") String occupation) {
-        return ResponseEntity.ok(userStatisticsService.getOccupationCount(occupation));
+    public ResponseEntity<OccupationCountResponse> getUserCountByOccupation(@RequestParam(name = "occupation") String occupation) {
+        return ResponseEntity.ok()
+                .body(OccupationCountResponse.builder()
+                        .occupation(occupation)
+                        .count(userStatisticsService.getUserCountByOccupation(occupation))
+                        .build());
     }
 
     @GetMapping("/wish")
-    public ResponseEntity<WishCountResponse> getWishCount(@RequestParam(name = "wish") String wish) {
-        return ResponseEntity.ok(userStatisticsService.getWishCount(wish));
+    public ResponseEntity<WishCountResponse> getUserCountByWish(@RequestParam(name = "wish") String wish) {
+        return ResponseEntity.ok()
+                .body(WishCountResponse.builder()
+                        .wish(wish)
+                        .count(userStatisticsService.getUserCountByWish(wish))
+                        .build());
     }
 
     @GetMapping("/pro")
     public ResponseEntity<ProUserCountResponse> getProUserCount() {
-        return ResponseEntity.ok(userStatisticsService.getProUserCount());
+        return ResponseEntity.ok()
+                .body(ProUserCountResponse.builder()
+                        .pro(userStatisticsService.getProUserCount(2))
+                        .build());
     }
 
     @GetMapping("/visitTotal")
     public ResponseEntity<VisitTotalCountResponse> getTotalVisitCount() {
-        return ResponseEntity.ok(userStatisticsService.getTotalVisitCount());
+        return ResponseEntity.ok()
+                .body(VisitTotalCountResponse.builder()
+                        .visitTotal(userStatisticsService.getTotalVisitCount())
+                        .build());
     }
 
     @GetMapping("/visitToday")
-    public ResponseEntity<VisitTodayCountResponse> getVisitTodayCount() {
-        return ResponseEntity.ok(userStatisticsService.getVisitTodayCount());
+    public ResponseEntity<VisitTodayCountResponse> getTodayVisitCount() {
+        return ResponseEntity.ok()
+                .body(VisitTodayCountResponse.builder()
+                        .visitToday(userStatisticsService.getTodayVisitCount())
+                        .build());
     }
 
     // 일별 접속자 집계

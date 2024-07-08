@@ -1,22 +1,11 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.team2.resumeeditorproject.admin.dto.response.AgeCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.GenderCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.ModeCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.OccupationCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.ProUserCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.StatusCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.UserCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.VisitTodayCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.VisitTotalCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.WishCountResponse;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
-
+import com.team2.resumeeditorproject.admin.repository.TrafficRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +16,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     private final TrafficService trafficService;
 
     private final AdminUserRepository adminUserRepository;
+    private final TrafficRepository trafficRepository;
 
     @Override
     public int getUserCount() {
@@ -39,43 +29,43 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     }
 
     @Override
-    public AgeCountResponse getAgeCount() {
-        return new AgeCountResponse(adminService.getAgeCount());
+    public int getUserCountByAgeGroup(int startAge, int endAge) {
+        return adminUserRepository.findByAgeBetween(startAge, endAge).size();
     }
 
     @Override
-    public StatusCountResponse getStatusCount() {
-        return new StatusCountResponse(adminService.getStatusCount());
+    public int getUserCountByStatus(int status) {
+        return adminUserRepository.findByStatus(status).size();
     }
 
     @Override
-    public ModeCountResponse getModeCount() {
-        return new ModeCountResponse(adminService.getModeCount());
+    public int getUserCountByMode(int mode) {
+        return adminUserRepository.findByMode(mode).size();
     }
 
     @Override
-    public OccupationCountResponse getOccupationCount(String occupation) {
-        return new OccupationCountResponse(adminService.getOccupationCount(occupation));
+    public int getUserCountByOccupation(String occupation) {
+        return adminUserRepository.findByOccupation(occupation).size();
     }
 
     @Override
-    public WishCountResponse getWishCount(String wish) {
-        return new WishCountResponse(adminService.getWishCount(wish));
+    public int getUserCountByWish(String wish) {
+        return adminUserRepository.findByWish(wish).size();
     }
 
     @Override
-    public ProUserCountResponse getProUserCount() {
-        return new ProUserCountResponse(historyService.getProUserCount());
+    public int getProUserCount(int mode) {
+        return adminUserRepository.findByMode(mode).size();
     }
 
     @Override
-    public VisitTotalCountResponse getTotalVisitCount() {
-        return new VisitTotalCountResponse(trafficService.getTotalVisitCount());
+    public long getTotalVisitCount() {
+        return trafficRepository.sumAllTraffic();
     }
 
     @Override
-    public VisitTodayCountResponse getVisitTodayCount() {
-        return new VisitTodayCountResponse(trafficService.getVisitCountForToday());
+    public long getTodayVisitCount() {
+        return trafficRepository.countByInDate(LocalDate.now());
     }
 
 }

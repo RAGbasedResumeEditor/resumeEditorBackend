@@ -1,12 +1,10 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
+@Builder
+@Getter
 public class VisitTotalCountResponse {
-    private Long totalVisitCount;
-
-    public VisitTotalCountResponse(Long totalVisitCount) {
-        this.totalVisitCount = totalVisitCount;
-    }
+    private long visitTotal;
 }

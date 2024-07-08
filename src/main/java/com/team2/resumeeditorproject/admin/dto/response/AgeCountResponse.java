@@ -1,14 +1,14 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-import java.util.Map;
-
-@Data
+@Builder
+@Getter
 public class AgeCountResponse {
-    private Map<String, Object> ageCount;
-
-    public AgeCountResponse(Map<String, Object> ageCount) {
-        this.ageCount = ageCount;
-    }
+    private int count20s;
+    private int count30s;
+    private int count40s;
+    private int count50s;
+    private int count60Plus;
 }

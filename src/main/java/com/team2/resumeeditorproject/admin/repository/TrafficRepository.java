@@ -18,4 +18,7 @@ public interface TrafficRepository extends JpaRepository<Traffic, Long> {
 
     // 일별 접속자 수 집계
     List<Traffic> findByInDateBetween(LocalDate startDate, LocalDate endDate);
+
+    // 오늘 방문자 수
+    long countByInDate(LocalDate inDate);
 }

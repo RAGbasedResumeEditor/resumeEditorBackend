@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

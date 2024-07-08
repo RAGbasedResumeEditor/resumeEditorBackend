@@ -19,4 +19,10 @@ public interface UserService {
     Boolean checkUserExist(Long uNum);
     //회원정보 수정
     void updateUser(UserDTO userDto);
+
+    // 사용자 조회
+    User findUser(Long uNum);
+
+    // User 정보 저장
+    void saveUser(User user);
 }

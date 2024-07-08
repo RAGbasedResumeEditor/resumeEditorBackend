@@ -22,19 +22,21 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     private final AdminReviewRepository reviewRepository;
 
     @Override
-    public boolean selectReview(Long rvNum) {
-        Optional<Review> optionalReview = reviewRepository.findById(rvNum);
+    public String selectReview(Long reviewNo) {
+        Optional<Review> optionalReview = reviewRepository.findById(reviewNo);
         if (optionalReview.isPresent()) {
             Review review = optionalReview.get();
-            if (review.isShow()) {
-                return false; // 이미 선택된 경우 false 반환
-            } else {
-                review.setShow(true); // 선택되지 않은 경우 show 값을 true로 변경
+            if (review.getDisplay().equals("true")) {
+                review.setDisplay("false"); // 이미 선택된 경우 false로 변경(display 된 리뷰에서 취소)
                 reviewRepository.save(review);
-                return true; // 선택된 경우 true 반환
+                return "Unchecked from display review.";
+            } else {
+                review.setDisplay("true"); // 선택되지 않은 경우 show 값을 true로 변경
+                reviewRepository.save(review);
+                return "Checked from display review.";
             }
         } else {
-            throw new BadRequestException("Review with id " + rvNum + " not found");
+            throw new BadRequestException("Review with id " + reviewNo + " not found");
         }
     }
 
@@ -48,15 +50,15 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Review> getAllShows(int pageNo) {
+    public Page<Review> getDisplayReviews(int pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("rvNum").descending());
-        Page<Review> pageResult = reviewRepository.findByShow(pageable);
+        Page<Review> pageResult = reviewRepository.findByDisplay(pageable);
         return pageResult;
     }
 
     @Override
     public List<Review> getVisibleReviews() {
-        return reviewRepository.findAllByShow(true);
+        return reviewRepository.findAllByDisplay("true");
     }
 }
 

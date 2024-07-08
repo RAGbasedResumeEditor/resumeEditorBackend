@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface ReviewManagementService {
-    boolean selectReview(Long rvNum);
+    String selectReview(Long rvNum);
     Page<Review> getPagedReviews(int pageNo);
-    Page<Review> getAllShows(int pageNo);
+    Page<Review> getDisplayReviews(int pageNo);
     List<Review> getVisibleReviews();
 }

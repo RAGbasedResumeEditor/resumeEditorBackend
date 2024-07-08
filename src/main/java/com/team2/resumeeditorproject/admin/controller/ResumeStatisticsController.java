@@ -66,7 +66,7 @@ public class ResumeStatisticsController {
     }
 
     // 총 첨삭 수
-    @GetMapping("/resume/count/editTotal")
+    @GetMapping("/resume/count/total-edit")
     public ResponseEntity<TotalResumeEditCountResponse> getTotalResumeEditCount(){
         return ResponseEntity.ok()
                 .body(TotalResumeEditCountResponse.builder()
@@ -75,7 +75,7 @@ public class ResumeStatisticsController {
     }
 
     // 오늘 첨삭 수
-    @GetMapping("/resume/count/editToday")
+    @GetMapping("/resume/count/today-edit")
     public ResponseEntity<TodayResumeEditCountResponse> getTodayResumeEditCount(){
         return ResponseEntity.ok()
                 .body(TodayResumeEditCountResponse.builder()
@@ -84,7 +84,7 @@ public class ResumeStatisticsController {
     }
 
     // 총 자소서 게시글 수
-    @GetMapping("/resume/count/boardTotal")
+    @GetMapping("/resume/count/total-board")
     public ResponseEntity<TotalResumeBoardCountResponse> getTotalResumeBoardCount(){
         return ResponseEntity.ok()
                 .body(TotalResumeBoardCountResponse.builder()

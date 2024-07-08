@@ -111,7 +111,7 @@ public class UserStatisticsController {
                         .build());
     }
 
-    @GetMapping("/visitTotal")
+    @GetMapping("/total-visit")
     public ResponseEntity<VisitTotalCountResponse> getTotalVisitCount() {
         return ResponseEntity.ok()
                 .body(VisitTotalCountResponse.builder()
@@ -119,7 +119,7 @@ public class UserStatisticsController {
                         .build());
     }
 
-    @GetMapping("/visitToday")
+    @GetMapping("/today-visit")
     public ResponseEntity<VisitTodayCountResponse> getTodayVisitCount() {
         return ResponseEntity.ok()
                 .body(VisitTodayCountResponse.builder()

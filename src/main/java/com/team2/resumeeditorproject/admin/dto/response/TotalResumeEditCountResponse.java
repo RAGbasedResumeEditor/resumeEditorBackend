@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder
 @Getter
 public class TotalResumeEditCountResponse {
-    @JsonProperty("edit_total")
-    private long editTotal;
+    @JsonProperty("total_edit")
+    private long totalEdit;
 }

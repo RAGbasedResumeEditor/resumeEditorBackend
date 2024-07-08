@@ -1,5 +1,8 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.team2.resumeeditorproject.admin.dto.response.AgeCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.ModeCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.StatusCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.TodayResumeEditCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.TotalResumeBoardCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.TotalResumeEditCountResponse;
@@ -32,17 +35,34 @@ public class ResumeStatisticsController {
 
     private final ResumeStatisticsService resumeStatisticsService;
 
-    /* 자소서 목록에 관한 통계 */
-    @GetMapping("/board")
-    public ResponseEntity<Map<String,Object>> getResumeBoardStatistics(@RequestParam(name="group") String group,
-                                                                       @RequestParam(name="company", required = false) String company,
-                                                                       @RequestParam(name="occupation", required=false) String occupation) {
-        Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
-            case "company" -> (g) -> createOkResponse(adminService.getResumeCountByCompany(company));
-            case "occupation" -> (g) -> createOkResponse(adminService.getResumeCountByOccupation(occupation));
-            default -> (g) ->  createBadRequestResponse(Invalid_Request_Error_Message);
-        };
-        return action.apply(group);
+    @GetMapping("/resume-edit/status")
+    public ResponseEntity<StatusCountResponse> getResumeEditCountByStatus(){
+        return ResponseEntity.ok()
+                .body(StatusCountResponse.builder()
+                        .status1(resumeStatisticsService.getResumeEditCountByStatus(1))
+                        .status2(resumeStatisticsService.getResumeEditCountByStatus(2))
+                        .build());
+    }
+
+    @GetMapping("/resume-edit/age")
+    public ResponseEntity<AgeCountResponse> getResumeEditCountByAge(){
+        return ResponseEntity.ok()
+                .body(AgeCountResponse.builder()
+                        .count20s(resumeStatisticsService.getResumeEditCountByAge(20, 29))
+                        .count30s(resumeStatisticsService.getResumeEditCountByAge(30, 39))
+                        .count40s(resumeStatisticsService.getResumeEditCountByAge(40, 49))
+                        .count50s(resumeStatisticsService.getResumeEditCountByAge(50, 59))
+                        .count60Plus(resumeStatisticsService.getResumeEditCountByAge(60, Integer.MAX_VALUE))
+                        .build());
+    }
+
+    @GetMapping("/resume-edit/mode")
+    public ResponseEntity<ModeCountResponse> getResumeEditCountByMode(){
+        return ResponseEntity.ok()
+                .body(ModeCountResponse.builder()
+                        .mode1(resumeStatisticsService.getResumeEditCountByMode(1))
+                        .mode2(resumeStatisticsService.getResumeEditCountByMode(2))
+                        .build());
     }
 
     /* 자소서 첨삭 이용에 관한 통계 */
@@ -70,7 +90,7 @@ public class ResumeStatisticsController {
     public ResponseEntity<TotalResumeEditCountResponse> getTotalResumeEditCount(){
         return ResponseEntity.ok()
                 .body(TotalResumeEditCountResponse.builder()
-                        .editTotal(resumeStatisticsService.getTotalResumeEditCount())
+                        .totalEdit(resumeStatisticsService.getTotalResumeEditCount())
                         .build());
     }
 
@@ -79,7 +99,7 @@ public class ResumeStatisticsController {
     public ResponseEntity<TodayResumeEditCountResponse> getTodayResumeEditCount(){
         return ResponseEntity.ok()
                 .body(TodayResumeEditCountResponse.builder()
-                        .editToday(resumeStatisticsService.getTodayResumeEditCount())
+                        .todayEdit(resumeStatisticsService.getTodayResumeEditCount())
                         .build());
     }
 
@@ -88,7 +108,7 @@ public class ResumeStatisticsController {
     public ResponseEntity<TotalResumeBoardCountResponse> getTotalResumeBoardCount(){
         return ResponseEntity.ok()
                 .body(TotalResumeBoardCountResponse.builder()
-                        .boardTotal(resumeStatisticsService.getTotalResumeBoardCount())
+                        .totalBoard(resumeStatisticsService.getTotalResumeBoardCount())
                         .build());
     }
 

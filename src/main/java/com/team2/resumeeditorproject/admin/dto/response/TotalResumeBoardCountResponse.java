@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder
 @Getter
 public class TotalResumeBoardCountResponse {
-    @JsonProperty("board_total")
-    private long boardTotal;
+    @JsonProperty("total_board")
+    private long totalBoard;
 }

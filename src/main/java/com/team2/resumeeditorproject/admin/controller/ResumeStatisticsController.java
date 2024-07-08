@@ -1,7 +1,11 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.team2.resumeeditorproject.admin.dto.response.TodayResumeEditCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.TotalResumeBoardCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.TotalResumeEditCountResponse;
 import com.team2.resumeeditorproject.admin.service.AdminService;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
+import com.team2.resumeeditorproject.admin.service.ResumeStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,6 +29,8 @@ public class ResumeStatisticsController {
 
     private final AdminService adminService;
     private final HistoryService historyService;
+
+    private final ResumeStatisticsService resumeStatisticsService;
 
     /* 자소서 목록에 관한 통계 */
     @GetMapping("/board")
@@ -59,16 +65,31 @@ public class ResumeStatisticsController {
         return action.apply(group);
     }
 
-    // 자소서 통계
-    @GetMapping("/resume/count")
-    public ResponseEntity<Map<String,Object>> getResumeStatistics(@RequestParam(name="group", required = false) String group) {
-        Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
-            case "editTotal" -> (g) -> createOkResponse(historyService.getTotalEditCount());
-            case "editToday" -> (g) -> createOkResponse(historyService.getEditCountForCurrentDate());
-            case "boardToday" -> (g) -> createOkResponse(historyService.getTotalBoardCount());
-            default -> (g) -> createBadRequestResponse(Invalid_Request_Error_Message);
-        };
-        return action.apply(group);
+    // 총 첨삭 수
+    @GetMapping("/resume/count/editTotal")
+    public ResponseEntity<TotalResumeEditCountResponse> getTotalResumeEditCount(){
+        return ResponseEntity.ok()
+                .body(TotalResumeEditCountResponse.builder()
+                        .editTotal(resumeStatisticsService.getTotalResumeEditCount())
+                        .build());
+    }
+
+    // 오늘 첨삭 수
+    @GetMapping("/resume/count/editToday")
+    public ResponseEntity<TodayResumeEditCountResponse> getTodayResumeEditCount(){
+        return ResponseEntity.ok()
+                .body(TodayResumeEditCountResponse.builder()
+                        .editToday(resumeStatisticsService.getTodayResumeEditCount())
+                        .build());
+    }
+
+    // 총 자소서 게시글 수
+    @GetMapping("/resume/count/boardTotal")
+    public ResponseEntity<TotalResumeBoardCountResponse> getTotalResumeBoardCount(){
+        return ResponseEntity.ok()
+                .body(TotalResumeBoardCountResponse.builder()
+                        .boardTotal(resumeStatisticsService.getTotalResumeBoardCount())
+                        .build());
     }
 
     @GetMapping("/resume/monthly")

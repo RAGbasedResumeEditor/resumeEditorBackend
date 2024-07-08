@@ -6,9 +6,7 @@ public interface HistoryService {
     void collectStatistics();
 
     Map<String, Object> getTotalVisitCount();
-    Map<String, Object> getProUserCount();
 
-    //Map<LocalDate, Integer> getMonthlySignupUser(YearMonth yearMonth);
     Map<String, Object> getTotalEditCount();
     Map<String, Object> getEditCountForCurrentDate();
 

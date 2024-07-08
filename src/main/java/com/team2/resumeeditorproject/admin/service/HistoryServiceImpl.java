@@ -6,7 +6,6 @@ import com.team2.resumeeditorproject.admin.domain.Traffic;
 import com.team2.resumeeditorproject.admin.dto.HistoryDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
-import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
 import com.team2.resumeeditorproject.admin.repository.HistoryRepository;
 import com.team2.resumeeditorproject.admin.repository.TrafficRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ import java.util.Map;
 public class HistoryServiceImpl implements HistoryService{
 
     private final HistoryRepository historyRepository;
-    private final AdminUserRepository userRepository;
     private final AdminResumeRepository resumeRepository;
     private final AdminResumeBoardRepository resumeBoardRepository;
     private final TrafficRepository trafficRepository;
@@ -37,6 +35,7 @@ public class HistoryServiceImpl implements HistoryService{
     private final ModelMapper modelMapper;
     private final AdminService adminService;
 
+    // 전체적으로 변경될 예정
     /* 통계 수집 */
     @Override
     @Transactional(readOnly = true)
@@ -158,17 +157,6 @@ public class HistoryServiceImpl implements HistoryService{
 
     // ---------------------------------------------
     // 통계 데이터 출력
-    /* 프로 유저 수 */
-    @Override
-    public Map<String, Object> getProUserCount() {
-        Map<String, Object> result = new HashMap<>();
-
-        int proUser = userRepository.findByMode(2).size();
-
-        result.put("pro", proUser);
-
-        return result;
-    }
 
     /* 총 방문자 수 */
     @Override

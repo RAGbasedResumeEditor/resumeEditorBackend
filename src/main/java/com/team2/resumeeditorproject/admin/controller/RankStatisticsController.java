@@ -1,38 +1,58 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.service.AdminService;
+import com.team2.resumeeditorproject.admin.dto.response.RankByResumeEditResponse;
+import com.team2.resumeeditorproject.admin.dto.response.RankByUserResponse;
+import com.team2.resumeeditorproject.admin.service.RankStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Map;
-
-import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOkResponse;
-
 @Controller
 @RequestMapping("/admin/statistics") // /admin 지우기
 @RequiredArgsConstructor
 public class RankStatisticsController {
 
-    private final AdminService adminService;
+    private final RankStatisticsService rankStatisticsService;
 
-    // 관리자 - 통계 페이지 내에서 각 영역 top 5를 출력한다.
-    @GetMapping("/rank/occupation")
-    public ResponseEntity<Map<String, Object>> getOccupationRank() {
-        return createOkResponse(adminService.getOccupationRank());
+    @GetMapping("/user/rank/occupation")
+    public ResponseEntity<RankByUserResponse> getTopOccupationRanksByUsers() {
+        return ResponseEntity.ok()
+                .body(RankByUserResponse.builder()
+                        .userRanking(rankStatisticsService.getTopOccupationRanksByUsers())
+                        .build());
     }
 
-    @GetMapping("/rank/company")
-    public ResponseEntity<Map<String, Object>> getCompanyRank() {
-        return createOkResponse(adminService.getCompanyRank());
+    @GetMapping("/user/rank/company")
+    public ResponseEntity<RankByUserResponse> getTopCompanyRanksByUsers() {
+        return ResponseEntity.ok()
+                .body(RankByUserResponse.builder()
+                        .userRanking(rankStatisticsService.getTopCompanyRanksByUsers())
+                        .build());
     }
 
-    @GetMapping("/rank/wish")
-    public ResponseEntity<Map<String, Object>> getWishRank() {
-        return createOkResponse(adminService.getWishRank());
+    @GetMapping("/user/rank/wish")
+    public ResponseEntity<RankByUserResponse> getTopWishRanksByUsers() {
+        return ResponseEntity.ok()
+                .body(RankByUserResponse.builder()
+                        .userRanking(rankStatisticsService.getTopWishRanksByUsers())
+                        .build());
     }
 
+    @GetMapping("/resume-edit/rank/occupation")
+    public ResponseEntity<RankByResumeEditResponse> getTopOccupationRanksByResumeEdits() {
+        return ResponseEntity.ok()
+                .body(RankByResumeEditResponse.builder()
+                        .editRanking(rankStatisticsService.getTopOccupationRanksByResumeEdits())
+                        .build());
+    }
 
+    @GetMapping("/resume-edit/rank/company")
+    public ResponseEntity<RankByResumeEditResponse> getTopCompanyRanksByResumeEdits() {
+        return ResponseEntity.ok()
+                .body(RankByResumeEditResponse.builder()
+                        .editRanking(rankStatisticsService.getTopCompanyRanksByResumeEdits())
+                        .build());
+    }
 }

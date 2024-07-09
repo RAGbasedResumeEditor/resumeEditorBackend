@@ -7,8 +7,6 @@ import java.util.Map;
 public interface AdminService {
     Map<String, Object> getUserCount();
     Map<String, Object> getGenderCount();
-    Map<String, Object> getOccupationCount(String occupation);
-    Map<String, Object> getWishCount(String wish);
 
     Map<String, Map<String, Integer>> getOccupationRank();
     Map<String, Map<String, Integer>> getCompanyRank();
@@ -18,12 +16,7 @@ public interface AdminService {
     Map<String, Object> getStatusCount();
     Map<String, Object> getModeCount();
 
-    Map<String, Object> getResumeCountByCompany(String company);
-    Map<String, Object> getResumeCountByOccupation(String occupation);
-
     Map<String, Object> getResumeEditCountByStatus();
-    Map<String, Object> getResumeEditCountByOccupation(String occupation);
-    Map<String, Object> getResumeEditCountByCompany(String company);
     Map<String, Object> getResumeEditCountByAge();
     Map<String, Object> getResumeEditCountByMode();
 

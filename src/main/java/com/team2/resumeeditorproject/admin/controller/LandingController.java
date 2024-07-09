@@ -1,20 +1,24 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.team2.resumeeditorproject.admin.dto.response.TotalResumeBoardCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.TotalResumeEditCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.UserCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.VisitTotalCountResponse;
 import com.team2.resumeeditorproject.admin.service.AdminService;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
+import com.team2.resumeeditorproject.admin.service.ResumeStatisticsService;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
+import com.team2.resumeeditorproject.admin.service.UserStatisticsService;
 import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import static com.team2.resumeeditorproject.common.util.ResponseHandler.createBadRequestResponse;
 import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOkResponse;
@@ -28,16 +32,39 @@ public class LandingController {
     private final HistoryService historyService;
     private final ReviewManagementService reviewService;
 
-    @GetMapping("/statistics")
-    public ResponseEntity<Map<String,Object>> getStatistics(@RequestParam(name="group", required=false) String group) {
-        Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
-            case "countUser" -> (g) -> createOkResponse(adminService.getUserCount());
-            case "visitTotal" -> (g) -> createOkResponse(historyService.getTotalVisitCount());
-            case "editTotal" -> (g) -> createOkResponse(historyService.getTotalEditCount());
-            case "boardTotal" -> (g) -> createOkResponse(historyService.getTotalBoardCount());
-            default -> (g) ->  createBadRequestResponse("잘못된 요청입니다.");
-        };
-        return action.apply(group);
+    private final UserStatisticsService userStatisticsService;
+    private final ResumeStatisticsService resumeStatisticsService;
+
+    @GetMapping("/statistics/user-count")
+    public ResponseEntity<UserCountResponse> getUserCount() {
+        return ResponseEntity.ok()
+                .body(UserCountResponse.builder()
+                        .totalCount(userStatisticsService.getUserCount())
+                        .build());
+    }
+
+    @GetMapping("/statistics/total-visit")
+    public ResponseEntity<VisitTotalCountResponse> getTotalVisitCount() {
+        return ResponseEntity.ok()
+                .body(VisitTotalCountResponse.builder()
+                        .visitTotal(userStatisticsService.getTotalVisitCount())
+                        .build());
+    }
+
+    @GetMapping("/statistics/total-edit")
+    public ResponseEntity<TotalResumeEditCountResponse> getTotalResumeEditCount(){
+        return ResponseEntity.ok()
+                .body(TotalResumeEditCountResponse.builder()
+                        .totalEdit(resumeStatisticsService.getTotalResumeEditCount())
+                        .build());
+    }
+
+    @GetMapping("/statistics/total-board")
+    public ResponseEntity<TotalResumeBoardCountResponse> getTotalResumeBoardCount(){
+        return ResponseEntity.ok()
+                .body(TotalResumeBoardCountResponse.builder()
+                        .totalBoard(resumeStatisticsService.getTotalResumeBoardCount())
+                        .build());
     }
 
     @GetMapping("/review")

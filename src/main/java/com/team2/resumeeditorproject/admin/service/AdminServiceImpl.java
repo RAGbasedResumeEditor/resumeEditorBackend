@@ -4,7 +4,6 @@ import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository
 import com.team2.resumeeditorproject.admin.repository.AdminResumeEditRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminResumeRepository;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
-import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,17 +55,6 @@ public class AdminServiceImpl implements AdminService { //관리자 페이지 �
         return result;
     }
 
-    @Override
-    public Map<String,Object> getOccupationCount(String occupation) {
-        int userCount = totalUserCount(adminUserRepository);
-        double occupationRatio = ((double) adminUserRepository.findByOccupation(occupation).size() / userCount) * 100;
-
-        Map<String,Object> result = new HashMap<>();
-        result.put(occupation,Math.round(occupationRatio * 100.0) / 100.0);
-
-        return result;
-    }
-
     /* 직업별 유저 수, 첨삭 수 랭킹 5 */
     @Override
     public Map<String, Map<String, Integer>> getOccupationRank(){
@@ -103,16 +90,6 @@ public class AdminServiceImpl implements AdminService { //관리자 페이지 �
         return result;
     }
 
-    @Override
-    public  Map<String, Object> getWishCount(String wish) {
-        int userCnt = totalUserCount(adminUserRepository);
-        double wishes = ((double) adminUserRepository.findByWish(wish).size() / (double) userCnt) * 100;
-
-        Map<String, Object> result = new HashMap<>();
-        result.put(wish,Math.round(wishes * 100.0) / 100.0);
-
-        return result;
-    }
 
     /* 회사별 유저 수, 첨삭 수 랭킹 5 */
     @Override
@@ -215,101 +192,6 @@ public class AdminServiceImpl implements AdminService { //관리자 페이지 �
         return result;
     }
 
-    /* 회사별 자소서 평점, 조회수 */
-    @Override
-    public Map<String, Object> getResumeCountByCompany(String company) {
-        if (company == null) {
-            throw new IllegalArgumentException("Company parameter cannot be null");
-        }
-
-        List<ResumeEdit> resumeByCompany = adminResumeEditRepository.findByCompany(company);
-        List<Float> ratesByCompany = new ArrayList<>();
-        List<Integer> viewsByCompany = new ArrayList<>();
-        Map<String, Object> result = new HashMap<>();
-
-        resumeByCompany.forEach(resumeEdit -> {
-            Long rNum = resumeEdit.getR_num();
-            adminResumeBoardRepository.findById(rNum).ifPresent(resumeBoard -> {
-                ratesByCompany.add(resumeBoard.getRating());
-                viewsByCompany.add(resumeBoard.getRead_num());
-            });
-        });
-
-        ratesByCompany.sort(Comparator.reverseOrder());
-        viewsByCompany.sort(Comparator.reverseOrder());
-        float sumRatesByCompany = 0;
-        int sumViewsByCompany = 0;
-
-        for(Float rate : ratesByCompany){
-            sumRatesByCompany += rate;
-        }
-        for(int view : viewsByCompany){
-            sumViewsByCompany += view;
-        }
-
-        int cnt = ratesByCompany.size();
-        float avgRate = cnt > 0 ? sumRatesByCompany / (float) cnt : 0;
-        int avgViews = cnt > 0 ? sumViewsByCompany / cnt : 0;
-
-        result.put("resume_count", ratesByCompany.size());
-        result.put("resume_avgRate", String.format("%.2f", avgRate));
-        result.put("resume_avgView", avgViews);
-        result.put("highest_rate", ratesByCompany.get(0));
-        result.put("lowest_rate", ratesByCompany.get(cnt - 1));
-        result.put("highest_view", viewsByCompany.get(0));
-        result.put("lowest_view", viewsByCompany.get(cnt - 1));
-
-        return result;
-    }
-
-    /* 직군별 자소서 평점, 조회수 */
-    @Override
-    public Map<String, Object> getResumeCountByOccupation(String occupation) {
-        if (occupation == null) {
-            throw new IllegalArgumentException("Company parameter cannot be null");
-        }
-
-        List<ResumeEdit> resumeByOccupation = adminResumeEditRepository.findByOccupation(occupation);
-        List<Float> ratesByOccupation = new ArrayList<>();
-        List<Integer> viewsByOccupation = new ArrayList<>();
-        Map<String, Object> result = new HashMap<>();
-
-        resumeByOccupation.forEach(resumeEdit -> {
-            Long rNum = resumeEdit.getR_num();
-            adminResumeBoardRepository.findById(rNum).ifPresent(adResBoard -> {
-                ratesByOccupation.add(adResBoard.getRating());
-                viewsByOccupation.add(adResBoard.getRead_num());
-            });
-        });
-
-        ratesByOccupation.sort(Comparator.reverseOrder());
-        viewsByOccupation.sort(Comparator.reverseOrder());
-
-        float sumRatesByOccupation = 0;
-        int sumViewsByOccupation = 0;
-
-        for(Float rate:ratesByOccupation){
-            sumRatesByOccupation += rate;
-        }
-        for(int view:viewsByOccupation){
-            sumViewsByOccupation += view;
-        }
-
-        int cnt = ratesByOccupation.size();
-        float avgRate = cnt > 0 ? sumRatesByOccupation / cnt : 0;
-        int avgViews = cnt > 0 ? sumViewsByOccupation / cnt : 0;
-
-        result.put("resume_count", cnt);
-        result.put("resume_avgRate", avgRate);
-        result.put("resume_avgView", avgViews);
-        result.put("highest_rate", ratesByOccupation.get(0));
-        result.put("lowest_rate", ratesByOccupation.get(cnt-1));
-        result.put("highest_view", viewsByOccupation.get(0));
-        result.put("lowest_view", viewsByOccupation.get(cnt-1));
-
-        return result;
-    }
-
     /* 3) 자소서 첨삭 이용 통계 */
     private long countResumeEdits(List<User> userList) {
         long totalResumeEdits = 0;
@@ -345,50 +227,6 @@ public class AdminServiceImpl implements AdminService { //관리자 페이지 �
 
         result.put("edit_cnt", editCounts);
         result.put("edit_ratio", editRatios);
-
-        return result;
-    }
-
-    /* 직군 별 첨삭 횟수,비율 */
-    @Override
-    public Map<String, Object> getResumeEditCountByOccupation(String occupation) {
-        Map<String, Object> result = new LinkedHashMap<>();
-        Map<String, Object> editCounts = new LinkedHashMap<>();
-        Map<String, Object> editRatios = new LinkedHashMap<>();
-
-        int userCnt = totalUserCount(adminUserRepository);
-        List<User> occupationList = adminUserRepository.findByOccupation(occupation);
-
-        long occupationCnt = countResumeEdits(occupationList);
-        double occupationRatio = ((double) occupationCnt / userCnt) * 100;
-
-        editCounts.put(occupation, occupationCnt);
-        editRatios.put(occupation, Math.round(occupationRatio * 100.0) / 100.0);
-
-        result.put("occup_edit_cnt", editCounts);
-        result.put("occup_edit_ratio", editRatios);
-
-        return result;
-    }
-
-    /* 회사 별 첨삭 횟수,비율*/
-    @Override
-    public Map<String, Object> getResumeEditCountByCompany(String company) {
-        Map<String, Object> result = new LinkedHashMap<>();
-        Map<String, Object> editCounts = new LinkedHashMap<>();
-        Map<String, Object> editRatios = new LinkedHashMap<>();
-
-        int userCnt = totalUserCount(adminUserRepository);
-        List<User> companyList = adminUserRepository.findByCompany(company);
-
-        long companyCnt = countResumeEdits(companyList);
-        double companyRatio = ((double) companyCnt / userCnt) * 100;
-
-        editCounts.put(company, companyCnt);
-        editRatios.put(company, Math.round(companyRatio * 100.0) / 100.0);
-
-        result.put("company_edit_cnt", editCounts);
-        result.put("company_edit_ratio", editRatios);
 
         return result;
     }

@@ -10,7 +10,6 @@ import com.team2.resumeeditorproject.admin.dto.response.StatusCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.TodayResumeEditCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.TotalResumeBoardCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.TotalResumeEditCountResponse;
-import com.team2.resumeeditorproject.admin.service.AdminService;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.ResumeStatisticsService;
 import com.team2.resumeeditorproject.common.util.DateRange;
@@ -34,11 +33,7 @@ import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOk
 @RequiredArgsConstructor
 public class ResumeStatisticsController {
 
-    private static final String Invalid_Request_Error_Message = "잘못된 요청입니다.";
-
-    private final AdminService adminService;
     private final HistoryService historyService;
-
     private final ResumeStatisticsService resumeStatisticsService;
 
     @GetMapping("/resume-edit/status")

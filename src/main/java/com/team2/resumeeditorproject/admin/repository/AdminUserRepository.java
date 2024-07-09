@@ -30,10 +30,36 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     // 유저 수 통계
     @Query("SELECT DISTINCT u.occupation FROM User u WHERE u.occupation IS NOT NULL")
     List<String> findOccupations();
+
+    // 직종 랭킹 Top5(수정)
+    @Query(value = "SELECT occupation, COUNT(occupation) AS count " +
+            "FROM user " +
+            "GROUP BY occupation " +
+            "ORDER BY count DESC " +
+            "LIMIT 5", nativeQuery = true)
+    List<Object[]> findTop5Occupations();
+
     @Query("SELECT DISTINCT u.company FROM User u WHERE u.company IS NOT NULL")
     List<String> findCompanies();
+
+    // 회사 랭킹 Top5(수정)
+    @Query(value = "SELECT company, COUNT(company) AS count " +
+            "FROM user " +
+            "GROUP BY company " +
+            "ORDER BY count DESC " +
+            "LIMIT 5", nativeQuery = true)
+    List<Object[]> findTop5Companies();
+
     @Query("SELECT DISTINCT u.wish FROM User u WHERE u.wish IS NOT NULL")
     List<String> findWishes();
+
+    // 희망직종 랭킹 Top5(수정)
+    @Query(value = "SELECT wish, COUNT(wish) AS count " +
+            "FROM user " +
+            "GROUP BY wish " +
+            "ORDER BY count DESC " +
+            "LIMIT 5", nativeQuery = true)
+    List<Object[]> findTop5Wishes();
 
     // 키워드 검색을 위한 그룹 + 페이징
     @Query("SELECT u, COUNT(re) FROM User u LEFT JOIN u.resumeEdits re WHERE "

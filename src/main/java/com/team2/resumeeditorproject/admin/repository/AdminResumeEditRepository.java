@@ -31,6 +31,22 @@ public interface AdminResumeEditRepository extends JpaRepository<ResumeEdit, Lon
     @Query("SELECT DISTINCT r.occupation FROM ResumeEdit r")
     List<String> findOccupations();
 
+    // 첨삭 받기 위한 지원직종별 첨삭횟수 랭킹Top5
+    @Query(value = "SELECT occupation, COUNT(occupation) AS count " +
+            "FROM resume_edit " +
+            "GROUP BY occupation " +
+            "ORDER BY count DESC " +
+            "LIMIT 5", nativeQuery = true)
+    List<Object[]> findTop5Occupations();
+
     @Query("SELECT DISTINCT r.company FROM ResumeEdit r")
     List<String> findCompanies();
+
+    // 첨삭 받기 위한 지원회사별 첨삭횟수 랭킹Top5
+    @Query(value = "SELECT company, COUNT(company) AS count " +
+            "FROM resume_edit " +
+            "GROUP BY company " +
+            "ORDER BY count DESC " +
+            "LIMIT 5", nativeQuery = true)
+    List<Object[]> findTop5Companies();
 }

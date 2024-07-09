@@ -1,11 +1,13 @@
 package com.team2.resumeeditorproject.admin.repository;
 
 import com.team2.resumeeditorproject.resume.domain.Resume;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -29,6 +31,11 @@ public interface AdminResumeRepository extends JpaRepository<Resume, Long> {
             "FROM resume r " +
             "GROUP BY DATE_FORMAT(r.w_date, '%Y-%m-%d')", nativeQuery = true)
     List<Object[]> findDailyCorrectionCounts();
+
+    // 일별 첨삭 횟수(수정)
+    @EntityGraph(attributePaths = "resumeEdit")
+    @Query("SELECT resume FROM Resume resume WHERE resume.w_date BETWEEN :startDate AND :endDate")
+    List<Resume> findByWDateBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     // 오늘 첨삭 수
     @Query("SELECT count(r) FROM Resume r WHERE DATE_FORMAT(r.w_date, '%Y-%m-%d') = :currentDate")

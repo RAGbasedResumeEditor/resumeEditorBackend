@@ -1,7 +1,11 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.team2.resumeeditorproject.admin.dto.request.DailyStatisticsRequest;
+import com.team2.resumeeditorproject.admin.dto.request.MonthlyStatisticsRequest;
 import com.team2.resumeeditorproject.admin.dto.response.AgeCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.DailyResumeEditStatisticsResponse;
 import com.team2.resumeeditorproject.admin.dto.response.ModeCountResponse;
+import com.team2.resumeeditorproject.admin.dto.response.MonthlyResumeEditStatisticsResponse;
 import com.team2.resumeeditorproject.admin.dto.response.StatusCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.TodayResumeEditCountResponse;
 import com.team2.resumeeditorproject.admin.dto.response.TotalResumeBoardCountResponse;
@@ -9,16 +13,18 @@ import com.team2.resumeeditorproject.admin.dto.response.TotalResumeEditCountResp
 import com.team2.resumeeditorproject.admin.service.AdminService;
 import com.team2.resumeeditorproject.admin.service.HistoryService;
 import com.team2.resumeeditorproject.admin.service.ResumeStatisticsService;
+import com.team2.resumeeditorproject.common.util.DateRange;
+import com.team2.resumeeditorproject.common.util.MonthRange;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import static com.team2.resumeeditorproject.common.util.ResponseHandler.createBadRequestResponse;
 import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOkResponse;
@@ -65,24 +71,24 @@ public class ResumeStatisticsController {
                         .build());
     }
 
-    /* 자소서 첨삭 이용에 관한 통계 */
-    @GetMapping("/resume-edit")
-    public ResponseEntity<Map<String, Object>> getResumeEditStatistics(@RequestParam(name="group", required = false) String group,
-                                                                       @RequestParam(name="company", required = false) String company,
-                                                                       @RequestParam(name="occupation", required = false) String occupation
-    ) {
-        Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
-            case "status" -> (g) -> createOkResponse(adminService.getResumeEditCountByStatus());
-            case "company" -> (g) -> createOkResponse(adminService.getResumeEditCountByCompany(company));
-            case "occupation" -> (g) -> createOkResponse(adminService.getResumeEditCountByOccupation(occupation));
-            case "age" -> (g) -> createOkResponse(adminService.getResumeEditCountByAge());
-            case "mode" -> (g) -> createOkResponse(adminService.getResumeEditCountByMode());
-            case "monthly" -> (g) -> createOkResponse(adminService.getMonthlyResumeEditCount()); // 채용시즌(월별)
-            case "weekly" -> (g) -> createOkResponse(adminService.getWeeklyResumeEditCount()); // 채용시즌(주별)
-            case "daily" -> (g) -> createOkResponse(adminService.getDailyResumeEditCount()); // 채용시즌(일별)
-            default -> (g) -> createBadRequestResponse(Invalid_Request_Error_Message);
-        };
-        return action.apply(group);
+    @GetMapping("/resume-edit/daily")
+    public ResponseEntity<DailyResumeEditStatisticsResponse> getDailyResumeEditStatistics(
+            @ModelAttribute DailyStatisticsRequest request) {
+        DateRange dateRange = request.toDateRange();
+        return ResponseEntity.ok()
+                .body(DailyResumeEditStatisticsResponse.builder()
+                        .editDate(resumeStatisticsService.getDailyResumeEditStatistics(dateRange))
+                        .build());
+    }
+
+    @GetMapping("/resume-edit/monthly")
+    public ResponseEntity<MonthlyResumeEditStatisticsResponse> getDailyResumeEditStatistics(
+            @ModelAttribute MonthlyStatisticsRequest request) {
+        MonthRange monthRange = request.toMonthRange();
+        return ResponseEntity.ok()
+                .body(MonthlyResumeEditStatisticsResponse.builder()
+                        .editDate(resumeStatisticsService.getMonthlyResumeEditStatistics(monthRange))
+                        .build());
     }
 
     // 총 첨삭 수
@@ -112,6 +118,7 @@ public class ResumeStatisticsController {
                         .build());
     }
 
+    // 아래 전체 수정 또는 삭제 예정----
     @GetMapping("/resume/monthly")
     public ResponseEntity<Map<String,Object>> getMonthlyResumeEditStatistics() {
         try {
@@ -147,4 +154,5 @@ public class ResumeStatisticsController {
             return createBadRequestResponse(e.getMessage());
         }
     }
+    //------
 }

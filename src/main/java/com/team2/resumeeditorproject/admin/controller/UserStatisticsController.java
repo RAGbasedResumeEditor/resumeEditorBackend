@@ -132,8 +132,10 @@ public class UserStatisticsController {
     public ResponseEntity<DailyAccessStatisticsResponse> getDailyAccessStatistics(
             @ModelAttribute DailyStatisticsRequest request) {
         DateRange dateRange = request.toDateRange();
-        DailyAccessStatisticsResponse response = accessStatisticsService.getDailyAccessStatistics(dateRange);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .body(DailyAccessStatisticsResponse.builder()
+                        .trafficDate(accessStatisticsService.getDailyAccessStatistics(dateRange))
+                        .build());
     }
 
     // 월별 접속자 집계
@@ -141,8 +143,10 @@ public class UserStatisticsController {
     public ResponseEntity<MonthlyAccessStatisticsResponse> getMonthlyAccessStatistics(
             @ModelAttribute MonthlyStatisticsRequest request) {
         MonthRange monthRange = request.toMonthRange();
-        MonthlyAccessStatisticsResponse response = accessStatisticsService.getMonthlyAccessStatistics(monthRange);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .body(MonthlyAccessStatisticsResponse.builder()
+                        .trafficDate(accessStatisticsService.getMonthlyAccessStatistics(monthRange))
+                        .build());
     }
 
     // 일별 회원가입 집계
@@ -150,8 +154,10 @@ public class UserStatisticsController {
     public ResponseEntity<DailySignupStatisticsResponse> getDailySignupStatistics(
             @ModelAttribute DailyStatisticsRequest request) {
         DateRange dateRange = request.toDateRange();
-        DailySignupStatisticsResponse response = signupStatisticsService.getDailySignupStatistics(dateRange);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .body(DailySignupStatisticsResponse.builder()
+                        .signupDate(signupStatisticsService.getDailySignupStatistics(dateRange))
+                        .build());
     }
 
     // 월별 회원가입 집계
@@ -159,7 +165,9 @@ public class UserStatisticsController {
     public ResponseEntity<MonthlySignupStatisticsResponse> getMonthlySignupStatistics(
             @ModelAttribute MonthlyStatisticsRequest request) {
         MonthRange monthRange = request.toMonthRange();
-        MonthlySignupStatisticsResponse response = signupStatisticsService.getMonthlySignupStatistics(monthRange);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .body(MonthlySignupStatisticsResponse.builder()
+                        .signupDate(signupStatisticsService.getMonthlySignupStatistics(monthRange))
+                        .build());
     }
 }

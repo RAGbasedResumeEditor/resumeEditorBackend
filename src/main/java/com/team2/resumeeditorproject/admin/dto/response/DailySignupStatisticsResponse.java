@@ -1,17 +1,15 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.Map;
 
-@Data
+@Builder
+@Getter
 public class DailySignupStatisticsResponse {
     @JsonProperty("signup_date")
-    private Map<LocalDate, Integer> signupData;
-
-    public DailySignupStatisticsResponse(Map<LocalDate, Integer> signupData) {
-        this.signupData = signupData;
-    }
+    private Map<LocalDate, Integer> signupDate;
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Builder
 @Getter
-public class DailyAccessStatisticsResponse {
-    @JsonProperty("traffic_date")
-    private Map<LocalDate, Integer> trafficDate;
+public class DailyResumeEditStatisticsResponse {
+    @JsonProperty("edit_date")
+    private Map<LocalDate, Integer> editDate;
 }

@@ -1,8 +1,8 @@
 package com.team2.resumeeditorproject.common.scheduler;
 
 import com.team2.resumeeditorproject.common.util.CronExpressions;
-import com.team2.resumeeditorproject.admin.service.HistoryService;
-import com.team2.resumeeditorproject.admin.service.TrafficService;
+import com.team2.resumeeditorproject.statistics.service.HistoryService;
+import com.team2.resumeeditorproject.statistics.service.TrafficService;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.RefreshService;

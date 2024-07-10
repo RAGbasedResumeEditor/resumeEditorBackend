@@ -1,14 +1,12 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.dto.response.TotalResumeBoardCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.TotalResumeEditCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.UserCountResponse;
-import com.team2.resumeeditorproject.admin.dto.response.VisitTotalCountResponse;
-import com.team2.resumeeditorproject.admin.service.AdminService;
-import com.team2.resumeeditorproject.admin.service.HistoryService;
-import com.team2.resumeeditorproject.admin.service.ResumeStatisticsService;
+import com.team2.resumeeditorproject.statistics.dto.response.TotalResumeBoardCountResponse;
+import com.team2.resumeeditorproject.statistics.dto.response.TotalResumeEditCountResponse;
+import com.team2.resumeeditorproject.statistics.dto.response.UserCountResponse;
+import com.team2.resumeeditorproject.statistics.dto.response.VisitTotalCountResponse;
+import com.team2.resumeeditorproject.statistics.service.ResumeStatisticsService;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
-import com.team2.resumeeditorproject.admin.service.UserStatisticsService;
+import com.team2.resumeeditorproject.statistics.service.UserStatisticsService;
 import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +26,7 @@ import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOk
 @RequiredArgsConstructor
 public class LandingController {
 
-    private final AdminService adminService;
-    private final HistoryService historyService;
     private final ReviewManagementService reviewService;
-
     private final UserStatisticsService userStatisticsService;
     private final ResumeStatisticsService resumeStatisticsService;
 

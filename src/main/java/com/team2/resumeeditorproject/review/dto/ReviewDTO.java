@@ -16,6 +16,6 @@ public class ReviewDTO {
     private String content;
     private int rating;
     private int mode;
-    private boolean show;
+    private String display;
     private Date w_date;
 }

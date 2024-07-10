@@ -1,0 +1,56 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: resume_editor/resumeeditorbackend
+          stage: main
+          yaml: |
+            name: resumeeditorbackend
+            app: java@17
+            options:
+              ports: "8088"
+              env:
+                - name: DB_USERNAME
+                  secret: db_username
+                - name: DB_PASSWORD
+                  secret: db_password
+                - name: DB_HOST
+                  secret: db_host
+                - name: DB_PORT
+                  secret: db_port
+                - name: GPT_API_KEY
+                  secret: gpt_api_key
+                - name: REDIS_HOST
+                  secret: redis_host
+                - name: REDIS_PORT
+                  secret: redis_port
+                - name: QDRANT_GRPC_HOST
+                  secret: qdrant_grpc_host
+                - name: QDRANT_API_KEY
+                  secret: qdrant_api_key
+                - name: EMAIL_ADDRESS
+                  secret: email_address
+                - name: EMAIL_PASSWORD
+                  secret: email_password
+                - name: JWT_SECRET
+                  secret: JWT_SECRET
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}

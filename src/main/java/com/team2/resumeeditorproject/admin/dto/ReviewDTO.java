@@ -22,5 +22,5 @@ public class ReviewDTO {
     private int rating;
     private int mode;
     private Date w_date;
-    private boolean show;
+    private String display;
 }

@@ -32,9 +32,6 @@ public class Review {
     private String content;
     private int rating;
     private int mode;
-
-    @Column(name = "`show`")
-    private boolean show;
-
+    private String display;
     private Date w_date;
 }

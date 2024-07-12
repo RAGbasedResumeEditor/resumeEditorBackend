@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.dto.ReviewDTO;
+import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import com.team2.resumeeditorproject.admin.dto.response.ReviewDisplayResultResponse;
 import com.team2.resumeeditorproject.admin.dto.response.ReviewListResponse;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
@@ -37,8 +37,8 @@ public class ReviewManagementController {
         List<ReviewDTO> reviewDTOList = new ArrayList<>();
         for (Review review : reviewList) {
             ReviewDTO reviewDTO = new ReviewDTO();
-            reviewDTO.setRv_num(review.getRvNum());
-            reviewDTO.setU_num(review.getUNum());
+            reviewDTO.setRvNum(review.getRvNum());
+            reviewDTO.setUNum(review.getUNum());
             reviewDTO.setContent(review.getContent());
             reviewDTO.setRating(review.getRating());
             reviewDTO.setMode(review.getMode());
@@ -69,8 +69,8 @@ public class ReviewManagementController {
         List<ReviewDTO> reviewDTOList = new ArrayList<>();
         for (Review review : reviewList) {
             ReviewDTO reviewDTO = new ReviewDTO();
-            reviewDTO.setRv_num(review.getRvNum());
-            reviewDTO.setU_num(review.getUNum());
+            reviewDTO.setRvNum(review.getRvNum());
+            reviewDTO.setUNum(review.getUNum());
             reviewDTO.setContent(review.getContent());
             reviewDTO.setRating(review.getRating());
             reviewDTO.setMode(review.getMode());

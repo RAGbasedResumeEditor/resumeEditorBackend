@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import com.team2.resumeeditorproject.admin.dto.LandingPageReviewDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.review.domain.Review;
@@ -8,12 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +58,15 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     }
 
     @Override
-    public List<Review> getVisibleReviews() {
-        return reviewRepository.findAllByDisplay("true");
+    public List<LandingPageReviewDTO> getVisibleReviews() {
+        List<Review> visibleReviews = reviewRepository.findAllByDisplay("true");
+
+        return visibleReviews.stream()
+                .map(review -> new LandingPageReviewDTO(
+                        review.getContent(),
+                        review.getRating()
+                ))
+                .collect(Collectors.toList());
     }
 }
 

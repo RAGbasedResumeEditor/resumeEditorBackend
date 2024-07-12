@@ -1,15 +1,14 @@
 package com.team2.resumeeditorproject.admin.dto.response;
 
-import lombok.Data;
+import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
+import lombok.Builder;
+import lombok.Getter;
 
-import java.util.Date;
+import java.util.List;
 
-@Data
+@Builder
+@Getter
 public class ResumeBoardListResponse {
-    private long rNum;
-    private float rating;
-    private String title;
-    private int ratingCount;
-    private String username;
-    private Date wDate;
+    private List<ResumeBoardDTO> resumeBoardList;
+    private int totalPages;
 }

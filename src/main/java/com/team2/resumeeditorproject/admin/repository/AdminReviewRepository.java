@@ -16,6 +16,6 @@ public interface AdminReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT r FROM Review r WHERE r.display='true'")
     Page<Review> findByDisplay(Pageable pageable);
 
-    List<Review> findAllByDisplay(String show);
+    List<Review> findAllByDisplay(String display);
 
 }

@@ -26,7 +26,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     // 수집한 통계 저장
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void collectStatistics() {
         HistoryDTO historyDTO = new HistoryDTO();
         log.info("Starting collectStatistics");
@@ -62,10 +62,12 @@ public class HistoryServiceImpl implements HistoryService{
             // 데이터 저장
             historyRepository.save(history);
 
-            log.info("Completed collectAndSaveStatistics successfully for date: {}", historyDTO.getTraffic_date());
+            log.debug("Completed collectStatistics successfully for date: {}", historyDTO.getTraffic_date());
 
         } catch (Exception exception) {
-            log.error("Error occurred while collecting statistics", exception);
+            log.error("Error occurred while collecting statistics : {}", exception.getMessage(), exception);
         }
     }
+
 }
+

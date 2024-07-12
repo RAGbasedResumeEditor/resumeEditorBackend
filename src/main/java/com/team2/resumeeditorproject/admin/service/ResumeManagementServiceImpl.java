@@ -2,8 +2,11 @@ package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository;
 import com.team2.resumeeditorproject.exception.BadRequestException;
+import com.team2.resumeeditorproject.exception.NotFoundException;
+import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
+import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,36 +22,66 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ResumeManagementServiceImpl implements ResumeManagementService{
+public class ResumeManagementServiceImpl implements ResumeManagementService {
 
     private final AdminResumeBoardRepository adminResumeBoardRepository;
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ResumeBoard> getResumeBoards(int pageNo) {
-        Pageable pageable= PageRequest.of(pageNo, 10, Sort.by("RNum").descending());
-        Page<ResumeBoard> pageResult = adminResumeBoardRepository.findAll(pageable);
-        return pageResult;
+    private List<ResumeBoardDTO> convertToDTO(List<ResumeBoard> resumeBoardList) {
+        return resumeBoardList.stream()
+                .map(resumeBoard -> {
+                    Resume resume = resumeBoard.getResume();
+                    User user = resume.getUser();
+                    return new ResumeBoardDTO(
+                            resumeBoard.getRNum(),
+                            (float) Math.round(resumeBoard.getRating() * 10) / 10,
+                            resumeBoard.getRating_count(),
+                            resumeBoard.getRead_num(),
+                            resumeBoard.getTitle(),
+                            resume.getW_date(),
+                            user.getUsername()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<ResumeBoardDTO> getPagedResumeBoards(Pageable pageable) {
-        Page<Object[]> resultsPage = adminResumeBoardRepository.findAllResumeBoards(pageable);
+        Page<ResumeBoard> resumeBoardPage = adminResumeBoardRepository.findAllResumeBoards(pageable);
+        List<ResumeBoardDTO> dtoList = convertToDTO(resumeBoardPage.getContent());
+        return new PageImpl<>(dtoList, pageable, resumeBoardPage.getTotalElements());
+    }
 
-        List<ResumeBoardDTO> dtoList = resultsPage.getContent().stream()
-                .map(resumeBoardData -> new ResumeBoardDTO(
-                        ((ResumeBoard) resumeBoardData[0]).getRNum(),
-                        (float) Math.round(((ResumeBoard) resumeBoardData[0]).getRating() * 10) / 10,
-                        ((ResumeBoard) resumeBoardData[0]).getRating_count(),
-                        ((ResumeBoard) resumeBoardData[0]).getRead_num(),
-                        (String) resumeBoardData[1],
-                        pageable.getPageNumber(),  // 현재 페이지 번호
-                        pageable.getPageSize()    // 페이지 사이즈
-                ))
-                .collect(Collectors.toList());
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ResumeBoardDTO> searchPagedResumeBoardByTitle (String title, int pageNo) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new BadRequestException("제목을 입력해야합니다.");
+        }
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("RNum").descending());
+        Page<ResumeBoard> pageResult = adminResumeBoardRepository.findByTitleContaining(title, pageable);
 
-        return new PageImpl<>(dtoList, pageable, resultsPage.getTotalElements());
+        if (pageResult.getContent().isEmpty()) {
+            throw new NotFoundException("존재하지 않습니다.");
+        }
+
+        List<ResumeBoardDTO> dtoList = convertToDTO(pageResult.getContent());
+        return new PageImpl<>(dtoList, pageable, pageResult.getTotalElements());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ResumeBoardDTO> searchPagedResumeBoardByRating (Float rating, int pageNo) {
+        if (rating == null || rating < 0) {
+            rating = 0f; // rating이 null 또는 음수인 경우 0으로 설정
+        }
+        if (rating > 5) {
+            rating = 5f; // rating이 5를 초과하는 경우 5로 설정
+        }
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("RNum").descending());
+        Page<ResumeBoard> pageResult = adminResumeBoardRepository.findByRatingBetween(rating, rating + 0.99f, pageable);
+        List<ResumeBoardDTO> dtoList = convertToDTO(pageResult.getContent());
+        return new PageImpl<>(dtoList, pageable, pageResult.getTotalElements());
     }
 
     @Override
@@ -61,30 +94,8 @@ public class ResumeManagementServiceImpl implements ResumeManagementService{
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<ResumeBoard> searchByTitle (String title, int pageNo) {
-        if(title == null) title = "없는 페이지";
-        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("RNum").descending());
-        Page<ResumeBoard> pageResult = adminResumeBoardRepository.findByTitleContaining(title, pageable);
-        return pageResult;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ResumeBoard> searchByRating (Float rating, int pageNo) {
-        if(rating > 5) rating = 5f;
-        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("RNum").descending());
-        Page<ResumeBoard> pageResult = adminResumeBoardRepository.findByRatingBetween(rating, rating+0.99f, pageable);
-        return pageResult;
-    }
-
-    @Override
     public Boolean checkResumeExists(Long rNum) {
         Optional<ResumeBoard> resumeBoard = adminResumeBoardRepository.findById(rNum);
-        if (resumeBoard.isPresent()) {
-            return true;
-        }else{
-            return false;
-        }
+        return resumeBoard.isPresent();
     }
 }

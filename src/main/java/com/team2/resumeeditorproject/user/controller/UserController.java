@@ -51,7 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
+import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOkResponse;
 
 @Controller
 @RequiredArgsConstructor

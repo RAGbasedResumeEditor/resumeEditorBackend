@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 @Repository
 public interface AdminReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAll(Pageable pageable);

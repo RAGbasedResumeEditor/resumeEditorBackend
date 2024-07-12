@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.user.config;
 
-import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
+import com.team2.resumeeditorproject.statistics.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.Jwt.CustomAuthenticationFailureHandler;
 import com.team2.resumeeditorproject.user.Jwt.CustomAuthenticationProvider;
 import com.team2.resumeeditorproject.user.Jwt.CustomLogoutFilter;

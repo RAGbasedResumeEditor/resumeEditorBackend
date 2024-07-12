@@ -11,5 +11,6 @@ import java.util.List;
 public class ReviewListResponse {
     @JsonProperty("review_list")
     private List<ReviewDTO> reviewDTOList;
+    @JsonProperty("total_page")
     private int totalPage;
 }

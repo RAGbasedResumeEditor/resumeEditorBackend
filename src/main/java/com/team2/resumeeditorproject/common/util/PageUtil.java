@@ -20,8 +20,8 @@ public class PageUtil {
         }
     }
 
-    public static void checkListEmpty(Page<UserDTO> userPage) {
-        if (userPage.getTotalElements() == 0) {
+    public static <T> void checkListEmpty(Page<T> page) {
+        if (page.getTotalElements() == 0) {
             throw new NotFoundException("검색 결과가 존재하지 않습니다");
         }
     }

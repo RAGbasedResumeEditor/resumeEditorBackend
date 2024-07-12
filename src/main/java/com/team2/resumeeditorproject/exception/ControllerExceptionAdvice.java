@@ -29,6 +29,8 @@ public class ControllerExceptionAdvice {
         response.put("response", e.getMessage());
         response.put("time", new Date());
         response.put("status","Fail");
+        System.out.println("hi" + HttpStatus.BAD_REQUEST);
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); //400
     }
 
@@ -63,6 +65,7 @@ public class ControllerExceptionAdvice {
         response.put("response", e.getMessage());
         response.put("time", new Date());
         response.put("status","Fail");
+        System.out.println("hi" + HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 

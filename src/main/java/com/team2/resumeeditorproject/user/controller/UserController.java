@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.common.util.CommonResponse;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
@@ -95,17 +96,15 @@ public class UserController extends HttpServlet {
 
     //회원탈퇴
     @DeleteMapping("/user/{uNum}")
-    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("uNum") Long uNum) throws AuthenticationException {
+    public ResponseEntity<CommonResponse> deleteUser(@PathVariable("uNum") Long uNum) throws AuthenticationException {
+        userService.deleteUser(uNum);
 
-            // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
-            userManagementService.updateUserDeleteDate(uNum);
-
-            // 해당 사용자의 refresh 토큰 정보 삭제
-            User deletedUser = userRepository.findById(uNum)
-                    .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
-            refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
-
-            return createOkResponse(uNum+"번 회원 탈퇴 완료.");
+        return ResponseEntity.ok()
+                .body(CommonResponse.builder()
+                        .response("uNum+\"번 회원 탈퇴 완료.")
+                        .status("Success")
+                        .time(new Date())
+                        .build());
     }
 
     //회원정보 수정

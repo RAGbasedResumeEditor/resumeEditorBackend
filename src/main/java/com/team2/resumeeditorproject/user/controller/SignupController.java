@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.user.controller;
 
+import com.team2.resumeeditorproject.common.util.CommonResponse;
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.exception.DelDateException;
 import com.team2.resumeeditorproject.exception.NotFoundException;
@@ -7,7 +8,6 @@ import com.team2.resumeeditorproject.resume.dto.OccupationDTO;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.dto.response.LoadOccupationResponse;
-import com.team2.resumeeditorproject.user.dto.response.SignupResultResponse;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.SignupService;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,7 @@ public class SignupController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<SignupResultResponse> signup(@RequestBody UserDTO userDTO) throws IOException {
+    public ResponseEntity<CommonResponse> signup(@RequestBody UserDTO userDTO) throws IOException {
         String username = userDTO.getUsername();
 
         //30일 이내에 탈퇴한 회원 예외 처리
@@ -84,7 +84,7 @@ public class SignupController {
 
         // ResponseEntity로 반환
         return ResponseEntity.ok()
-                .body(SignupResultResponse.builder()
+                .body(CommonResponse.builder()
                         .response("회원가입 성공")
                         .status("Success")
                         .time(new Date())

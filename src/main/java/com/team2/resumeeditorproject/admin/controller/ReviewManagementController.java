@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/review")
@@ -26,8 +27,14 @@ public class ReviewManagementController {
 
     private final ReviewManagementService reviewService;
 
+    private static final int SIZE_OF_PAGE = 10; // 한 페이지에 보여줄 회원 수
+
     @GetMapping("/list")
-    public ResponseEntity<ReviewListResponse> getAllReviews(@RequestParam("pageNo") int pageNo) {
+    public ResponseEntity<ReviewListResponse> getAllReviews(
+            @RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+
+        int size = SIZE_OF_PAGE;
+
         if (pageNo < 0) {
             pageNo = 0;
         }
@@ -66,19 +73,17 @@ public class ReviewManagementController {
 
         Page<Review> reviewList = reviewService.getDisplayReviews(pageNo);
 
-        List<ReviewDTO> reviewDTOList = new ArrayList<>();
-        for (Review review : reviewList) {
-            ReviewDTO reviewDTO = new ReviewDTO();
-            reviewDTO.setRvNum(review.getRvNum());
-            reviewDTO.setUNum(review.getUNum());
-            reviewDTO.setContent(review.getContent());
-            reviewDTO.setRating(review.getRating());
-            reviewDTO.setMode(review.getMode());
-            reviewDTO.setW_date(review.getW_date());
-            reviewDTO.setDisplay(review.getDisplay());
-            reviewDTOList.add(reviewDTO);
-        }
-
+        List<ReviewDTO> reviewDTOList = reviewList.stream()
+                .map(review -> new ReviewDTO(
+                        review.getRvNum(),
+                        review.getUNum(),
+                        review.getContent(),
+                        review.getRating(),
+                        review.getMode(),
+                        review.getDisplay(),
+                        review.getW_date()
+                ))
+                .collect(Collectors.toList());
         if (reviewDTOList.isEmpty()) {
             throw new NotFoundException("후기가 존재하지 않습니다.");
         }

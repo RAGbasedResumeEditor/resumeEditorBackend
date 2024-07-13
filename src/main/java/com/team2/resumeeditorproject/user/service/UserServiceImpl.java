@@ -19,34 +19,9 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder; // 비밀번호 암호화 처리
 
-    //회원가입
-    @Override
-    public void signup(UserDTO userDTO) {
-        //회원가입 진행
-        User user = User.builder()
-                .email(userDTO.getEmail())
-                .username(userDTO.getUsername())
-                .password(bCryptPasswordEncoder.encode(userDTO.getPassword()))
-                .role("ROLE_USER")
-                .birthDate(userDTO.getBirthDate())
-                .age(userDTO.getAge())
-                .gender(userDTO.getGender())
-                .occupation((userDTO.getOccupation()))
-                .company(userDTO.getCompany())
-                .wish(userDTO.getWish())
-                .status(userDTO.getStatus())
-                .mode(1)
-                .build();
-        userRepository.save(user);
-    }
     @Override
     public Boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    public Boolean checkUsernameDuplicate(String username) {
-        return userRepository.existsByUsername(username);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.statistics.controller;
 
-import com.team2.resumeeditorproject.admin.dto.request.DailyStatisticsRequest;
-import com.team2.resumeeditorproject.admin.dto.request.MonthlyStatisticsRequest;
+import com.team2.resumeeditorproject.statistics.dto.request.DailyStatisticsRequest;
+import com.team2.resumeeditorproject.statistics.dto.request.MonthlyStatisticsRequest;
 import com.team2.resumeeditorproject.statistics.dto.response.AgeCountResponse;
 import com.team2.resumeeditorproject.statistics.dto.response.DailyAccessStatisticsResponse;
 import com.team2.resumeeditorproject.statistics.dto.response.DailySignupStatisticsResponse;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/admin/statistics/user") // /admin 지우기
+@RequestMapping("/statistics/user") // /admin 지우기
 @RequiredArgsConstructor
 public class UserStatisticsController {
     

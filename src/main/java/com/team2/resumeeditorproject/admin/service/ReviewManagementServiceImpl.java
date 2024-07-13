@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import com.team2.resumeeditorproject.exception.NotFoundException;
 import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
 import com.team2.resumeeditorproject.common.util.PageUtil;
@@ -51,7 +52,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
                 return "Checked from display review.";
             }
         } else {
-            throw new BadRequestException("Review with id " + reviewNo + " not found");
+            throw new NotFoundException("Review with id " + reviewNo + " not found");
         }
     }
 

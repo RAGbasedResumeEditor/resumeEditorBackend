@@ -4,5 +4,6 @@ import com.team2.resumeeditorproject.review.domain.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    Review findByUNum(long uNum);
+
+    Review findByUserUserNo(long userNo);
 }

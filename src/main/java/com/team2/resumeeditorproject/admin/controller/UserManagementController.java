@@ -56,9 +56,9 @@ public class UserManagementController {
     }
 
     /* 회원 탈퇴 */
-    @DeleteMapping("/{uNum}")
-    public ResponseEntity<DeleteUserResultResponse> deleteUser(@PathVariable("uNum") long uNum) {
-        userDeleteService.deleteUser(uNum);
+    @DeleteMapping("/{userNo}")
+    public ResponseEntity<DeleteUserResultResponse> deleteUser(@PathVariable("userNo") long userNo) {
+        userDeleteService.deleteUser(userNo);
 
         return ResponseEntity.ok()
                 .body(DeleteUserResultResponse.builder()

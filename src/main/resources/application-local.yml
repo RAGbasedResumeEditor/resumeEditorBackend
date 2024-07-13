@@ -1,0 +1,33 @@
+
+server:
+  port: 80
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./testdb;MODE=MariaDB;AUTO_SERVER=TRUE;NON_KEYWORDS=USER,SHOW,MODE,CODE
+    username: localDB
+    password: localDB
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+  redis:
+    host: meaningless-dummy-string
+    port: 1234
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test
+    password: test
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.enable: false
+  jwt:
+    secret: meaningless-dummy-string

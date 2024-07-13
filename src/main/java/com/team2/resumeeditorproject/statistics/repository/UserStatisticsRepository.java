@@ -18,7 +18,7 @@ public interface UserStatisticsRepository extends JpaRepository<User, Long> {
     List<User> findByAgeBetween(int startAge, int endAge);
     List<User> findByStatus(int status);
     List<User> findByMode(int mode);
-    List<User> findByInDateBetween(Date startDate, Date endDate);
+    List<User> findByCreatedDateBetween(Date startDate, Date endDate);
 
     // 직종 랭킹 Top5
     @Query(value = "SELECT occupation, COUNT(occupation) AS count " +

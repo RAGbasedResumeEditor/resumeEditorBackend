@@ -3,7 +3,7 @@ package com.team2.resumeeditorproject.comment.controller;
 import com.team2.resumeeditorproject.comment.domain.Comment;
 import com.team2.resumeeditorproject.comment.dto.CommentDTO;
 import com.team2.resumeeditorproject.comment.service.CommentService;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,12 +44,12 @@ public class CommentController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(commentDTO.getRNum()).orElse(null);
-            if (resumeBoard == null) { // 해당하는 게시글이 없다면
-                throw new Exception(" - ResumeBoard with num " + commentDTO.getRNum() + " not found");
+            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(commentDTO.getResumeNo()).orElse(null);
+            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+                throw new Exception(" - ResumeBoard with num " + commentDTO.getResumeNo() + " not found");
             }
 
-            if (commentDTO.getCContent().length() > 100) { // 댓글 최대 글자수(100)을 넘으면 예외 발생
+            if (commentDTO.getContent().length() > 100) { // 댓글 최대 글자수(100)을 넘으면 예외 발생
                 throw new Exception("[Failed to write a comment] Comments must not exceed 100 characters");
             }
             commentService.insertComment(commentDTO);
@@ -67,12 +67,12 @@ public class CommentController {
     }
 
     /* 댓글 삭제 - delete_at 컬럼에 삭제 날짜 추가 */
-    @PutMapping("/delete/{c_num}")
-    public ResponseEntity<Map<String, Object>> deleteComment(@PathVariable("c_num") Long c_num) {
+    @PutMapping("/delete/{commentNo}")
+    public ResponseEntity<Map<String, Object>> deleteComment(@PathVariable("commentNo") Long commentNo) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
-            int n = commentService.deleteComment(c_num); // delete_at 컬럼 업데이트
+            int n = commentService.deleteComment(commentNo); // delete_at 컬럼 업데이트
 
             response.put("response", "comment delete success");
             response.put("time", today);
@@ -87,13 +87,13 @@ public class CommentController {
     }
 
     /* 댓글 수정 */
-    @PutMapping("/update/{c_num}")
-    public ResponseEntity<Map<String, Object>> updateComment(@PathVariable("c_num") Long c_num, @RequestBody Map<String, Object> requestBody) {
+    @PutMapping("/update/{commentNo}")
+    public ResponseEntity<Map<String, Object>> updateComment(@PathVariable("commentNo") Long commentNo, @RequestBody Map<String, Object> requestBody) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
 
         try {
-            int n = commentService.updateComment(c_num, (String)requestBody.get("c_content"));
+            int n = commentService.updateComment(commentNo, (String)requestBody.get("content"));
             response.put("response", "comment update success");
             response.put("time", today);
             response.put("status", "Success");
@@ -107,24 +107,24 @@ public class CommentController {
     }
 
     /* 댓글 조회 */
-    @GetMapping("/{num}")
-    public ResponseEntity<Map<String, Object>> getComments(@PathVariable("num") Long r_num, @RequestParam("pageNo") int pageNo) {
+    @GetMapping("/{resumeNo}")
+    public ResponseEntity<Map<String, Object>> getComments(@PathVariable("resumeNo") Long resumeNo, @RequestParam("pageNo") int pageNo) {
         int size = SIZE_OF_PAGE;
 
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
 
         try {
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(r_num).orElse(null);
-            if (resumeBoard == null) { // 해당하는 게시글이 없다면
-                throw new Exception(" - ResumeBoard with num " + r_num + " not found");
+            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(resumeNo).orElse(null);
+            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+                throw new Exception(" - ResumeBoard with num " + resumeNo + " not found");
             }
 
             pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(pageNo, size);
-            Page<Object[]> results = commentService.getComments(r_num, pageable);
+            Page<Object[]> results = commentService.getComments(resumeNo, pageable);
 
             if (results.getTotalPages() == 0) { // 댓글이 없는 경우
                 response.put("response", "댓글이 없습니다.");
@@ -133,7 +133,7 @@ public class CommentController {
                 if (pageNo > results.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
                     pageNo = results.getTotalPages() - 1;
                     pageable = PageRequest.of(pageNo, size);
-                    results = commentService.getComments(r_num, pageable);
+                    results = commentService.getComments(resumeNo, pageable);
                 }
                 List<Map<String, Object>> formattedResults = new ArrayList<>();
                 for (Object[] result : results.getContent()) {
@@ -141,11 +141,11 @@ public class CommentController {
 
                     // 첫 번째 요소는 Comment
                     Comment comment = (Comment) result[0];
-                    formattedResult.put("c_num", comment.getCNum());
-                    formattedResult.put("r_num", comment.getRNum());
-                    formattedResult.put("u_num", comment.getUNum());
-                    formattedResult.put("c_content", comment.getCContent());
-                    formattedResult.put("w_date", comment.getW_date());
+                    formattedResult.put("commentNo", comment.getCommentNo());
+                    formattedResult.put("resumeNo", comment.getResume().getResumeNo());
+                    formattedResult.put("userNo", comment.getUser().getUserNo());
+                    formattedResult.put("content", comment.getContent());
+                    formattedResult.put("w_date", comment.getCreatedDate());
 
                     // 두 번째 요소는 User의 username
                     String username = (String) result[1];

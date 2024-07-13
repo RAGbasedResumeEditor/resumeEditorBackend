@@ -1,8 +1,8 @@
 package com.team2.resumeeditorproject.resume.controller;
 
 import com.team2.resumeeditorproject.resume.domain.Bookmark;
-import com.team2.resumeeditorproject.resume.domain.Rating;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.domain.ResumeRating;
+import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.BookmarkDTO;
 import com.team2.resumeeditorproject.resume.dto.RatingDTO;
@@ -11,6 +11,7 @@ import com.team2.resumeeditorproject.resume.repository.BookmarkRepository;
 import com.team2.resumeeditorproject.resume.repository.RatingRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeEditRepository;
+import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.BookmarkService;
 import com.team2.resumeeditorproject.resume.service.RatingService;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
@@ -77,6 +78,9 @@ public class ResumeBoardController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ResumeRepository resumeRepository;
+
     private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
 
     public static String getUsername() {
@@ -116,11 +120,11 @@ public class ResumeBoardController {
                     Map<String, Object> formattedResult = new HashMap<>();
 
                     // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
-                    formattedResult.put("r_num", resumeBoard.getRNum());
-                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
-                    formattedResult.put("rating_count", resumeBoard.getRating_count());
-                    formattedResult.put("read_num", resumeBoard.getRead_num());
+                    ResumeStatistics resumeStatistics = (ResumeStatistics) result[0];
+                    formattedResult.put("resumeNo", resumeStatistics.getResume().getResumeNo());
+                    formattedResult.put("rating", (float) Math.round(resumeStatistics.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeStatistics.getRatingCount());
+                    formattedResult.put("read_num", resumeStatistics.getReadCount());
 
                     // 두 번째 요소는 Resume_board의 title
                     String title = (String) result[1];
@@ -162,10 +166,10 @@ public class ResumeBoardController {
         Date today = new Date();
         try {
             // 조회수 증가
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
-            if (resumeBoard != null) {
-                resumeBoard.setRead_num(resumeBoard.getRead_num()+1);
-                resumeBoardRepository.save(resumeBoard);
+            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(num).orElse(null);
+            if (resumeStatistics != null) {
+                resumeStatistics.setReadCount(resumeStatistics.getReadCount()+1);
+                resumeBoardRepository.save(resumeStatistics);
             } else { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
             }
@@ -180,12 +184,12 @@ public class ResumeBoardController {
             Map<String, Object> responseData = new HashMap<>();
 
             // 첫 번째 요소는 ResumeBoard
-            resumeBoard = (ResumeBoard) resultArray[0];
-            responseData.put("r_num", resumeBoard.getRNum());
-            responseData.put("rating", (float)Math.round(resumeBoard.getRating() * 10) / 10);
-            responseData.put("rating_count", resumeBoard.getRating_count());
-            responseData.put("read_num", resumeBoard.getRead_num());
-            responseData.put("title", resumeBoard.getTitle());
+            resumeStatistics = (ResumeStatistics) resultArray[0];
+            responseData.put("resumeNo", resumeStatistics.getResume().getResumeNo());
+            responseData.put("rating", (float)Math.round(resumeStatistics.getRating() * 10) / 10);
+            responseData.put("rating_count", resumeStatistics.getRatingCount());
+            responseData.put("read_num", resumeStatistics.getReadCount());
+            responseData.put("title", resumeStatistics.getTitle());
 
             // 두 번째 요소는 content
             String content = (String) resultArray[1];
@@ -195,15 +199,15 @@ public class ResumeBoardController {
             Date w_date = (Date) resultArray[2];
             responseData.put("w_date", w_date);
 
-            // 네 번째 요소는 u_num
-            long u_num = (long) resultArray[3];
-            responseData.put("u_num", u_num);
+            // 네 번째 요소는 userNo
+            long userNo = (long) resultArray[3];
+            responseData.put("userNo", userNo);
 
             // 다섯번째 요소는 username
-            String username = userRepository.findUsernameByUNum(u_num);
+            String username = userRepository.findUsernameByUserNo(userNo);
             responseData.put("username", username);
 
-            responseData.put("item", resumeEdit.getItem());
+            responseData.put("item", resumeEdit.getQuestion());
 
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
@@ -244,12 +248,12 @@ public class ResumeBoardController {
                     Map<String, Object> formattedResult = new HashMap<>();
 
                     // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
-                    formattedResult.put("r_num", resumeBoard.getRNum());
-                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
-                    formattedResult.put("rating_count", resumeBoard.getRating_count());
-                    formattedResult.put("read_num", resumeBoard.getRead_num());
-                    formattedResult.put("title", resumeBoard.getTitle());
+                    ResumeStatistics resumeStatistics = (ResumeStatistics) result[0];
+                    formattedResult.put("resumeNo", resumeStatistics.getResume().getResumeNo());
+                    formattedResult.put("rating", (float) Math.round(resumeStatistics.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeStatistics.getRatingCount());
+                    formattedResult.put("read_num", resumeStatistics.getReadCount());
+                    formattedResult.put("title", resumeStatistics.getTitle());
 
                     // 두 번째 요소는 Resume의 content
                     String content = (String) result[1];
@@ -284,16 +288,16 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
-            long r_num = ratingDTO.getRNum();
+            long resumeNo = ratingDTO.getResumeNo();
 
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(r_num).orElse(null);
-            if (resumeBoard == null) { // 해당하는 게시글이 없다면
-                throw new Exception(" - ResumeBoard with num " + r_num + " not found");
+            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(resumeNo).orElse(null);
+            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+                throw new Exception(" - ResumeBoard with num " + resumeNo + " not found");
             }
 
             Map<String, Object> result = new HashMap<>();
 
-            int isRated = ratingService.ratingCount(ratingDTO.getRNum(), ratingDTO.getUNum());
+            int isRated = ratingService.ratingCount(ratingDTO.getResumeNo(), ratingDTO.getUserNo());
 
             if (isRated > 0) { // 이미 별점을 줬다면
                 throw new Exception(" - 이미 별점을 준 게시글");
@@ -304,31 +308,33 @@ public class ResumeBoardController {
             }
 
             // 별점을 안 준 상태면 rating 테이블에 저장
-            Rating rating = new Rating();
-            rating.setRNum(ratingDTO.getRNum());
-            rating.setUNum(ratingDTO.getUNum());
-            rating.setRating(ratingDTO.getRating());
-            rating = ratingRepository.save(rating);
+            ResumeRating resumeRating = ResumeRating.builder()
+                    .resume(resumeRepository.findById(ratingDTO.getResumeNo()).orElseThrow(() -> new IllegalArgumentException("invalid resumeNo")))
+                    .user(userRepository.findById(ratingDTO.getUserNo()).orElseThrow(() -> new IllegalArgumentException("invalid userNo")))
+                    .rating(ratingDTO.getRating())
+                    .build();
+
+            ratingRepository.save(resumeRating);
 
             // resume_board의 rating_count(게시글 별점 수) 증가
             // 현재(증가 전) rating_count
-            ResumeBoardDTO resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getRNum());
-            int beforeRatingCount = resumeBoardDTO.getRating_count();
+            ResumeBoardDTO resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getResumeNo());
+            int beforeRatingCount = resumeBoardDTO.getRatingCount();
             float beforeRating = resumeBoardDTO.getRating();
 
             // 평균 별점.. (현재 평균 별점*현재 별점 준 사람 수 + 지금 주는 별점)/총 별점 준 사람 수
             float avgRating = (beforeRating * beforeRatingCount + ratingDTO.getRating()) / (beforeRatingCount + 1);
 
             // resume_board의 rating_count, rating 업데이트
-            int ratingCountUpdate = resumeBoardService.updateRatingCount(ratingDTO.getRNum(), beforeRatingCount+1, avgRating);
+            int ratingCountUpdate = resumeBoardService.updateRatingCount(ratingDTO.getResumeNo(), beforeRatingCount+1, avgRating);
 
             // 증가한 rating_count 가져오기
-            resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getRNum());
+            resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getResumeNo());
 
             float afterRating = (float) Math.round(resumeBoardDTO.getRating() * 10) /10;
 
             result.put("rating", afterRating);
-            result.put("rating_count", resumeBoardDTO.getRating_count());
+            result.put("rating_count", resumeBoardDTO.getRatingCount());
 
             return new ResponseEntity<>(result, HttpStatus.OK); // 업데이트 된 평균 별점/별점수 반환
         } catch (Exception e) {
@@ -345,23 +351,23 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         String username = getUsername();
-        Long uNum = userService.showUser(username).getUNum();
+        Long userNo = userService.showUser(username).getUserNo();
         float result = 0;
 
         try {
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
-            if (resumeBoard == null) { // 해당하는 게시글이 없다면
+            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(num).orElse(null);
+            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
             }
 
             // 별점 여부 확인
-            Rating rating = ratingRepository.findByRNumAndUNum(num, uNum);
+            ResumeRating resumeRating = ratingRepository.findByResumeResumeNoAndUserUserNo(num, userNo);
 
-            if(rating == null){
+            if(resumeRating == null){
                 result = 0; // 별점 안줬음
             }
             else{
-                result = rating.getRating(); // 별점줬음
+                result = resumeRating.getRating(); // 별점줬음
             }
 
             response.put("response", result);
@@ -402,11 +408,11 @@ public class ResumeBoardController {
                 Map<String, Object> formattedResult = new HashMap<>();
 
                 // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                ResumeBoard resumeBoard = (ResumeBoard) result[0];
-                formattedResult.put("r_num", resumeBoard.getRNum());
-                formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
-                formattedResult.put("rating_count", resumeBoard.getRating_count());
-                formattedResult.put("read_num", resumeBoard.getRead_num());
+                ResumeStatistics resumeStatistics = (ResumeStatistics) result[0];
+                formattedResult.put("resumeNo", resumeStatistics.getResume().getResumeNo());
+                formattedResult.put("rating", (float) Math.round(resumeStatistics.getRating() * 10) / 10);
+                formattedResult.put("rating_count", resumeStatistics.getRatingCount());
+                formattedResult.put("read_num", resumeStatistics.getReadCount());
 
                 // 두 번째 요소는 Resume_board의 title
                 String title = (String) result[1];
@@ -441,9 +447,9 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try{
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(bookmarkDTO.getRNum()).orElse(null);
-            if (resumeBoard == null) { // 해당하는 게시글이 없다면
-                throw new Exception(" - ResumeBoard with num " + bookmarkDTO.getRNum() + " not found");
+            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(bookmarkDTO.getResumeNo()).orElse(null);
+            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+                throw new Exception(" - ResumeBoard with num " + bookmarkDTO.getResumeNo() + " not found");
             }
 
             // 즐겨찾기를 누르면 테이블에 저장
@@ -470,17 +476,17 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         String username = getUsername();
-        Long uNum = userService.showUser(username).getUNum();
+        Long userNo = userService.showUser(username).getUserNo();
         String result = "";
 
         try {
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
-            if (resumeBoard == null) { // 해당하는 게시글이 없다면
+            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(num).orElse(null);
+            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
             }
             
             // 즐겨찾기 여부 확인
-            Bookmark bookmark = bookmarkRepository.findByRNumAndUNum(num, uNum);
+            Bookmark bookmark = bookmarkRepository.findByResumeResumeNoAndUserUserNo(num, userNo);
 
             if (bookmark == null) {
                 result = "false"; // 즐겨찾기 안했음

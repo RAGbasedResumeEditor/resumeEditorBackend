@@ -18,20 +18,20 @@ public interface ResumeBoardService {
 
     Page<Object[]> getAllResumeBoards(Pageable pageable);
 
-    Object getResumeBoard(long r_num);
+    Object getResumeBoard(long resumeNo);
 
     Page<Object[]> searchBoard(String keyword, Pageable pageable);
 
-    ResumeBoardDTO getResumeBoardForRating(Long r_num);
+    ResumeBoardDTO getResumeBoardForRating(Long resumeNo);
 
-    int updateRatingCount(Long rNum, int newRatingCount, float newRating);
+    int updateRatingCount(Long resumeNo, int newRatingCount, float newRating);
 
     List<Object[]> getBoardRankingReadNum();
 
     List<Object[]> getBoardRankingRating();
 
-    Page<Object[]> getBookmarkList(long u_num, Pageable pageable);
+    Page<Object[]> getBookmarkList(long userNo, Pageable pageable);
 
 
-//    float getRating(long r_num);
+//    float getRating(long resumeNo);
 }

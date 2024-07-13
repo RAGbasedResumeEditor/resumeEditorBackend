@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumeGuideDTO {
-    private Long gNum;
-    private Long uNum;
+    private Long resumeGuideNo;
+    private Long userNo;
     private String company;
     private String occupation;
     private String content;

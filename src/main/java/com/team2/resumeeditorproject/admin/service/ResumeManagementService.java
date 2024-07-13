@@ -8,6 +8,6 @@ public interface ResumeManagementService {
     Page<ResumeBoardDTO> getPagedResumeBoards(Pageable pageable);
     Page<ResumeBoardDTO> searchPagedResumeBoardByTitle(String title, int pageNo);
     Page<ResumeBoardDTO> searchPagedResumeBoardByRating(Float rating, int pageNo);
-    void deleteResume(Long rNum);
-    Boolean checkResumeExists(Long rNum);
+    void deleteResume(Long resumeNo);
+    Boolean checkResumeExists(Long resumeNo);
 }

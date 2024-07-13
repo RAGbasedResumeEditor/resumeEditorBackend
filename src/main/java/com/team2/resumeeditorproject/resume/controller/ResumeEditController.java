@@ -47,9 +47,9 @@ public class ResumeEditController {
             ResumeEditDTO resumeEditDTO = objectMapper.convertValue(requestBody, ResumeEditDTO.class);
 
             // 존재하는 user인지 확인
-            User user = userRepository.findById(resumeEditDTO.getU_num()).orElse(null);
+            User user = userRepository.findById(resumeEditDTO.getUserNo()).orElse(null);
             if (user == null) { // 해당하는 user가 없다면
-                throw new Exception(" - User with num " + resumeEditDTO.getU_num() + " not found");
+                throw new Exception(" - User with num " + resumeEditDTO.getUserNo() + " not found");
             }
 
             // 트랜잭션이 적용된 메서드 호출

@@ -1,10 +1,10 @@
 package com.team2.resumeeditorproject.resume.repository;
 
-import com.team2.resumeeditorproject.resume.domain.Rating;
+import com.team2.resumeeditorproject.resume.domain.ResumeRating;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RatingRepository extends JpaRepository<Rating, Long> {
-    int countByRNumAndUNum(long r_num, long u_num);
+public interface RatingRepository extends JpaRepository<ResumeRating, Long> {
+    int countByResumeResumeNoAndUserUserNo(long resumeNo, long userNo);
 
-    Rating findByRNumAndUNum(long r_num, long u_num);
+    ResumeRating findByResumeResumeNoAndUserUserNo(long resumeNo, long userNo);
 }

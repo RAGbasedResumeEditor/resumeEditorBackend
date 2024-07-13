@@ -26,12 +26,12 @@ public class ResumeGuideServiceImpl implements ResumeGuideService{
     }
 
     @Override
-    public Page<ResumeGuide> getResumeGuidesByUNum(Long uNum, Pageable pageable) {
-        return resumeGuideRepository.findByUNum(uNum, pageable);
+    public Page<ResumeGuide> getResumeGuidesByUserNo(Long userNo, Pageable pageable) {
+        return resumeGuideRepository.findByUserUserNo(userNo, pageable);
     }
 
     @Override
-    public ResumeGuide getResumeGuideByGNum(Long gNum) {
-        return resumeGuideRepository.findById(gNum).orElse(null);
+    public ResumeGuide getResumeGuideByResumeGuideNo(Long resumeGuideNo) {
+        return resumeGuideRepository.findById(resumeGuideNo).orElse(null);
     }
 }

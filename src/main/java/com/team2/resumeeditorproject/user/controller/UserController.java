@@ -5,7 +5,7 @@ import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.exception.DelDateException;
 import com.team2.resumeeditorproject.resume.domain.Occupation;
 import com.team2.resumeeditorproject.resume.domain.Resume;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
@@ -118,8 +118,8 @@ public class UserController extends HttpServlet {
 
         //30일 이내에 탈퇴한 회원 예외 처리
         User user = userRepository.findByUsername(username);
-        if (user != null && user.getDelDate() != null) {
-            Date delDate = user.getDelDate();
+        if (user != null && user.getDeletedDate() != null) {
+            Date delDate = user.getDeletedDate();
             //삭제한 날짜
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String deleted = dateFormat.format(delDate);
@@ -152,7 +152,7 @@ public class UserController extends HttpServlet {
 
             User tempUser = userService.showUser(username);
             UserDTO user = new UserDTO();
-                user.setUNum(tempUser.getUNum());
+                user.setUserNo(tempUser.getUserNo());
                 user.setEmail(tempUser.getEmail());
                 user.setUsername((tempUser.getUsername()));
                 user.setRole(tempUser.getRole());
@@ -164,24 +164,24 @@ public class UserController extends HttpServlet {
                 user.setWish(tempUser.getWish());
                 user.setStatus(tempUser.getStatus());
                 user.setMode(tempUser.getMode());
-                user.setInDate(tempUser.getInDate());
-                user.setDelDate(tempUser.getDelDate());
+                user.setInDate(tempUser.getCreatedDate());
+                user.setDelDate(tempUser.getDeletedDate());
             return createOkResponse(user);
     }
 
     //회원탈퇴
-    @DeleteMapping("/user/{uNum}")
-    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("uNum") Long uNum) throws AuthenticationException {
+    @DeleteMapping("/user/{userNo}")
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("userNo") Long userNo) throws AuthenticationException {
 
             // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
-            userManagementService.updateUserDeleteDate(uNum);
+            userManagementService.updateUserDeleteDate(userNo);
 
             // 해당 사용자의 refresh 토큰 정보 삭제
-            User deletedUser = userRepository.findById(uNum)
-                    .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
+            User deletedUser = userRepository.findById(userNo)
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + userNo));
             refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
 
-            return createOkResponse(uNum+"번 회원 탈퇴 완료.");
+            return createOkResponse(userNo+"번 회원 탈퇴 완료.");
     }
 
     //회원정보 수정
@@ -189,7 +189,7 @@ public class UserController extends HttpServlet {
     public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDTO) throws AuthenticationException {
         String username = getUsername();
         User tempUser = userService.showUser(username);
-        userDTO.setUNum(tempUser.getUNum());
+        userDTO.setUserNo(tempUser.getUserNo());
 
         userService.updateUser(userDTO);//수정 처리
         return createOkResponse(getUsername()+" 회원 수정 완료.");
@@ -199,19 +199,19 @@ public class UserController extends HttpServlet {
     @GetMapping("/user/bookmark")
     public ResponseEntity<Map<String, Object>> showBookmark(@RequestParam("pageNo") int pageNo) throws AuthenticationException {
         String username = getUsername();
-        Long uNum = userService.showUser(username).getUNum();
+        Long userNo = userService.showUser(username).getUserNo();
         int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
 
         try{
             // 즐겨찾기한 목록 보여주기
-            // 로그인한 user의 u_num과 일치하는 항목을 bookmark 테이블에서 찾고, 그에 해당하는 r_num으로 목록 불러오기
+            // 로그인한 user의 userNo과 일치하는 항목을 bookmark 테이블에서 찾고, 그에 해당하는 resumeNo으로 목록 불러오기
             pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(pageNo, size);
-            Page<Object[]> resultsPage = resumeBoardService.getBookmarkList(uNum, pageable);
+            Page<Object[]> resultsPage = resumeBoardService.getBookmarkList(userNo, pageable);
 
             if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
                 response.put("response", "게시글이 없습니다.");
@@ -220,7 +220,7 @@ public class UserController extends HttpServlet {
                 if(pageNo > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
                     pageNo = resultsPage.getTotalPages() - 1;
                     pageable = PageRequest.of(pageNo, size);
-                    resultsPage = resumeBoardService.getBookmarkList(uNum, pageable);
+                    resultsPage = resumeBoardService.getBookmarkList(userNo, pageable);
                 }
 
                 List<Map<String, Object>> formattedResults = new ArrayList<>();
@@ -229,12 +229,12 @@ public class UserController extends HttpServlet {
                     Map<String, Object> formattedResult = new HashMap<>();
 
                     // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
-                    formattedResult.put("r_num", resumeBoard.getRNum());
-                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
-                    formattedResult.put("rating_count", resumeBoard.getRating_count());
-                    formattedResult.put("read_num", resumeBoard.getRead_num());
-                    formattedResult.put("title", resumeBoard.getTitle());
+                    ResumeStatistics resumeStatistics = (ResumeStatistics) result[0];
+                    formattedResult.put("resumeNo", resumeStatistics.getResume().getResumeNo());
+                    formattedResult.put("rating", (float) Math.round(resumeStatistics.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeStatistics.getRatingCount());
+                    formattedResult.put("read_num", resumeStatistics.getReadCount());
+                    formattedResult.put("title", resumeStatistics.getTitle());
 
                     // 두 번째 요소는 Resume의 content
                     String content = (String) result[1];
@@ -266,7 +266,7 @@ public class UserController extends HttpServlet {
     @GetMapping("/user/edit-list")
     public ResponseEntity<Map<String, Object>> resumeEditList(@RequestParam("pageNo") int pageNo) throws AuthenticationException {
         String username = getUsername();
-        Long uNum = userService.showUser(username).getUNum();
+        Long userNo = userService.showUser(username).getUserNo();
         int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
@@ -276,7 +276,7 @@ public class UserController extends HttpServlet {
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(pageNo, size);
-            Page<Object[]> resultsPage = resumeService.myPageEditList(uNum, pageable);
+            Page<Object[]> resultsPage = resumeService.myPageEditList(userNo, pageable);
 
             if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
                 response.put("response", "게시글이 없습니다.");
@@ -285,7 +285,7 @@ public class UserController extends HttpServlet {
                 if(pageNo > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
                     pageNo = resultsPage.getTotalPages() - 1;
                     pageable = PageRequest.of(pageNo, size);
-                    resultsPage = resumeService.myPageEditList(uNum, pageable);
+                    resultsPage = resumeService.myPageEditList(userNo, pageable);
                 }
 
                 List<Map<String, Object>> formattedResults = new ArrayList<>();
@@ -293,9 +293,9 @@ public class UserController extends HttpServlet {
                 for (Object[] result : resultsPage.getContent()) {
                     Map<String, Object> formattedResult = new HashMap<>();
 
-                    // 첫 번째 요소 r_num
-                    long r_num = (long) result[0];
-                    formattedResult.put("r_num", r_num);
+                    // 첫 번째 요소 resumeNo
+                    long resumeNo = (long) result[0];
+                    formattedResult.put("resumeNo", resumeNo);
 
                     // 두 번째, 세 번째 요소 company, occupation
                     String title = result[1] + " " + result[2];
@@ -338,10 +338,10 @@ public class UserController extends HttpServlet {
                 throw new Exception(" - resume with num " + num + " not found");
             }
 
-            // 조회하려는 첨삭기록의 u_num이 로그인한 유저의 u_num과 같은지 확인
+            // 조회하려는 첨삭기록의 userNo이 로그인한 유저의 userNo과 같은지 확인
             String username = getUsername();
-            Long uNum = userService.showUser(username).getUNum();
-            if(!uNum.equals(resume.getU_num())){ // 일치하지 않는다면
+            Long userNo = userService.showUser(username).getUserNo();
+            if(!userNo.equals(resume.getUser().getUserNo())){ // 일치하지 않는다면
                 throw new Exception(" - 잘못된 접근입니다. (로그인한 사용자의 첨삭 기록이 아닙니다)");
             }
 
@@ -355,7 +355,7 @@ public class UserController extends HttpServlet {
             resumeEditService.setModelMapper(modelMapper); // Setter or Constructor injection
             ResumeEditDTO resumeEditDTO = resumeEditService.convertToDto(resumeEdit);
 
-            responseData.put("r_num", resumeEditDTO.getR_num());
+            responseData.put("resumeNo", resumeEditDTO.getResumeNo());
             responseData.put("company", resumeEditDTO.getCompany());
             responseData.put("occupation", resumeEditDTO.getOccupation());
             responseData.put("item", resumeEditDTO.getItem());
@@ -385,7 +385,7 @@ public class UserController extends HttpServlet {
     public ResponseEntity<Map<String, Object>> resumeGuideList(
             @RequestParam("pageNo") int pageNo) throws AuthenticationException {
         String username = getUsername();
-        Long uNum = userService.showUser(username).getUNum();
+        Long userNo = userService.showUser(username).getUserNo();
         int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
@@ -395,7 +395,7 @@ public class UserController extends HttpServlet {
 
             // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
             Pageable pageable = PageRequest.of(pageNo, size);
-            Page<ResumeGuide> resultsPage = resumeGuideService.getResumeGuidesByUNum(uNum, pageable);
+            Page<ResumeGuide> resultsPage = resumeGuideService.getResumeGuidesByUserNo(userNo, pageable);
 
             if (resultsPage.getTotalElements() == 0) { // 게시글이 없는 경우
                 response.put("response", "게시글이 없습니다.");
@@ -403,7 +403,7 @@ public class UserController extends HttpServlet {
                 if (pageNo > resultsPage.getTotalPages() - 1) { // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
                     pageNo = resultsPage.getTotalPages() - 1;
                     pageable = PageRequest.of(pageNo, size);
-                    resultsPage = resumeGuideService.getResumeGuidesByUNum(uNum, pageable);
+                    resultsPage = resumeGuideService.getResumeGuidesByUserNo(userNo, pageable);
                 }
 
                 List<Map<String, Object>> formattedResults = new ArrayList<>();
@@ -411,9 +411,9 @@ public class UserController extends HttpServlet {
                 for (ResumeGuide resumeGuide : resultsPage.getContent()) {
                     Map<String, Object> formattedResult = new HashMap<>();
 
-                    // 첫 번째 요소 g_num
-                    Long gNum = resumeGuide.getGNum();
-                    formattedResult.put("No", gNum); //자소서 번호
+                    // 첫 번째 요소 resumeGuideNo
+                    Long resumeGuideNo = resumeGuide.getResumeGuideNo();
+                    formattedResult.put("No", resumeGuideNo); //자소서 번호
 
                     // 두 번째 요소 company
                     String company = resumeGuide.getCompany();
@@ -442,23 +442,23 @@ public class UserController extends HttpServlet {
     }
 
     // 자소서 가이드 상세 페이지
-    @GetMapping("/user/guide-list/{gNum}")
-    public ResponseEntity<Map<String, Object>> getResumeGuideDetail(@PathVariable("gNum") Long gNum) {
+    @GetMapping("/user/guide-list/{resumeGuideNo}")
+    public ResponseEntity<Map<String, Object>> getResumeGuideDetail(@PathVariable("resumeGuideNo") Long resumeGuideNo) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
 
         try {
-            // 특정 gNum에 해당하는 자기소개서 가이드를 조회
-            ResumeGuide resumeGuide = resumeGuideService.getResumeGuideByGNum(gNum);
+            // 특정 resumeGuideNo에 해당하는 자기소개서 가이드를 조회
+            ResumeGuide resumeGuide = resumeGuideService.getResumeGuideByResumeGuideNo(resumeGuideNo);
 
             if (resumeGuide == null) {
-                throw new Exception("Resume guide with gNum " + gNum + " not found");
+                throw new Exception("Resume guide with resumeGuideNo " + resumeGuideNo + " not found");
             }
 
             // 조회된 자기소개서 가이드의 정보를 response에 담기
             Map<String, Object> responseData = new HashMap<>();
-            responseData.put("g_num", resumeGuide.getGNum());
-            responseData.put("u_num", resumeGuide.getUNum());
+            responseData.put("resumeGuideNo", resumeGuide.getResumeGuideNo());
+            responseData.put("userNo", resumeGuide.getUser().getUserNo());
             responseData.put("company", resumeGuide.getCompany());
             responseData.put("occupation", resumeGuide.getOccupation());
             responseData.put("content", resumeGuide.getContent());

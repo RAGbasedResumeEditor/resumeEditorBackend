@@ -10,11 +10,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDTO {
-    private Long rvNum;
-    private Long UNum;
+    private Long reviewNo;
+    private Long userNo;
     private String content;
     private int rating;
     private int mode;
     private String display;
-    private Date w_date;
+    private Date registerDate;
 }

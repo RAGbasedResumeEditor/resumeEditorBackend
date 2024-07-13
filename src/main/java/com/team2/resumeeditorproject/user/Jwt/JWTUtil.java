@@ -31,8 +31,8 @@ public class JWTUtil { // ver 0.12.3
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
-    public Long getUNum(String token){
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("uNum", Long.class);
+    public Long getUserNo(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userNo", Long.class);
     }
 
     public int getMode(String token){
@@ -40,14 +40,14 @@ public class JWTUtil { // ver 0.12.3
     }
 
     // 토큰을 생성할 메서드
-    public String createJwt(Long uNum, int mode, String category,String username, String role, Long expiredMs){
+    public String createJwt(Long userNo, int mode, String category,String username, String role, Long expiredMs){
 
         return Jwts.builder()
                 //claim : JWT에 저장되는 정보
                 .claim("category", category) //access, refresh 판단하여 refresh토큰을 가지고 access에 접근하면 사용할 수 없도록 설정
                 .claim("username", username)
                 .claim("role", role)
-                .claim("uNum", uNum) //uNum 추가
+                .claim("userNo", userNo) //userNo 추가
                 .claim("mode", mode) //mode 추가
                 // 토큰 발행시간
                 .issuedAt(new Date(System.currentTimeMillis()))

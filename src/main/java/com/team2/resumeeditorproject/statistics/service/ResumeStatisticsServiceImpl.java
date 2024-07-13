@@ -34,10 +34,10 @@ public class ResumeStatisticsServiceImpl implements ResumeStatisticsService {
 
     private int getResumeEditCount(List<User> userList) {
         List<Long> userNo = userList.stream()
-                .map(User::getUNum)
+                .map(User::getUserNo)
                 .collect(Collectors.toList());
 
-        List<Object[]> results = resumeEditStatisticsRepository.countByUNumIn(userNo);
+        List<Object[]> results = resumeEditStatisticsRepository.countResumeEditByUserIn(userNo);
 
         return results.stream()
                 .mapToInt(result -> ((Long) result[1]).intValue())
@@ -52,7 +52,7 @@ public class ResumeStatisticsServiceImpl implements ResumeStatisticsService {
     @Override
     public int getTodayResumeEditCount() {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        return resumeStatisticsRepository.findRNumByCurrentDate(currentDate);
+        return resumeStatisticsRepository.findResumeCountByCurrentDate(currentDate);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ResumeStatisticsServiceImpl implements ResumeStatisticsService {
             List<Resume> resumeList = resumeStatisticsRepository.findByWDateBetween(startDate, endDate);
 
             for (Resume resume : resumeList) {
-                LocalDate date = resume.getW_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate date = resume.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 editData.put(date, editData.getOrDefault(date, 0) + 1);
             }
 
@@ -116,7 +116,7 @@ public class ResumeStatisticsServiceImpl implements ResumeStatisticsService {
             List<Resume> resumeList = resumeStatisticsRepository.findByWDateBetween(java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
 
             for (Resume resume : resumeList) {
-                LocalDate wDate = resume.getW_date().toInstant()
+                LocalDate wDate = resume.getCreatedDate().toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
                 YearMonth yearMonth = YearMonth.from(wDate);

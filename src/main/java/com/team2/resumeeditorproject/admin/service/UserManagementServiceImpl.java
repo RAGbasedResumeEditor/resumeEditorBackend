@@ -40,9 +40,9 @@ public class UserManagementServiceImpl implements UserManagementService{
             userDTO.setWish(user.getWish());
             userDTO.setStatus(user.getStatus());
             userDTO.setMode(user.getMode());
-            userDTO.setInDate(user.getInDate());
-            userDTO.setDelDate(user.getDelDate());
-            userDTO.setUNum(user.getUNum());
+            userDTO.setInDate(user.getCreatedDate());
+            userDTO.setDelDate(user.getDeletedDate());
+            userDTO.setUserNo(user.getUserNo());
             userDTO.setRole(user.getRole());
             userDTO.setAge(user.getAge());
             userDTO.setResumeEditCount(resumeEditCount.intValue());
@@ -106,10 +106,10 @@ public class UserManagementServiceImpl implements UserManagementService{
 
     // 회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
-    public void updateUserDeleteDate(Long uNum) {
-        User user = adminUserRepository.findById(uNum)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
-        user.setDelDate(new Date()); // 현재 시간으로 탈퇴 날짜 업데이트
+    public void updateUserDeleteDate(Long userNo) {
+        User user = adminUserRepository.findById(userNo)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userNo));
+        user.setDeletedDate(new Date()); // 현재 시간으로 탈퇴 날짜 업데이트
         adminUserRepository.save(user);
     }
 
@@ -128,8 +128,8 @@ public class UserManagementServiceImpl implements UserManagementService{
 
         // 가져온 사용자 중 del_date가 60일 이상 지난 사용자의 del_date를 null로 업데이트
         for (User user : blacklistedUsers) {
-            if (user.getDelDate() != null && user.getDelDate().before(dateBefore60Days)) {
-                user.setDelDate(null);
+            if (user.getDeletedDate() != null && user.getDeletedDate().before(dateBefore60Days)) {
+                user.setDeletedDate(null);
             }
         }
 

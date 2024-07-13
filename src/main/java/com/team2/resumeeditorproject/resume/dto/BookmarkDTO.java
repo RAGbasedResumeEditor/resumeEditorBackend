@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.resume.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookmarkDTO {
-    private Long BNum;
-    private Long RNum;
-    private Long UNum;
+    private Long bookmarkNo;
+    private Long resumeNo;
+    private Long userNo;
 }

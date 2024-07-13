@@ -35,7 +35,7 @@ public class ReviewController {
         Date today = new Date();
         try {
             // 리뷰내용 + 별점 받아와서 테이블에 저장
-            Review review = reviewRepository.findByUNum(reviewDTO.getUNum());
+            Review review = reviewRepository.findByUserUserNo(reviewDTO.getUserNo());
             if (review != null) { // 이미 리뷰를 작성한 경우면
                 throw new Exception(" 리뷰를 이미 작성한 사용자입니다.");
             }
@@ -61,14 +61,14 @@ public class ReviewController {
     }
 
     /* 리뷰 권한 확인 */
-    @GetMapping("/{u_num}")
-    public ResponseEntity<Map<String, Object>> setReview(@PathVariable("u_num") Long u_num) {
+    @GetMapping("/{userNo}")
+    public ResponseEntity<Map<String, Object>> setReview(@PathVariable("userNo") Long userNo) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try{
             // 리뷰를 이미 작성한 사용자인지 확인 -> 이미 작성했다면 리뷰작성버튼 비활성화
             String result = "true";
-            Review review = reviewRepository.findById(u_num).orElse(null);
+            Review review = reviewRepository.findById(userNo).orElse(null);
             if (review != null) { // 이미 리뷰를 작성한 경우면
                 result = "false";
             }

@@ -32,9 +32,9 @@ public class ResumeServiceImpl implements ResumeService{
     }
 
     @Override
-    public String getResumeContent(long r_num) {
-        // r_num을 사용하여 resume 테이블에서 해당 레코드를 조회
-        Optional<Resume> resumeOptional = resumeRepository.findById(r_num);
+    public String getResumeContent(long resumeNo) {
+        // resumeNo을 사용하여 resume 테이블에서 해당 레코드를 조회
+        Optional<Resume> resumeOptional = resumeRepository.findById(resumeNo);
 
         // 레코드가 존재하는지 확인하고, 존재하면 content 값을 반환
         if (resumeOptional.isPresent()) {
@@ -44,7 +44,7 @@ public class ResumeServiceImpl implements ResumeService{
             return resume.getContent();
         } else {
             // 레코드가 존재하지 않으면 예외 처리 또는 적절한 방법으로 처리
-            throw new RuntimeException("Resume not found for r_num: " + r_num);
+            throw new RuntimeException("Resume not found for resumeNo: " + resumeNo);
         }
     }
 
@@ -54,8 +54,8 @@ public class ResumeServiceImpl implements ResumeService{
     }
 
     @Override
-    public Page<Object[]> myPageEditList(long u_num, Pageable pageable) {
-        return resumeRepository.getMyPageEditList(u_num, pageable);
+    public Page<Object[]> myPageEditList(long userNo, Pageable pageable) {
+        return resumeRepository.getMyPageEditList(userNo, pageable);
     }
 
 }

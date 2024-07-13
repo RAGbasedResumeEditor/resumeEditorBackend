@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.resume.repository;
 
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
-import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
+import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,58 +18,59 @@ import java.util.List;
  * @fileName : ResumeBoardRepository
  * @since : 04/30/24
  */
-public interface ResumeBoardRepository extends JpaRepository<ResumeBoard, Long> {
-    @Query("SELECT rb, rb.title, r.content, r.w_date, row_number() over(order by rb.RNum asc) as num\n" +
-            "FROM ResumeBoard rb JOIN Resume r ON rb.RNum = r.r_num\n" +
+public interface ResumeBoardRepository extends JpaRepository<ResumeStatistics, Long> {
+    @Query("SELECT rb, rb.title, r.content, r.createdDate, row_number() over(order by r.resumeNo asc) as num\n" +
+            "FROM ResumeStatistics rb JOIN Resume r \n" +
             "order by num desc")
     Page<Object[]> findAllResumeBoards(Pageable pageable);
 
-    @Query("SELECT rb, r.content, r.w_date, r.u_num\n" +
-            "FROM ResumeBoard rb\n" +
-            "JOIN Resume r ON rb.RNum = r.r_num\n" +
-            "WHERE rb.RNum = :r_num")
-    Object findResumeBoard(@Param("r_num") Long r_num);
+    @Query("SELECT rb, r.content, r.createdDate, r.user.userNo \n" +
+            "FROM ResumeStatistics rb\n" +
+            "JOIN Resume r \n" +
+            "WHERE r.resumeNo = :resumeNo")
+    Object findResumeBoard(@Param("resumeNo") Long resumeNo);
 
-    @Query("SELECT rb, r.content, r.w_date, row_number() over(order by rb.RNum asc) as num " +
-            "FROM ResumeBoard rb JOIN Resume r ON rb.RNum = r.r_num " +
+    @Query("SELECT rb, r.content, r.createdDate, row_number() over(order by r.resumeNo asc) as num " +
+            "FROM ResumeStatistics rb JOIN Resume r " +
             "WHERE rb.title LIKE %:keyword% OR r.content LIKE %:keyword% " +
             "ORDER BY num DESC")
     Page<Object[]> findSearchBoard(@Param("keyword") String keyword, Pageable pageable);
 
-    ResumeBoard findByRNum(Long r_num);
+    @Query("SELECT rb FROM ResumeStatistics rb JOIN Resume r WHERE r.resumeNo = :resumeNo")
+    ResumeStatistics findByResumeNo(Long resumeNo);
 
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE ResumeBoard SET rating_count = :newRatingCount, rating = :newRating WHERE RNum = :r_num")
-    int updateRatingCount(@Param("r_num") Long r_num, @Param("newRatingCount") int newRatingCount, @Param("newRating") float newRating);
+    @Query("UPDATE ResumeStatistics SET ratingCount = :newRatingCount, rating = :newRating WHERE resume.resumeNo = :resumeNo")
+    int updateRatingCount(@Param("resumeNo") Long resumeNo, @Param("newRatingCount") int newRatingCount, @Param("newRating") float newRating);
 
-//    @Query("SELECT rb, rb.title, r.content, r.w_date, row_number() over(order by rb.RNum asc) as num, rb.read_num as read_num, rb.rating as rating\n" +
-//            "FROM ResumeBoard rb JOIN Resume r ON rb.RNum = r.r_num\n" +
+//    @Query("SELECT rb, rb.title, r.content, r.w_date, row_number() over(order by rb.resumeNo asc) as num, rb.read_num as read_num, rb.rating as rating\n" +
+//            "FROM ResumeBoard rb JOIN Resume r ON rb.resumeNo = r.resumeNo\n" +
 //            "order by read_num desc")
 //    List<Object[]> getBoardRankingReadNum();
 
-    @Query("SELECT rb, rb.title, r.content, r.w_date, rb.read_num AS read_num " +
-            "FROM ResumeBoard rb " +
-            "JOIN Resume r ON rb.RNum = r.r_num " +
+    @Query("SELECT rb, rb.title, r.content, r.createdDate, rb.readCount AS read_num " +
+            "FROM ResumeStatistics rb " +
+            "JOIN Resume r " +
             "ORDER BY read_num DESC " +
             "LIMIT 3")
     List<Object[]> getBoardRankingReadNum();
 
-    @Query("SELECT rb, rb.title, r.content, r.w_date, rb.rating AS rating " +
-            "FROM ResumeBoard rb " +
-            "JOIN Resume r ON rb.RNum = r.r_num " +
+    @Query("SELECT rb, rb.title, r.content, r.createdDate, rb.rating AS rating " +
+            "FROM ResumeStatistics rb " +
+            "JOIN Resume r " +
             "ORDER BY rating DESC " +
             "LIMIT 3")
     List<Object[]> getBoardRankingRating();
 
-    @Query("SELECT rb, r.content, r.w_date " +
-            "FROM ResumeBoard rb " +
-            "JOIN Bookmark b ON rb.RNum = b.RNum " +
-            "JOIN Resume r ON rb.RNum = r.r_num " +
-            "WHERE b.UNum = :u_num " +
-            "ORDER BY b.BNum DESC")
-    Page<Object[]> getBookmarkList(@Param("u_num") long u_num, Pageable pageable);
+    @Query("SELECT rb, r.content, r.createdDate " +
+            "FROM ResumeStatistics rb " +
+            "JOIN Resume r " +
+            "JOIN Bookmark b " +
+            "WHERE b.user.userNo = :userNo " +
+            "ORDER BY b.bookmarkNo DESC")
+    Page<Object[]> getBookmarkList(@Param("userNo") long userNo, Pageable pageable);
 
 
 
-    //float getRatingByRNum(long r_num);
+    //float getRatingByResumeNo(long resumeNo);
 }

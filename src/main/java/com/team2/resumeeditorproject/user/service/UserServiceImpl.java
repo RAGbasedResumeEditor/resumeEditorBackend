@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Slf4j
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService{
                 .company(userDTO.getCompany())
                 .wish(userDTO.getWish())
                 .status(userDTO.getStatus())
+                .createdDate(new Date())
                 .mode(1)
                 .build();
         userRepository.save(user);
@@ -51,8 +53,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public int updateUserMode(long u_num) {
-        return userRepository.updateUserMode(u_num);
+    public int updateUserMode(long userNo) {
+        return userRepository.updateUserMode(userNo);
     }
 
     @Override
@@ -62,13 +64,13 @@ public class UserServiceImpl implements UserService{
 
     //회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
-    public void deleteUser(Long uNum){
-        userRepository.deleteById(uNum);
+    public void deleteUser(Long userNo){
+        userRepository.deleteById(userNo);
     }
 
     @Override
-    public Boolean checkUserExist(Long uNum){
-        Optional<User> user = userRepository.findById(uNum);
+    public Boolean checkUserExist(Long userNo){
+        Optional<User> user = userRepository.findById(userNo);
         if (user.isPresent()) {
             return true;
         } else {
@@ -80,7 +82,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void updateUser(UserDTO userDTO) {
-        User user = userRepository.findById(userDTO.getUNum()).orElseThrow(()-> new IllegalArgumentException("Invalid user ID"));
+        User user = userRepository.findById(userDTO.getUserNo()).orElseThrow(()-> new IllegalArgumentException("Invalid user ID"));
         if (userDTO.getGender() != null) {
             user.setGender(userDTO.getGender());
         }
@@ -112,13 +114,14 @@ public class UserServiceImpl implements UserService{
         if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
             user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         }
+
         userRepository.save(user);
     }
 
     @Override
-    public User findUser(Long uNum) {
-        return userRepository.findById(uNum)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
+    public User findUser(Long userNo) {
+        return userRepository.findById(userNo)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userNo));
     }
 
     @Override

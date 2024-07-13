@@ -1,33 +1,31 @@
 package com.team2.resumeeditorproject.resume.domain;
 
+import java.util.Date;
 
-import jakarta.persistence.Column;
+import com.team2.resumeeditorproject.user.domain.User;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
 @Getter
 @Entity
-@Table(name = "bookmark")
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
-@AllArgsConstructor
 public class Bookmark {
-    @Id
-    @Column(nullable = false, name = "b_num")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long BNum;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long bookmarkNo;
 
-    @Column(nullable = false, name = "r_num")
-    private Long RNum;
+	private Date createdDate;
 
-    @Column(nullable = false, name = "u_num")
-    private Long UNum;
+	@ManyToOne
+	@JoinColumn(name = "resume_no")
+	private Resume resume;
+
+	@ManyToOne
+	@JoinColumn(name = "user_no")
+	private User user;
 }

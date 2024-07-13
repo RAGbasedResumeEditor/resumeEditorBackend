@@ -44,12 +44,12 @@ public class ReviewManagementController {
         List<ReviewDTO> reviewDTOList = new ArrayList<>();
         for (Review review : reviewList) {
             ReviewDTO reviewDTO = new ReviewDTO();
-            reviewDTO.setRvNum(review.getRvNum());
-            reviewDTO.setUNum(review.getUNum());
+            reviewDTO.setReviewNo(review.getReviewNo());
+            reviewDTO.setUserNo(review.getUser().getUserNo());
             reviewDTO.setContent(review.getContent());
             reviewDTO.setRating(review.getRating());
             reviewDTO.setMode(review.getMode());
-            reviewDTO.setW_date(review.getW_date());
+            reviewDTO.setRegisterDate(review.getRegisterDate());
             reviewDTO.setDisplay(review.getDisplay());
             reviewDTOList.add(reviewDTO);
         }
@@ -87,13 +87,13 @@ public class ReviewManagementController {
 //        }
         List<ReviewDTO> reviewDTOList = reviewList.stream()
                 .map(review -> new ReviewDTO(
-                        review.getRvNum(),
-                        review.getUNum(),
+                        review.getReviewNo(),
+                        review.getUser().getUserNo(),
                         review.getContent(),
                         review.getRating(),
                         review.getMode(),
-                        review.getW_date(),
-                        review.getDisplay()
+                        review.getDisplay(),
+                        review.getRegisterDate()
                 ))
                 .collect(Collectors.toList());
 

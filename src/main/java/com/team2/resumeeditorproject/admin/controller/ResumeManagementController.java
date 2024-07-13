@@ -35,7 +35,7 @@ public class ResumeManagementController {
         int lastPageNo = pageResult.getTotalPages() - 1;
         if (pageNo > lastPageNo && lastPageNo >= 0) { // 마지막 페이지가 유효한 경우에만
             pageNo = lastPageNo;
-            Pageable newPageable = PageRequest.of(pageNo, SIZE_OF_PAGE, Sort.by("RNum").descending()); // 페이지 번호와 정렬 정보를 포함하여 pageable 다시 생성
+            Pageable newPageable = PageRequest.of(pageNo, SIZE_OF_PAGE, Sort.by("resumeNo").descending()); // 페이지 번호와 정렬 정보를 포함하여 pageable 다시 생성
             pageResult = resumeManagementService.getPagedResumeBoards(newPageable); // 재호출
         }
         return pageResult;
@@ -48,7 +48,7 @@ public class ResumeManagementController {
         pageNo = (pageNo < 0) ? 0 : pageNo;
 
         // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-        Pageable pageable = PageRequest.of(pageNo, SIZE_OF_PAGE, Sort.by("RNum").descending());
+        Pageable pageable = PageRequest.of(pageNo, SIZE_OF_PAGE, Sort.by("resumeNo").descending());
         Page<ResumeBoardDTO> resultsPage = resumeManagementService.getPagedResumeBoards(pageable);
 
         // 페이지 범위를 초과한 경우 마지막 페이지로 이동
@@ -101,15 +101,15 @@ public class ResumeManagementController {
     }
 
     //자소서 삭제
-    @DeleteMapping("/board/{rNum}")
-    public ResponseEntity<DeleteResumeResultResponse> deleteResume(@PathVariable("rNum") Long rNum) {
-        if(!resumeManagementService.checkResumeExists(rNum)){
+    @DeleteMapping("/board/{resumeNo}")
+    public ResponseEntity<DeleteResumeResultResponse> deleteResume(@PathVariable("resumeNo") Long resumeNo) {
+        if(!resumeManagementService.checkResumeExists(resumeNo)){
             throw new BadRequestException("존재하지 않는 자소서입니다.");
         }
-        resumeManagementService.deleteResume(rNum);
+        resumeManagementService.deleteResume(resumeNo);
         return ResponseEntity.ok()
                 .body(DeleteResumeResultResponse.builder()
-                        .response(rNum + "번 자소서 삭제 성공")
+                        .response(resumeNo + "번 자소서 삭제 성공")
                         .status("Success")
                         .time(new Date())
                         .build());

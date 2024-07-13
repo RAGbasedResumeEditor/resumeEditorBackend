@@ -4,20 +4,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Entity
 @Data
-@Table(name = "traffic")
-public class Traffic {
+public class DailyStatistics {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long t_num;
+    private Long dailyStatisticsNo;
 
     private int visitCount;
     private int editCount;
-    private LocalDate inDate;
+    private LocalDate referenceDate;
 }

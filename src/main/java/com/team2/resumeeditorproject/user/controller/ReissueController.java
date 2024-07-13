@@ -68,15 +68,15 @@ public class ReissueController {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        Long uNum = jwtUtil.getUNum(refresh);
+        Long userNo = jwtUtil.getUserNo(refresh);
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
         int mode = jwtUtil.getMode(refresh);
 
         // 새로운 access토큰 발급
-        String newAccess = jwtUtil.createJwt(uNum, mode, "access", username, role, 3600000L); //생명주기 1시간
+        String newAccess = jwtUtil.createJwt(userNo, mode, "access", username, role, 3600000L); //생명주기 1시간
         // refresh토큰 만료 후 refresh토큰 갱신
-        String newRefresh = jwtUtil.createJwt(uNum, mode, "refresh", username, role, 1209600000L); //생명주기 2주
+        String newRefresh = jwtUtil.createJwt(userNo, mode, "refresh", username, role, 1209600000L); //생명주기 2주
 
         // refresh토큰 저장 DB에 기존의 refresh토큰 삭제 후 새 Refresh 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
@@ -97,7 +97,7 @@ public class ReissueController {
 
     // refresh토큰을 DB에 저장하여 관리하기 위한 메서드
     @Transactional
-    private synchronized void addRefreshEntity(String username, String refresh, Long expiredMs) {
+    protected synchronized void addRefreshEntity(String username, String refresh, Long expiredMs) {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
@@ -107,10 +107,11 @@ public class ReissueController {
         refreshDTO.setExpiration(date);
 
         // Refresh 엔티티로 변환
-        Refresh refreshEntity = new Refresh();
-        refreshEntity.setUsername(refreshDTO.getUsername());
-        refreshEntity.setRefresh(refreshDTO.getRefresh());
-        refreshEntity.setExpiration(refreshDTO.getExpiration());
+        Refresh refreshEntity = Refresh.builder()
+                .username(username)
+                .refresh(refresh)
+                .expirationDate(date)
+                .build();
 
         refreshRepository.save(refreshEntity);
         //=>토큰을 생성하고 난 이후에 값 저장

@@ -8,7 +8,9 @@ import org.springframework.data.domain.Pageable;
 public interface UserManagementService {
     Page<UserDTO> getUserList(int pageNo, int size);
     Page<UserDTO> searchUsersByGroupAndKeyword(SearchUserRequest searchUserRequest, int size);
-    void updateUserDeleteDate(Long uNum);
+
+    void updateUserDeleteDate(Long userNo);
+
     void updateDelDateForRoleBlacklist();
 
 }

@@ -74,7 +74,7 @@ public class ApplicationScheduler {
     @Transactional
     public void deleteUserEnd() {
         try {
-            userRepository.deleteByDelDateLessThanEqual((LocalDateTime.now().minusDays(30)));
+            userRepository.deleteByDeletedDateLessThanEqual((LocalDateTime.now().minusDays(30)));
         } catch (Exception e) {
             log.error("Error occurred while deleting users inactive for 30 days or more", e);
         }

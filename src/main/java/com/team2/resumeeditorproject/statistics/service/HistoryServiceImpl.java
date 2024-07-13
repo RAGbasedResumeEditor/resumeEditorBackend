@@ -1,10 +1,10 @@
 package com.team2.resumeeditorproject.statistics.service;
 
-import com.team2.resumeeditorproject.statistics.domain.History;
-import com.team2.resumeeditorproject.statistics.domain.Traffic;
+import com.team2.resumeeditorproject.statistics.domain.DailyStatistics;
 import com.team2.resumeeditorproject.statistics.dto.HistoryDTO;
-import com.team2.resumeeditorproject.statistics.repository.HistoryRepository;
-import com.team2.resumeeditorproject.statistics.repository.TrafficRepository;
+import com.team2.resumeeditorproject.statistics.repository.StatisticsHistoryRepository;
+import com.team2.resumeeditorproject.statistics.repository.DailyStatisticsRepository;
+import com.team2.resumeeditorproject.statistics.domain.StatisticsHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -18,8 +18,8 @@ import java.time.LocalDate;
 @Slf4j
 public class HistoryServiceImpl implements HistoryService{
 
-    private final HistoryRepository historyRepository;
-    private final TrafficRepository trafficRepository;
+    private final StatisticsHistoryRepository statisticsHistoryRepository;
+    private final DailyStatisticsRepository dailyStatisticsRepository;
     private final ModelMapper modelMapper;
 
     private final StatisticsCollectionService statisticsCollectionService;
@@ -33,12 +33,12 @@ public class HistoryServiceImpl implements HistoryService{
         try {
             // 어제 날짜 가져오기
             LocalDate yesterday = LocalDate.now().minusDays(1);
-            Traffic yesterdayTraffic = trafficRepository.findByInDate(yesterday);
+            DailyStatistics yesterdayDailyStatistics = dailyStatisticsRepository.findByReferenceDate(yesterday);
 
-            if (yesterdayTraffic != null) {
-                historyDTO.setTraffic(yesterdayTraffic.getVisitCount());
-                historyDTO.setEdit_count(yesterdayTraffic.getEditCount());
-                historyDTO.setTraffic_date(yesterdayTraffic.getInDate());
+            if (yesterdayDailyStatistics != null) {
+                historyDTO.setTraffic(yesterdayDailyStatistics.getVisitCount());
+                historyDTO.setEdit_count(yesterdayDailyStatistics.getEditCount());
+                historyDTO.setTraffic_date(yesterdayDailyStatistics.getReferenceDate());
             }
 
             // 통계 데이터를 수집하여 JSON 형태로 변환
@@ -57,10 +57,10 @@ public class HistoryServiceImpl implements HistoryService{
             historyDTO.setW_date(new java.util.Date());
 
             // HistoryDTO를 History로 변환
-            History history = modelMapper.map(historyDTO, History.class);
+           StatisticsHistory history = modelMapper.map(historyDTO, StatisticsHistory.class);
 
             // 데이터 저장
-            historyRepository.save(history);
+            statisticsHistoryRepository.save(history);
 
             log.debug("Completed collectStatistics successfully for date: {}", historyDTO.getTraffic_date());
 
@@ -70,4 +70,3 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
 }
-

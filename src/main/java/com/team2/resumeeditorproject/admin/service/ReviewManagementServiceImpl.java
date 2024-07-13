@@ -44,7 +44,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     @Override
     @Transactional(readOnly = true)
     public Page<Review> getPagedReviews(int pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("rvNum").descending());
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("reviewNo").descending());
         Page<Review> pageResult = reviewRepository.findAll(pageable);
         return pageResult;
     }
@@ -52,7 +52,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     @Override
     @Transactional(readOnly = true)
     public Page<Review> getDisplayReviews(int pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("rvNum").descending());
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("reviewNo").descending());
         Page<Review> pageResult = reviewRepository.findByDisplay(pageable);
         return pageResult;
     }
@@ -69,4 +69,3 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
                 .collect(Collectors.toList());
     }
 }
-

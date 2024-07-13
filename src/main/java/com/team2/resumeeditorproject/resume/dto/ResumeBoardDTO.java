@@ -18,10 +18,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumeBoardDTO {
-    private Long RNum;
+    private Long resumeNo;
     private float rating;
-    private int rating_count;
-    private int read_num;
+    private int ratingCount;
+    private int readCount;
     private String title;
 
     //for admin

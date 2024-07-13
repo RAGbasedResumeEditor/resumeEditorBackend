@@ -16,16 +16,17 @@ import org.springframework.data.repository.query.Param;
  * @since : 04/25/24
  */
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
-    @Query("SELECT re, r.content, r.w_date\n" +
+    @Query("SELECT re, r.content, r.createdDate\n" +
             "FROM ResumeEdit re\n" +
-            "JOIN Resume r ON re.r_num = r.r_num\n" +
-            "WHERE r.r_num = :r_num")
-    Object getResumeEditDetail(@Param("r_num") Long num);
+            "JOIN Resume r ON re.resumeEditNo = r.resumeNo\n" +
+            "WHERE r.resumeNo = :resumeNo")
+    Object getResumeEditDetail(@Param("resumeNo") Long resumeNo);
 
-    @Query("SELECT re.r_num, re.company, re.occupation, re.mode, r.w_date " +
-            "FROM ResumeEdit re " +
-            "JOIN Resume r ON re.r_num = r.r_num " +
-            "WHERE re.u_num = :u_num " +
-            "ORDER BY r.r_num DESC")
-    Page<Object[]> getMyPageEditList(@Param("u_num") long u_num, Pageable pageable);
+    @Query("SELECT re.resumeEditNo, re.company, re.occupation, re.mode, r.createdDate " +
+            "FROM User u " +
+            "INNER JOIN u.resumeEdits re " +
+            "INNER JOIN Resume r ON re.resumeEditNo = r.resumeNo " +
+            "WHERE u.userNo = :userNo " +
+            "ORDER BY r.resumeNo DESC")
+    Page<Object[]> getMyPageEditList(@Param("userNo") long userNo, Pageable pageable);
 }

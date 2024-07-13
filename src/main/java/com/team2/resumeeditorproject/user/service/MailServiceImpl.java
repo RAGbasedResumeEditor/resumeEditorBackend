@@ -28,7 +28,7 @@ public class MailServiceImpl implements MailService { // 인증코드를 생성�
     @Override
     public boolean checkAuthNum(String email,String authCode) {
         Verification verification = verificationRepository.findByEmail(email);
-        if (verification != null && verification.getCode().equals(authCode) && new Date().before(verification.getExpiresAt())) {
+        if (verification != null && verification.getCode().equals(authCode) && new Date().before(verification.getExpiresDate())) {
             return true;
         } else {
             return false;
@@ -80,10 +80,8 @@ public class MailServiceImpl implements MailService { // 인증코드를 생성�
         Date futureTime = calendar.getTime();
 
         if (verificationRepository.findByEmail(toM)!=null) {
-            Verification verification= verificationRepository.findByEmail(toM);
-            verification.setCode(AUTHNUM);
-            verification.setCreatedAt(currentTime);
-            verification.setExpiresAt(futureTime);
+            Verification verification = verificationRepository.findByEmail(toM);
+            verification.refreshVerification(AUTHNUM, currentTime, futureTime);
             verificationRepository.save(verification);
             return;
         }
@@ -91,8 +89,8 @@ public class MailServiceImpl implements MailService { // 인증코드를 생성�
         Verification verification=Verification.builder()
                 .email(toM)
                 .code(AUTHNUM)
-                .createdAt(currentTime)
-                .expiresAt(futureTime)
+                .createdDate(currentTime)
+                .expiresDate(futureTime)
                 .build();
         verificationRepository.save(verification);
     }

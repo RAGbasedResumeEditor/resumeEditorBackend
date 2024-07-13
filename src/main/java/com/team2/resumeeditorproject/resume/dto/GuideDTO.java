@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GuideDTO {
-    @JsonProperty("uNum")
-    private Long UNum;
+    private Long userNo;
     private String awards;
     private String experiences;
 }

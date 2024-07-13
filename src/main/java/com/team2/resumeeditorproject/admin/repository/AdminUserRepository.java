@@ -19,7 +19,7 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     Page<User> findAllUsersWithResumeEdits(Pageable pageable);
 
     // 회원 정보 + 첨삭 횟수
-    @Query("SELECT u, COUNT(re) FROM User u LEFT JOIN u.resumeEdits re GROUP BY u ORDER BY u.inDate DESC")
+    @Query("SELECT u, COUNT(re) FROM User u LEFT JOIN u.resumeEdits re GROUP BY u ORDER BY u.createdDate DESC")
     Page<Object[]> findUsersWithResumeEditCount(Pageable pageable);
 
     // 키워드 검색을 위한 그룹 + 페이징
@@ -29,12 +29,10 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
             + "(:group = 'company' AND u.company LIKE %:keyword%) OR "
             + "(:group = 'occupation' AND u.occupation LIKE %:keyword%) OR "
             + "(:group = 'wish' AND u.wish LIKE %:keyword%) "
-            + "GROUP BY u ORDER BY u.inDate DESC")
+            + "GROUP BY u ORDER BY u.createdDate DESC")
     Page<Object[]> findByGroupAndKeyword(@Param("group") String group, @Param("keyword") String keyword, Pageable pageable);
 
     // ROLE_USER 조회
     @Query("SELECT u FROM User u WHERE u.role = :role")
     List<User> findByRole(@Param("role") String role);
 }
-
-

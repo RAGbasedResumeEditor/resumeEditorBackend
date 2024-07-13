@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ResumeGuideRepository extends JpaRepository<ResumeGuide, Long> {
-    Page<ResumeGuide> findByUNum(Long uNum, Pageable pageable);
+    Page<ResumeGuide> findByUserUserNo(Long userNo, Pageable pageable);
 }

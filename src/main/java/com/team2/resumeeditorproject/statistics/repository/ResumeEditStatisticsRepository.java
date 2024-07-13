@@ -11,8 +11,11 @@ import java.util.List;
 @Repository
 public interface ResumeEditStatisticsRepository extends JpaRepository<ResumeEdit, Long> {
     // 첨삭 횟수
-    @Query("SELECT resumeEdit.u_num, COUNT(resumeEdit) FROM ResumeEdit resumeEdit WHERE resumeEdit.u_num IN :u_num GROUP BY resumeEdit.u_num")
-    List<Object[]> countByUNumIn(@Param("u_num") List<Long> uNum);
+    // @Query("SELECT resumeEdit.userNo, COUNT(resumeEdit) FROM ResumeEdit resumeEdit WHERE resumeEdit.userNo IN :userNo GROUP BY resumeEdit.userNo")
+
+
+    @Query("SELECT user.userNo, COUNT(resumeEdit) FROM ResumeEdit resumeEdit INNER JOIN User user WHERE user.userNo IN :userNo GROUP BY user.userNo")
+    List<Object[]> countResumeEditByUserIn(@Param("userNo") List<Long> userNo);
 
     // 첨삭 받기 위한 지원직종별 첨삭횟수 랭킹Top5
     @Query(value = "SELECT occupation, COUNT(occupation) AS count " +

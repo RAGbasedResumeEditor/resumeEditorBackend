@@ -14,11 +14,10 @@ import org.springframework.data.domain.Pageable;
 public interface ResumeService {
     ResumeDTO insertResume(ResumeDTO resumeDTO);
 
-    String getResumeContent(long r_num);
+    String getResumeContent(long resumeNo);
 
     Object getResumeEditDetail(Long num);
 
-    Page<Object[]> myPageEditList(long u_num, Pageable pageable);
+    Page<Object[]> myPageEditList(long userNo, Pageable pageable);
 
 }
-

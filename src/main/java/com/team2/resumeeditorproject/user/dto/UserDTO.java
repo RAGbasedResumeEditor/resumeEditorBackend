@@ -1,13 +1,14 @@
 package com.team2.resumeeditorproject.user.dto;
 
-import lombok.Data;
-import lombok.Setter;
-
 import java.util.Date;
 
-@Data
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class UserDTO {
-    private Long uNum;
+    private Long userNo;
     private String email;
     private String username;
     private String password;
@@ -25,6 +26,6 @@ public class UserDTO {
     private String authCode;
     // 스네이크로 바꿔보고 안되면?
     // 첨삭횟수 설정 메서드
-    @Setter
     private int resumeEditCount; // 첨삭횟수 필드 추가
+
 }

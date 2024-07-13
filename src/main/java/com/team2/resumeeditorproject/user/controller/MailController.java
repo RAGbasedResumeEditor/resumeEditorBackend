@@ -37,7 +37,7 @@ public class MailController {
     public ResponseEntity<Map<String, Object>> mailSend(@RequestBody UserDTO userDTO) throws AuthenticationException {
         String email = userDTO.getEmail();
         if (userRepository.findByEmail(email) != null){
-            Date delDate = userRepository.findByEmail(email).getDelDate();
+            Date delDate = userRepository.findByEmail(email).getDeletedDate();
             // del_date가 30일 이내인 경우
             if (delDate!=null) {
                 // Calendar 인스턴스를 생성하여 delDate로 설정합니다.

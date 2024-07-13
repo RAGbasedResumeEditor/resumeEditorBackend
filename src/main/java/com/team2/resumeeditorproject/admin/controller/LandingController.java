@@ -1,58 +1,71 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.service.AdminService;
-import com.team2.resumeeditorproject.admin.service.HistoryService;
+import com.team2.resumeeditorproject.admin.dto.LandingPageReviewDTO;
+import com.team2.resumeeditorproject.admin.dto.response.LandingPageReviewsResponse;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
-import com.team2.resumeeditorproject.review.domain.Review;
+import com.team2.resumeeditorproject.statistics.dto.response.TotalResumeBoardCountResponse;
+import com.team2.resumeeditorproject.statistics.dto.response.TotalResumeEditCountResponse;
+import com.team2.resumeeditorproject.statistics.dto.response.UserCountResponse;
+import com.team2.resumeeditorproject.statistics.dto.response.VisitTotalCountResponse;
+import com.team2.resumeeditorproject.statistics.service.ResumeStatisticsService;
+import com.team2.resumeeditorproject.statistics.service.UserStatisticsService;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createBadRequestResponse;
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createOkResponse;
 
 @Controller
 @RequestMapping("/landing")
 @RequiredArgsConstructor
 public class LandingController {
 
-    private final AdminService adminService;
-    private final HistoryService historyService;
     private final ReviewManagementService reviewService;
+    private final UserStatisticsService userStatisticsService;
+    private final ResumeStatisticsService resumeStatisticsService;
+    private final ReviewManagementService reviewManagementService;
 
-    @GetMapping("/statistics")
-    public ResponseEntity<Map<String,Object>> getStatistics(@RequestParam(name="group", required=false) String group) {
-        Function<String, ResponseEntity<Map<String, Object>>> action = switch (group) {
-            case "countUser" -> (g) -> createOkResponse(adminService.userCnt());
-            case "visitTotal" -> (g) -> createOkResponse(historyService.getTotalTraffic());
-            case "editTotal" -> (g) -> createOkResponse(historyService.getTotalEdit());
-            case "boardTotal" -> (g) -> createOkResponse(historyService.getTotalBoardCnt());
-            default -> (g) ->  createBadRequestResponse("잘못된 요청입니다.");
-        };
-        return action.apply(group);
+    @GetMapping("/statistics/user-count")
+    public ResponseEntity<UserCountResponse> getUserCount() {
+        return ResponseEntity.ok()
+                .body(UserCountResponse.builder()
+                        .totalCount(userStatisticsService.getUserCount())
+                        .build());
+    }
+
+    @GetMapping("/statistics/total-visit")
+    public ResponseEntity<VisitTotalCountResponse> getTotalVisitCount() {
+        return ResponseEntity.ok()
+                .body(VisitTotalCountResponse.builder()
+                        .visitTotal(userStatisticsService.getTotalVisitCount())
+                        .build());
+    }
+
+    @GetMapping("/statistics/total-edit")
+    public ResponseEntity<TotalResumeEditCountResponse> getTotalResumeEditCount(){
+        return ResponseEntity.ok()
+                .body(TotalResumeEditCountResponse.builder()
+                        .totalEdit(resumeStatisticsService.getTotalResumeEditCount())
+                        .build());
+    }
+
+    @GetMapping("/statistics/total-board")
+    public ResponseEntity<TotalResumeBoardCountResponse> getTotalResumeBoardCount(){
+        return ResponseEntity.ok()
+                .body(TotalResumeBoardCountResponse.builder()
+                        .totalBoard(resumeStatisticsService.getTotalResumeBoardCount())
+                        .build());
     }
 
     @GetMapping("/review")
-    public ResponseEntity<Map<String,Object>> getAllVisibleReviews() {
-        try {
-            List<Review> reviews = reviewService.getVisibleReviews();
+    public ResponseEntity<LandingPageReviewsResponse> getAllVisibleReviews() {
+        List<LandingPageReviewDTO> reviewDTOs = reviewManagementService.getVisibleReviews();
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("review", reviews);
-
-            return createOkResponse(response);
-        } catch (Exception e) {
-            return createBadRequestResponse(e.getMessage());
-        }
-
+        return ResponseEntity.ok()
+                .body(LandingPageReviewsResponse.builder()
+                        .reviews(reviewDTOs)
+                        .build());
     }
 }

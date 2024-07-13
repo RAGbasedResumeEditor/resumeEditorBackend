@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -60,7 +61,14 @@ public class UserManagementServiceImpl implements UserManagementService{
     @Override
     @Transactional(readOnly = true)
     public Page<UserDTO> searchUsersByGroupAndKeyword(String group, String keyword, Pageable pageable) {
-        Page<Object[]> userPage = adminUserRepository.findByGroupAndKeyword(group, keyword, pageable);
+        Page<Object[]> userPage;
+
+        if (StringUtils.hasText(group) && StringUtils.hasText(keyword)) {
+            userPage = adminUserRepository.findByGroupAndKeyword(group, keyword, pageable);
+        } else {
+            userPage = adminUserRepository.findUsersWithResumeEditCount(pageable);
+        }
+
         return convertToUserDTOPage(userPage);
     }
 

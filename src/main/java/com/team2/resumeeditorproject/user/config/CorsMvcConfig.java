@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.user.config;
 
-import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
+import com.team2.resumeeditorproject.statistics.interceptor.TrafficInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

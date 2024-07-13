@@ -9,14 +9,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 @Repository
 public interface AdminReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAll(Pageable pageable);
 
-    @Query("SELECT r FROM Review r WHERE r.show=true")
-    Page<Review> findByShow(Pageable pageable);
+    @Query("SELECT r FROM Review r WHERE r.display='true'")
+    Page<Review> findByDisplay(Pageable pageable);
 
-    List<Review> findAllByShow(boolean show);
+    List<Review> findAllByDisplay(String display);
 
 }

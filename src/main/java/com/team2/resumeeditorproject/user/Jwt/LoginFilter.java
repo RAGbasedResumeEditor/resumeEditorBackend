@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.user.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
+import com.team2.resumeeditorproject.statistics.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.domain.Refresh;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.RefreshDTO;

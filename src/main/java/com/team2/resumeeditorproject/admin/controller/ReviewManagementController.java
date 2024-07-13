@@ -1,8 +1,10 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.dto.ReviewDTO;
+import com.team2.resumeeditorproject.review.dto.ReviewDTO;
+import com.team2.resumeeditorproject.admin.dto.response.ReviewDisplayResultResponse;
+import com.team2.resumeeditorproject.admin.dto.response.ReviewListResponse;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
-import com.team2.resumeeditorproject.exception.BadRequestException;
+import com.team2.resumeeditorproject.exception.NotFoundException;
 import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,11 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.team2.resumeeditorproject.admin.service.ResponseHandler.createPagedResponse;
 
 @Controller
 @RequestMapping("/admin/review")
@@ -29,81 +27,85 @@ public class ReviewManagementController {
     private final ReviewManagementService reviewService;
 
     @GetMapping("/list")
-    public ResponseEntity<Map<String,Object>> getAllReviews(@RequestParam("pageNo") int pageNo) {
+    public ResponseEntity<ReviewListResponse> getAllReviews(@RequestParam("pageNo") int pageNo) {
         if (pageNo < 0) {
             pageNo = 0;
         }
 
         Page<Review> reviewList = reviewService.getPagedReviews(pageNo);
-        int totalPage=reviewList.getTotalPages();
 
         List<ReviewDTO> reviewDTOList = new ArrayList<>();
         for (Review review : reviewList) {
             ReviewDTO reviewDTO = new ReviewDTO();
-            reviewDTO.setRv_num(review.getRvNum());
-            reviewDTO.setU_num(review.getUNum());
+            reviewDTO.setRvNum(review.getRvNum());
+            reviewDTO.setUNum(review.getUNum());
             reviewDTO.setContent(review.getContent());
             reviewDTO.setRating(review.getRating());
             reviewDTO.setMode(review.getMode());
             reviewDTO.setW_date(review.getW_date());
-            reviewDTO.setShow(review.isShow());
+            reviewDTO.setDisplay(review.getDisplay());
             reviewDTOList.add(reviewDTO);
         }
 
         if (reviewDTOList.isEmpty()) {
-            throw new BadRequestException("후기가 존재하지 않습니다.");
+            throw new NotFoundException("후기가 존재하지 않습니다.");
         }
 
-        return createPagedResponse(totalPage, reviewDTOList);
+        return ResponseEntity.ok()
+                .body(ReviewListResponse.builder()
+                .totalPage(reviewList.getTotalPages())
+                .reviewDTOList(reviewDTOList)
+                        .build());
     }
 
-    @GetMapping("/list/show")
-    public ResponseEntity<Map<String, Object>> getShowReviews(@RequestParam("pageNo") int pageNo) {
-            if (pageNo < 0) {
-                pageNo = 0;
-            }
+    @GetMapping("/list/display-review")
+    public ResponseEntity<ReviewListResponse> getShowReviews(@RequestParam("pageNo") int pageNo) {
+        if (pageNo < 0) {
+            pageNo = 0;
+        }
 
-            Page<Review> reviewList = reviewService.getAllShows(pageNo);
-            int totalPage = reviewList.getTotalPages();
+        Page<Review> reviewList = reviewService.getDisplayReviews(pageNo);
 
-            List<ReviewDTO> reviewDTOList = new ArrayList<>();
-            for (Review review : reviewList) {
-                ReviewDTO reviewDTO = new ReviewDTO();
-                reviewDTO.setRv_num(review.getRvNum());
-                reviewDTO.setU_num(review.getUNum());
-                reviewDTO.setContent(review.getContent());
-                reviewDTO.setRating(review.getRating());
-                reviewDTO.setMode(review.getMode());
-                reviewDTO.setW_date(review.getW_date());
-                reviewDTO.setShow(review.isShow());
-                reviewDTOList.add(reviewDTO);
-            }
+        List<ReviewDTO> reviewDTOList = new ArrayList<>();
+        for (Review review : reviewList) {
+            ReviewDTO reviewDTO = new ReviewDTO();
+            reviewDTO.setRvNum(review.getRvNum());
+            reviewDTO.setUNum(review.getUNum());
+            reviewDTO.setContent(review.getContent());
+            reviewDTO.setRating(review.getRating());
+            reviewDTO.setMode(review.getMode());
+            reviewDTO.setW_date(review.getW_date());
+            reviewDTO.setDisplay(review.getDisplay());
+            reviewDTOList.add(reviewDTO);
+        }
 
-            if (reviewDTOList.isEmpty()) {
-                throw new BadRequestException("후기가 존재하지 않습니다.");
-            }
-        return createPagedResponse(totalPage,reviewDTOList);
+        if (reviewDTOList.isEmpty()) {
+            throw new NotFoundException("후기가 존재하지 않습니다.");
+        }
+
+        return ResponseEntity.ok()
+                .body(ReviewListResponse.builder()
+                        .totalPage(reviewList.getTotalPages())
+                        .reviewDTOList(reviewDTOList)
+                        .build());
     }
 
-    @PostMapping("/select")
-    public ResponseEntity<Map<String, Object>> selectReview(@RequestParam("rvNum") Long rvNum) {
+    @PostMapping("/display")
+    public ResponseEntity<ReviewDisplayResultResponse> selectDisplayReview(@RequestParam("reviewNo") Long reviewNo) {
         try {
-            Map<String, Object> response = new HashMap<>();
-            if (reviewService.selectReview(rvNum)) {
-                response.put("response", "Review selected successfully");
-                response.put("status", "Success");
-            } else {
-                response.put("response", "Already selected");
-                response.put("status", "Fail");
-            }
-            response.put("time", new Date());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok()
+                    .body(ReviewDisplayResultResponse.builder()
+                            .response(reviewService.selectReview(reviewNo))
+                            .status("Success")
+                            .time(new Date())
+                            .build());
         } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("response", "Failed to selected : " + e.getMessage());
-            errorResponse.put("time", new Date());
-            errorResponse.put("status", "Fail");
-            return ResponseEntity.badRequest().body(errorResponse);
+            return ResponseEntity.badRequest()
+                    .body(ReviewDisplayResultResponse.builder()
+                            .response("Failed to selected")
+                            .status("Fail")
+                            .time(new Date())
+                            .build());
         }
     }
 }

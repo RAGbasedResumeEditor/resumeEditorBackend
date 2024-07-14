@@ -1,22 +1,24 @@
+
 package com.team2.resumeeditorproject.resume.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
-@AllArgsConstructor
-public class Occupation {
+public class Company {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long occupationNo;
+	private Long companyNo;
 
-	private String occupationName;
+	@Column(unique = true)
+	private String companyName;
+
+	@Column(length = 5000)
+	private String questions;
+
 }

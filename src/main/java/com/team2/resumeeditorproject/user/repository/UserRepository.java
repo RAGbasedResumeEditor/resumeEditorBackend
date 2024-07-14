@@ -19,14 +19,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /* eunbi */
     @Modifying
-    @Query("UPDATE User u SET u.mode = 2 WHERE u.uNum = :u_num")
-    int updateUserMode(@Param("u_num") long u_num);
+    @Query("UPDATE User u SET u.mode = 2 WHERE u.userNo = :userNo")
+    int updateUserMode(@Param("userNo") long userNo);
 
-    @Query("SELECT u.username FROM User u WHERE u.uNum = :uNum")
-    String findUsernameByUNum(@Param("uNum") Long uNum);
+    @Query("SELECT u.username FROM User u WHERE u.userNo = :userNo")
+    String findUsernameByUserNo(@Param("userNo") Long userNo);
 
-    void deleteByDelDateLessThanEqual(LocalDateTime localDateTime);
+    void deleteByDeletedDateLessThanEqual(LocalDateTime localDateTime);
 
 }
-
-

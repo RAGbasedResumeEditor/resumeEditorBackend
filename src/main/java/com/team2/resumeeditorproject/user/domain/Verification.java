@@ -1,37 +1,34 @@
 package com.team2.resumeeditorproject.user.domain;
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.util.Date;
-
-@Getter
-@Setter
 @Entity
-@Table(name="Verification")
-@NoArgsConstructor
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Verification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long vNum;
-    private String email;
-    private String code;
-    private Date createdAt;
-    private Date expiresAt;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long verificationNo;
+	private String email;
+	private String code;
+	private Date createdDate;
+	private Date expiresDate;
 
-    @Builder
-    public Verification(Long vNum, String email, String code, Date createdAt, Date expiresAt) {
-        this.vNum = vNum;
-        this.email = email;
-        this.code = code;
-        this.createdAt = createdAt;
-        this.expiresAt = expiresAt;
-    }
+	public void refreshVerification(String code, Date createdDate, Date expiresDate) {
+		this.code = code;
+		this.createdDate = createdDate;
+		this.expiresDate = expiresDate;
+	}
 }

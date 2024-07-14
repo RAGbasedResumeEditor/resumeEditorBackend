@@ -36,14 +36,14 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     @Transactional
-    public int deleteComment(Long c_num) {
-        return commentRepository.deleteComment(c_num);
+    public int deleteComment(Long commentNo) {
+        return commentRepository.deleteComment(commentNo);
     }
 
     @Override
     @Transactional
-    public int updateComment(Long c_num, String updateContent) {
-        return commentRepository.updateComment(c_num, updateContent);
+    public int updateComment(Long commentNo, String updateContent) {
+        return commentRepository.updateComment(commentNo, updateContent);
     }
 
 }

@@ -69,13 +69,13 @@ public class CustomUserDetails implements UserDetails {
             }
         }
         // del_date가 null이 아니면 계정이 비활성화된 상태로 간주하고 false 반환
-        return user.getDelDate() == null;
+        return user.getDeletedDate() == null;
     }
 
     public Date getReactivationDate() {
-        if (user.getDelDate() != null) {
+        if (user.getDeletedDate() != null) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(user.getDelDate());
+            calendar.setTime(user.getDeletedDate());
             calendar.add(Calendar.DATE, 60);
             return calendar.getTime();
         }

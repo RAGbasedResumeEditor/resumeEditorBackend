@@ -44,26 +44,26 @@ public class ResumeEditServiceImpl implements ResumeEditService{
         // resumeEdit 테이블에 저장
         resumeEditDTO = insertResumeEdit(resumeEditDTO);
 
-        Long resumeEditId = resumeEditDTO.getR_num(); // resumeEdit 테이블의 primary key 얻기
+        Long resumeEditId = resumeEditDTO.getResumeNo(); // resumeEdit 테이블의 primary key 얻기
 
         // resume 테이블에 저장
         ResumeDTO resumeDTO = new ResumeDTO();
-        resumeDTO.setR_num(resumeEditId);
+        resumeDTO.setResumeNo(resumeEditId);
         resumeDTO.setContent(content);
-        resumeDTO.setU_num(resumeEditDTO.getU_num());
+        resumeDTO.setUserNo(resumeEditDTO.getUserNo());
         resumeDTO = resumeService.insertResume(resumeDTO);
-        Long resumeId = resumeDTO.getR_num();
+        Long resumeId = resumeDTO.getResumeNo();
 
         // mode가 pro(2)인 경우, resume_board 테이블에 저장하고 user mode 2로 변경
         if (mode == 2) {
             ResumeBoardDTO resumeBoardDTO = new ResumeBoardDTO();
             String title = resumeEditDTO.getCompany() + " " + resumeEditDTO.getOccupation();
             resumeBoardDTO.setTitle(title);
-            resumeBoardDTO.setRNum(resumeId);
+            resumeBoardDTO.setResumeNo(resumeId);
             resumeBoardService.insertResumeBoard(resumeBoardDTO);
 
             if (user.getMode() == 1) { // user의 모드가 1이면 2로 변경
-                userService.updateUserMode(resumeEditDTO.getU_num());
+                userService.updateUserMode(resumeEditDTO.getUserNo());
             }
         }
 

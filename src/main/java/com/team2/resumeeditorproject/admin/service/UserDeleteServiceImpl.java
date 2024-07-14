@@ -16,17 +16,17 @@ public class UserDeleteServiceImpl implements UserDeleteService{
     private final UserManagementService userManagementService;
 
     @Override
-    public void deleteUser(Long uNum) {
-        // uNum으로 사용자 조회
-        User user = userService.findUser(uNum);
+    public void deleteUser(Long userNo) {
+        // userNo으로 사용자 조회
+        User user = userService.findUser(userNo);
 
         // 사용자가 이미 삭제된 상태인지 확인
-        if (user.getDelDate() != null) {
-            throw new BadRequestException("User already deleted with id: " + uNum);
+        if (user.getDeletedDate() != null) {
+            throw new BadRequestException("User already deleted with id: " + userNo);
         }
 
         // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
-        userManagementService.updateUserDeleteDate(uNum);
+        userManagementService.updateUserDeleteDate(userNo);
 
         // 해당 사용자의 refresh 토큰 정보 삭제
         refreshService.deleteRefreshByUsername(user.getUsername());

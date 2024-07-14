@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.statistics.interceptor;
 
-import com.team2.resumeeditorproject.statistics.domain.Traffic;
-import com.team2.resumeeditorproject.statistics.repository.TrafficRepository;
+import com.team2.resumeeditorproject.statistics.domain.DailyStatistics;
+import com.team2.resumeeditorproject.statistics.repository.DailyStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -13,16 +13,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class TrafficInterceptor implements HandlerInterceptor {
     private final AtomicInteger trafficCounter = new AtomicInteger();
-    private final TrafficRepository trafficRepository;
+    private final DailyStatisticsRepository dailyStatisticsRepository;
 
     public void incrementTrafficCount() {
-        Traffic traffic = trafficRepository.findByInDate(LocalDate.now());
-        if (traffic == null) {
-            traffic = new Traffic();
-            traffic.setInDate(LocalDate.now());
+        DailyStatistics dailyStatistics = dailyStatisticsRepository.findByReferenceDate(LocalDate.now());
+        if (dailyStatistics == null) {
+            dailyStatistics = new DailyStatistics();
+            dailyStatistics.setReferenceDate(LocalDate.now());
         }
-        traffic.setVisitCount(traffic.getVisitCount() + 1);
-        trafficRepository.save(traffic);
+        dailyStatistics.setVisitCount(dailyStatistics.getVisitCount() + 1);
+        dailyStatisticsRepository.save(dailyStatistics);
 
         trafficCounter.incrementAndGet(); // 메모리 내 카운터도 증가
     }

@@ -1,15 +1,23 @@
 package com.team2.resumeeditorproject.user.domain;
 
+import com.team2.resumeeditorproject.resume.domain.Company;
+import com.team2.resumeeditorproject.resume.domain.Occupation;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
-import jakarta.persistence.Column;
+
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,55 +28,56 @@ import org.hibernate.annotations.SQLDelete;
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
 @Entity
-@Table(name="User")
-@SQLDelete(sql = "UPDATE user SET del_date = current_timestamp WHERE u_num = ?") // soft delete
-@NoArgsConstructor
+@SQLDelete(sql = "UPDATE user SET deleted_date = current_timestamp,  WHERE user_no = ?") // soft delete
 @DynamicUpdate
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "u_num")
-    private Long uNum;
+    private Long userNo;
     private String email;
     private String username;
+    @Setter
     private String password;
+    @Setter
     private String role;
+    @Setter
     private int age;
+    @Setter
     private String birthDate;
+    @Setter
     private char gender;
-    private String company;
-    private String occupation;
-    private String wish;
+    @Setter
     private int status;
     private int mode;
-    private Date inDate;
-    private Date delDate;
+    private Date createdDate;
+    @Setter
+    private Date deletedDate;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)// ResumeEdit와의 양방향 관계를 설정
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_no")
     private List<ResumeEdit> resumeEdits;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_no")
     private List<Resume> resumes;
 
-    @Builder
-    public User(Long uNum, String email, String username, String password, String role, int age, String birthDate, char gender, String company, String occupation, String wish, int status, int mode, Date inDate, Date delDate) {
-        this.uNum = uNum;
-        this.email = email;
-        this.username=username;
-        this.password = password;
-        this.role=role;
-        this.age = age;
-        this.birthDate=birthDate;
-        this.gender = gender;
-        this.company = company;
-        this.occupation = occupation;
-        this.wish = wish;
-        this.status = status;
-        this.mode = mode;
-        this.inDate = inDate;
-        this.delDate = delDate;
-    }
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "occupation_no")
+    private Occupation occupation;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_no")
+    private Company company;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wish_company_no")
+    private Company wishCompany;
 }

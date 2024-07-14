@@ -4,5 +4,5 @@ import com.team2.resumeeditorproject.resume.domain.Guide;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GuideRepository extends JpaRepository<Guide, Long> {
-    Guide findByUNum(long uNum);
+    Guide findByUserUserNo(long userNo);
 }

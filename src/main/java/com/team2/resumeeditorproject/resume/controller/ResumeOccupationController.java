@@ -27,7 +27,7 @@ public class ResumeOccupationController {
     public ResponseEntity<Map<String, Object>> loadOccupation(@PathVariable("occupation")  String occupation) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Occupation> existingOccupation = occupationRepository.findByOccupationContaining(occupation);
+            List<Occupation> existingOccupation = occupationRepository.findByOccupationNameContaining(occupation);
             if (existingOccupation != null && !existingOccupation.isEmpty()) {
                 response.put("status","Success");
                 response.put("occupationList", existingOccupation);

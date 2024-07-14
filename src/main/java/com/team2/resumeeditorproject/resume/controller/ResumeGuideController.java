@@ -53,33 +53,31 @@ public class ResumeGuideController {
             boolean resumeGuideSaved = false;
 
             // GuideDTO 처리
-            if (requestBody.containsKey("uNum") && requestBody.containsKey("awards") && requestBody.containsKey("experiences")) {
+            if (requestBody.containsKey("userNo") && requestBody.containsKey("awards") && requestBody.containsKey("experiences")) {
                 GuideDTO guideDto = objectMapper.convertValue(requestBody, GuideDTO.class);
 
-                Long uNum = ((Number) requestBody.get("uNum")).longValue(); // Integer -> Long 변환
+                Long userNo = ((Number) requestBody.get("userNo")).longValue(); // Integer -> Long 변환
                 String awards = guideDto.getAwards();
                 String experiences = guideDto.getExperiences();
 
-                // User 테이블에서 해당하는 uNum을 가진 사용자가 존재하는지 확인
-                Optional<User> userOptional = userRepository.findById(uNum);
+                // User 테이블에서 해당하는 userNo을 가진 사용자가 존재하는지 확인
+                Optional<User> userOptional = userRepository.findById(userNo);
                 if (userOptional.isPresent()) {
                     // 새로운 데이터를 추가하여 저장
-                    Guide existingGuide = guideRepository.findByUNum(uNum);
+                    Guide existingGuide = guideRepository.findByUserUserNo(userNo);
                     if (existingGuide != null) {
                         // 기존 데이터와 동일한지 확인
                         if (!existingGuide.getAwards().equals(awards) || !existingGuide.getExperiences().equals(experiences)) {
                             // 데이터가 다르면 업데이트
-                            existingGuide.setUNum(uNum);
-                            existingGuide.setAwards(awards);
-                            existingGuide.setExperiences(experiences);
-                            guideRepository.save(existingGuide);
+                            GuideDTO newGuideDTO = new GuideDTO(userNo, awards, experiences);
+                            guideService.insertGuide(newGuideDTO);
                             response.put("status_guide", "Updated Guide");
                         } else {
                             response.put("status_guide", "No changes made");
                         }
                     } else {
                         // 기존 데이터가 없으면 새로 삽입
-                        GuideDTO newGuideDTO = new GuideDTO(uNum, awards, experiences);
+                        GuideDTO newGuideDTO = new GuideDTO(userNo, awards, experiences);
                         guideService.insertGuide(newGuideDTO);
                         response.put("status_guide", "Inserted Guide");
                     }
@@ -90,19 +88,19 @@ public class ResumeGuideController {
             }
 
             // ResumeGuideDTO 처리
-            if (requestBody.containsKey("uNum") && requestBody.containsKey("company") && requestBody.containsKey("occupation") && requestBody.containsKey("content")) {
+            if (requestBody.containsKey("userNo") && requestBody.containsKey("company") && requestBody.containsKey("occupation") && requestBody.containsKey("content")) {
                 ResumeGuideDTO resumeGuideDTO = objectMapper.convertValue(requestBody, ResumeGuideDTO.class);
 
-                Long uNum = ((Number) requestBody.get("uNum")).longValue(); // Integer -> Long 변환
-                String company = resumeGuideDTO.getCompany();
-                String occupation = resumeGuideDTO.getOccupation();
+                Long userNo = ((Number) requestBody.get("userNo")).longValue(); // Integer -> Long 변환
+                String company = resumeGuideDTO.getCompanyName();
+                String occupation = resumeGuideDTO.getOccupationName();
                 String content = resumeGuideDTO.getContent();
 
-                // User 테이블에서 해당하는 uNum을 가진 사용자가 존재하는지 확인
-                Optional<User> userOptional = userRepository.findById(uNum);
+                // User 테이블에서 해당하는 userNo을 가진 사용자가 존재하는지 확인
+                Optional<User> userOptional = userRepository.findById(userNo);
                 if (userOptional.isPresent()) {
                     // 새로운 데이터를 추가하여 저장
-                    resumeGuideDTO.setUNum(uNum);
+                    resumeGuideDTO.setUserNo(userNo);
                     ResumeGuideDTO savedResumeGuide = resumeGuideService.saveResumeGuide(resumeGuideDTO);
                     response.put("status_resumeGuide", "Inserted ResumeGuide");
                     resumeGuideSaved = true; // ResumeGuide 데이터 저장 여부 설정
@@ -129,10 +127,10 @@ public class ResumeGuideController {
     public ResponseEntity<Map<String, Object>> loadGuide(@PathVariable("num") Long num) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Guide existingGuide = guideRepository.findByUNum(num);
+            Guide existingGuide = guideRepository.findByUserUserNo(num);
             if (existingGuide != null) {
                 response.put("status","Success");
-                response.put("uNum", existingGuide.getUNum());
+                response.put("userNo", existingGuide.getUser().getUserNo());
                 response.put("awards", existingGuide.getAwards());
                 response.put("experiences", existingGuide.getExperiences());
             } else {

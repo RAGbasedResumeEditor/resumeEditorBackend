@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.statistics.service;
 
-import com.team2.resumeeditorproject.statistics.repository.TrafficRepository;
+import com.team2.resumeeditorproject.statistics.repository.DailyStatisticsRepository;
 import com.team2.resumeeditorproject.statistics.repository.UserStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     private final UserStatisticsRepository userStatisticsRepository;
-    private final TrafficRepository trafficRepository;
+    private final DailyStatisticsRepository dailyStatisticsRepository;
 
     @Override
     public int getUserCount() {
@@ -46,12 +46,12 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     @Override
     public long getTotalVisitCount() {
-        return trafficRepository.sumAllTraffic();
+        return dailyStatisticsRepository.sumAllTraffic();
     }
 
     @Override
     public long getTodayVisitCount() {
-        return trafficRepository.countByInDate(LocalDate.now());
+        return dailyStatisticsRepository.countByReferenceDate(LocalDate.now());
     }
 
 }

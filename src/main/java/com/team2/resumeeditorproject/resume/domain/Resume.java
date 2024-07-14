@@ -1,23 +1,22 @@
 package com.team2.resumeeditorproject.resume.domain;
 
 import com.team2.resumeeditorproject.user.domain.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
+
+import com.team2.resumeeditorproject.comment.domain.Comment;
 
 /**
  * resume entity
@@ -26,31 +25,25 @@ import java.util.List;
  * @fileName : Resume
  * @since : 04/26/24
  */
-@Setter
-@Getter
 @Entity
-@Table(name = "resume")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@Getter
 public class Resume {
     @Id
-    @Column(name = "r_num")
-    private Long r_num;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long resumeNo;
+    @Column(length = 5000)
     private String content;
-    private Date w_date;
-
-    @Column(name = "u_num", insertable = false, updatable = false)  // u_num 컬럼을 매핑
-    private Long u_num;
+    private Date createdDate;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "r_num", referencedColumnName = "r_num")
+    @JoinColumn(name = "resume_no") 
     private ResumeEdit resumeEdit;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "u_num" )
-    private User user; // u_num 컬럼이 User와 Resume 간의 관계를 매핑
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_no") 
+    private List<Comment> comments;
 
-    @OneToMany(mappedBy = "resume", fetch = FetchType.LAZY)
-    private List<ResumeBoard> resumeBoards;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_no")
+    private User user;
 }

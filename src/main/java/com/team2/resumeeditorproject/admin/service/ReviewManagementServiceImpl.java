@@ -28,13 +28,13 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     private Page<ReviewDTO> convertToReviewDTOPage(Page<Review> resultPage) {
         List<ReviewDTO> reviewDTOList = resultPage.stream()
                 .map(review -> new ReviewDTO(
-                        review.getRvNum(),
-                        review.getUNum(),
+                        review.getReviewNo(),
+                        review.getUser().getUserNo(),
                         review.getContent(),
                         review.getRating(),
                         review.getMode(),
                         review.getDisplay(),
-                        review.getW_date()
+                        review.getCreatedDate()
                 ))
                 .collect(Collectors.toList());
         return new PageImpl<>(reviewDTOList, resultPage.getPageable(), resultPage.getTotalElements());
@@ -65,7 +65,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
         // page가 0보다 작으면 재요청
         PageUtil.checkUnderZero(pageNo);
 
-        Pageable pageable = PageRequest.of(pageNo, size, Sort.by("rvNum").descending());
+        Pageable pageable = PageRequest.of(pageNo, size, Sort.by("reviewNo").descending());
 
         Page<Review> reviewPage = reviewRepository.findAll(pageable);
         Page<ReviewDTO> reviewDTOPage = convertToReviewDTOPage(reviewPage);
@@ -86,7 +86,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
         // page가 0보다 작으면 재요청
         PageUtil.checkUnderZero(pageNo);
 
-        Pageable pageable = PageRequest.of(pageNo, size, Sort.by("rvNum").descending());
+        Pageable pageable = PageRequest.of(pageNo, size, Sort.by("reviewNo").descending());
 
         Page<Review> reviewPage = reviewRepository.findByDisplay(pageable);
         Page<ReviewDTO> reviewDTOPage = convertToReviewDTOPage(reviewPage);
@@ -102,15 +102,20 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     }
 
     @Override
-    public List<LandingPageReviewDTO> getVisibleReviews() {
+    public List<ReviewDTO> getVisibleReviews() {
         List<Review> visibleReviews = reviewRepository.findAllByDisplay("true");
 
         return visibleReviews.stream()
-                .map(review -> new LandingPageReviewDTO(
-                        review.getContent(),
-                        review.getRating()
-                ))
+                .map(review -> ReviewDTO.builder()
+                        .reviewNo(review.getReviewNo())
+                        .userNo(review.getUser().getUserNo())
+                        .content(review.getContent())
+                        .rating(review.getRating())
+                        .mode(review.getMode())
+                        .display(review.getDisplay())
+                        .createdDate(review.getCreatedDate())
+                        .build()
+                )
                 .collect(Collectors.toList());
     }
 }
-

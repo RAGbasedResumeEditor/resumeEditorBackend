@@ -2,39 +2,44 @@ package com.team2.resumeeditorproject.comment.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Date;
 
-@Setter
-@Getter
+import com.team2.resumeeditorproject.resume.domain.Resume;
+import com.team2.resumeeditorproject.user.domain.User;
+
 @Entity
-@Table(name="comment")
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, name = "c_num")
-    private Long CNum;
+    private Long commentNo;
+    @Column(length = 1000)
+    private String content;
+    private Date createdDate;
+    private Date updatedDate;
+    private Date deletedDate;
 
-    @Column(nullable = false, name = "c_content")
-    private String CContent;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_no") 
+    private User user;
 
-    @Column(nullable = false, name = "r_num")
-    private Long RNum;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_no")
+    private Resume resume;
 
-    @Column(nullable = false, name = "u_num")
-    private Long UNum;
-
-    private Date w_date;
-    private Date updated_at;
-    private Date deleted_at;
 }

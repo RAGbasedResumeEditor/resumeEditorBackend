@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.resume.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,12 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumeEditDTO {
-    private Long r_num;
+    private Long resumeNo;
     private String company;
     private String occupation;
     private String item;
     private String options;
     private String r_content;
     private int mode;
-    private Long u_num;
+    private Long userNo;
 }

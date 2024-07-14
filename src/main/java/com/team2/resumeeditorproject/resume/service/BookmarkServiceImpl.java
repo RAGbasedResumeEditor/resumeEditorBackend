@@ -20,12 +20,12 @@ public class BookmarkServiceImpl implements BookmarkService{
     public String bookmarkBoard(BookmarkDTO bookmarkDTO) {
         Bookmark bookmark = modelMapper.map(bookmarkDTO, Bookmark.class);
         // 즐겨찾기가 안되어있는 경우, 즐겨찾기 테이블에 저장
-        if(bookmarkRepository.findByRNumAndUNum(bookmarkDTO.getRNum(), bookmarkDTO.getUNum())==null){
+        if(bookmarkRepository.findByResumeResumeNoAndUserUserNo(bookmarkDTO.getResumeNo(), bookmarkDTO.getUserNo())==null){
             bookmarkRepository.save(bookmark);
             return "즐겨찾기에 등록되었습니다.";
         }
         else{ // 즐겨찾기가 되어있는 경우, 즐겨찾기 테이블에서 삭제 (즐겨찾기 취소)
-            bookmark = bookmarkRepository.findByRNumAndUNum(bookmarkDTO.getRNum(), bookmarkDTO.getUNum());
+            bookmark = bookmarkRepository.findByResumeResumeNoAndUserUserNo(bookmarkDTO.getResumeNo(), bookmarkDTO.getUserNo());
             bookmarkRepository.delete(bookmark);
             return "즐겨찾기가 취소되었습니다.";
         }

@@ -6,11 +6,9 @@ import java.util.Date;
 
 @Data
 public class VerificationDTO {
-    private Long vNum;
+    private Long verificationNo;
     private String email;
     private String code;
-    private Date createdAt;
-    private Date expiresAt;
+    private Date createdDate;
+    private Date expireDate;
 }
-
-

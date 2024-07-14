@@ -1,10 +1,10 @@
 package com.team2.resumeeditorproject.statistics.service;
 
-import com.team2.resumeeditorproject.statistics.domain.History;
-import com.team2.resumeeditorproject.statistics.domain.Traffic;
-import com.team2.resumeeditorproject.statistics.dto.HistoryDTO;
-import com.team2.resumeeditorproject.statistics.repository.HistoryRepository;
-import com.team2.resumeeditorproject.statistics.repository.TrafficRepository;
+import com.team2.resumeeditorproject.statistics.dto.StatisticsHistoryDTO;
+import com.team2.resumeeditorproject.statistics.domain.DailyStatistics;
+import com.team2.resumeeditorproject.statistics.repository.StatisticsHistoryRepository;
+import com.team2.resumeeditorproject.statistics.repository.DailyStatisticsRepository;
+import com.team2.resumeeditorproject.statistics.domain.StatisticsHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -18,8 +18,8 @@ import java.time.LocalDate;
 @Slf4j
 public class HistoryServiceImpl implements HistoryService{
 
-    private final HistoryRepository historyRepository;
-    private final TrafficRepository trafficRepository;
+    private final StatisticsHistoryRepository statisticsHistoryRepository;
+    private final DailyStatisticsRepository dailyStatisticsRepository;
     private final ModelMapper modelMapper;
 
     private final StatisticsCollectionService statisticsCollectionService;
@@ -28,41 +28,41 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     @Transactional
     public void collectStatistics() {
-        HistoryDTO historyDTO = new HistoryDTO();
+        StatisticsHistoryDTO historyDTO = new StatisticsHistoryDTO();
         log.info("Starting collectStatistics");
         try {
             // 어제 날짜 가져오기
             LocalDate yesterday = LocalDate.now().minusDays(1);
-            Traffic yesterdayTraffic = trafficRepository.findByInDate(yesterday);
+            DailyStatistics yesterdayDailyStatistics = dailyStatisticsRepository.findByReferenceDate(yesterday);
 
-            if (yesterdayTraffic != null) {
-                historyDTO.setTraffic(yesterdayTraffic.getVisitCount());
-                historyDTO.setEdit_count(yesterdayTraffic.getEditCount());
-                historyDTO.setTraffic_date(yesterdayTraffic.getInDate());
+            if (yesterdayDailyStatistics != null) {
+                historyDTO.setVisitCount(yesterdayDailyStatistics.getVisitCount());
+                historyDTO.setEditCount(yesterdayDailyStatistics.getEditCount());
+                historyDTO.setReferenceDate(yesterdayDailyStatistics.getReferenceDate());
             }
 
             // 통계 데이터를 수집하여 JSON 형태로 변환
-            historyDTO.setUser_mode(statisticsCollectionService.getUserCountByMode());
-            historyDTO.setUser_status(statisticsCollectionService.getUserCountByStatus());
-            historyDTO.setUser_gender(statisticsCollectionService.getUserCountByGender());
-            historyDTO.setUser_age(statisticsCollectionService.getUserCountByAge());
-            historyDTO.setUser_occu(statisticsCollectionService.getTopOccupationRanksByUsers());
-            historyDTO.setUser_comp(statisticsCollectionService.getTopCompanyRanksByUsers());
-            historyDTO.setUser_wish(statisticsCollectionService.getTopWishRanksByUsers());
-            historyDTO.setEdit_mode(statisticsCollectionService.getResumeEditCountByMode());
-            historyDTO.setEdit_status(statisticsCollectionService.getResumeEditCountByStatus());
-            historyDTO.setEdit_age(statisticsCollectionService.getResumeEditCountByAge());
-            historyDTO.setEdit_occu(statisticsCollectionService.getTopOccupationRanksByResumeEdits());
-            historyDTO.setEdit_comp(statisticsCollectionService.getTopCompanyRanksByResumeEdits());
-            historyDTO.setW_date(new java.util.Date());
+            historyDTO.setUserMode(statisticsCollectionService.getUserCountByMode());
+            historyDTO.setUserStatus(statisticsCollectionService.getUserCountByStatus());
+            historyDTO.setUserGender(statisticsCollectionService.getUserCountByGender());
+            historyDTO.setUserAge(statisticsCollectionService.getUserCountByAge());
+            historyDTO.setEditOccupation(statisticsCollectionService.getTopOccupationRanksByUsers());
+            historyDTO.setUserCompany(statisticsCollectionService.getTopCompanyRanksByUsers());
+            historyDTO.setUserWish(statisticsCollectionService.getTopWishRanksByUsers());
+            historyDTO.setEditMode(statisticsCollectionService.getResumeEditCountByMode());
+            historyDTO.setEditStatus(statisticsCollectionService.getResumeEditCountByStatus());
+            historyDTO.setEditAge(statisticsCollectionService.getResumeEditCountByAge());
+            historyDTO.setEditOccupation(statisticsCollectionService.getTopOccupationRanksByResumeEdits());
+            historyDTO.setEditCompany(statisticsCollectionService.getTopCompanyRanksByResumeEdits());
+            historyDTO.setCreatedDate(new java.util.Date());
 
             // HistoryDTO를 History로 변환
-            History history = modelMapper.map(historyDTO, History.class);
+           StatisticsHistory history = modelMapper.map(historyDTO, StatisticsHistory.class);
 
             // 데이터 저장
-            historyRepository.save(history);
+            statisticsHistoryRepository.save(history);
 
-            log.debug("Completed collectStatistics successfully for date: {}", historyDTO.getTraffic_date());
+            log.debug("Completed collectStatistics successfully for date: {}", historyDTO.getCreatedDate());
 
         } catch (Exception exception) {
             log.error("Error occurred while collecting statistics : {}", exception.getMessage(), exception);
@@ -70,4 +70,3 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
 }
-

@@ -12,20 +12,22 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    @Query("SELECT c, u.username, row_number() over(order by c.CNum asc) as num\n" +
-            "FROM Comment c JOIN User u ON c.UNum = u.uNum\n" +
-            "WHERE c.deleted_at IS NULL AND c.RNum = :r_num " +
+    @Query("SELECT c, u.username, row_number() over(order by c.commentNo asc) as num\n" +
+            "FROM Comment c\n" +
+            "INNER JOIN User u\n" +
+            "INNER JOIN Resume r\n" +
+            "WHERE c.deletedDate IS NULL AND r.resumeNo = :resumeNo " +
             "order by num desc")
-    Page<Object[]> getComments(@Param("r_num") Long r_num, Pageable pageable);
+    Page<Object[]> getComments(@Param("resumeNo") Long resumeNo, Pageable pageable);
 
     @Modifying
-    @Query("UPDATE Comment SET deleted_at = CURRENT_TIMESTAMP WHERE CNum = :c_num")
-    int deleteComment(@Param("c_num") Long c_num);
+    @Query("UPDATE Comment SET deletedDate = CURRENT_TIMESTAMP WHERE commentNo = :commentNo")
+    int deleteComment(@Param("commentNo") Long commentNo);
 
     @Modifying
-    @Query("UPDATE Comment SET updated_at = CURRENT_TIMESTAMP, CContent = :updateContent WHERE CNum = :c_num")
-    int updateComment(@Param("c_num") Long c_num, @Param("updateContent") String updateContent);
+    @Query("UPDATE Comment SET updatedDate = CURRENT_TIMESTAMP, content = :updateContent WHERE commentNo = :commentNo")
+    int updateComment(@Param("commentNo") Long commentNo, @Param("updateContent") String updateContent);
 
 
-//    List<Comment> findByRNum(Long r_num);
+//    List<Comment> findByResumeNo(Long resumeNo);
 }

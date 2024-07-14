@@ -35,14 +35,17 @@ public class UserManagementServiceImpl implements UserManagementService{
             userDTO.setEmail(user.getEmail());
             userDTO.setGender(user.getGender());
             userDTO.setBirthDate(user.getBirthDate());
-            userDTO.setCompany(user.getCompany());
-            userDTO.setOccupation(user.getOccupation());
-            userDTO.setWish(user.getWish());
+            userDTO.setCompanyNo(user.getCompany().getCompanyNo());
+            userDTO.setCompanyName(user.getCompany().getCompanyName());
+            userDTO.setOccupationNo(user.getOccupation().getOccupationNo());
+            userDTO.setOccupationName(user.getOccupation().getOccupationName());
+            userDTO.setWishCompanyNo(user.getWishCompany().getCompanyNo());
+            userDTO.setWishCompanyName(user.getWishCompany().getCompanyName());
             userDTO.setStatus(user.getStatus());
             userDTO.setMode(user.getMode());
-            userDTO.setInDate(user.getInDate());
-            userDTO.setDelDate(user.getDelDate());
-            userDTO.setUNum(user.getUNum());
+            userDTO.setCreatedDate(user.getCreatedDate());
+            userDTO.setDeletedDate(user.getDeletedDate());
+            userDTO.setUserNo(user.getUserNo());
             userDTO.setRole(user.getRole());
             userDTO.setAge(user.getAge());
             userDTO.setResumeEditCount(resumeEditCount.intValue());
@@ -106,15 +109,15 @@ public class UserManagementServiceImpl implements UserManagementService{
 
     // 회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
-    public void updateUserDeleteDate(Long uNum) {
-        User user = adminUserRepository.findById(uNum)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
-        user.setDelDate(new Date()); // 현재 시간으로 탈퇴 날짜 업데이트
+    public void updateUserDeleteDate(Long userNo) {
+        User user = adminUserRepository.findById(userNo)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userNo));
+        user.setDeletedDate(new Date()); // 현재 시간으로 탈퇴 날짜 업데이트
         adminUserRepository.save(user);
     }
 
     @Override
-    public void updateDelDateForRoleBlacklist() {
+    public void updateDeletedDateForRoleBlacklist() {
         // 현재 날짜 가져오기
         Date currentDate = new Date();
         // 60일 전 날짜 계산
@@ -128,8 +131,8 @@ public class UserManagementServiceImpl implements UserManagementService{
 
         // 가져온 사용자 중 del_date가 60일 이상 지난 사용자의 del_date를 null로 업데이트
         for (User user : blacklistedUsers) {
-            if (user.getDelDate() != null && user.getDelDate().before(dateBefore60Days)) {
-                user.setDelDate(null);
+            if (user.getDeletedDate() != null && user.getDeletedDate().before(dateBefore60Days)) {
+                user.setDeletedDate(null);
             }
         }
 

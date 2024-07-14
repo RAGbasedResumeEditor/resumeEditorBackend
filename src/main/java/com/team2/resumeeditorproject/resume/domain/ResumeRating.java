@@ -1,7 +1,5 @@
 package com.team2.resumeeditorproject.resume.domain;
 
-import java.util.Date;
-
 import com.team2.resumeeditorproject.user.domain.User;
 
 import jakarta.persistence.Entity;
@@ -13,25 +11,33 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
-@Table(name = "bookmark", uniqueConstraints = {
+@Table(name = "resume_rating", uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"user_no", "resume_no"})
 })
-public class Bookmark {
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ResumeRating {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long bookmarkNo;
+	private Long resumeRatingNo;
 
-	private Date createdDate;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_no")
+	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "resume_no")
 	private Resume resume;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_no")
-	private User user;
+	private float rating;
+
 }

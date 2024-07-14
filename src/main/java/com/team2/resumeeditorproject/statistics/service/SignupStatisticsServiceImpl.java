@@ -30,10 +30,10 @@ public class SignupStatisticsServiceImpl implements SignupStatisticsService {
         Map<LocalDate, Integer> signupDate = new HashMap<>();
         List<LocalDate> dates = dateRange.getDates();
         try{
-            List<User> users = userStatisticsRepository.findByInDateBetween(DateUtils.toSqlDate(dateRange.startDate()), DateUtils.toSqlDate(dateRange.endDate()));
+            List<User> users = userStatisticsRepository.findByCreatedDateBetween(DateUtils.toSqlDate(dateRange.startDate()), DateUtils.toSqlDate(dateRange.endDate()));
 
             for (User user : users) {
-                LocalDate registrationDate = user.getInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate registrationDate = user.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 signupDate.merge(registrationDate, 1, Integer::sum);
             }
 
@@ -55,10 +55,10 @@ public class SignupStatisticsServiceImpl implements SignupStatisticsService {
             LocalDate startDate = monthRange.startMonth().atDay(1); // 시작 월의 첫 날
             LocalDate endDate = monthRange.endMonth().atEndOfMonth(); // 종료 월의 마지막 날
 
-            List<User> users = userStatisticsRepository.findByInDateBetween(DateUtils.toSqlDate(startDate), DateUtils.toSqlDate(endDate));
+            List<User> users = userStatisticsRepository.findByCreatedDateBetween(DateUtils.toSqlDate(startDate), DateUtils.toSqlDate(endDate));
 
             for (User user : users) {
-                YearMonth yearMonth = YearMonth.from(user.getInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                YearMonth yearMonth = YearMonth.from(user.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                 monthlySignupDate.merge(yearMonth, 1, Integer::sum);
             }
 

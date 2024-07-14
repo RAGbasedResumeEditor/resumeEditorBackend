@@ -1,11 +1,8 @@
 package com.team2.resumeeditorproject.resume.service;
 
-import com.team2.resumeeditorproject.resume.domain.Guide;
-import com.team2.resumeeditorproject.resume.domain.Items;
-import com.team2.resumeeditorproject.resume.dto.GuideDTO;
+import com.team2.resumeeditorproject.resume.domain.Company;
 import com.team2.resumeeditorproject.resume.dto.ItemsDTO;
-import com.team2.resumeeditorproject.resume.repository.GuideRepository;
-import com.team2.resumeeditorproject.resume.repository.ItemsRepository;
+import com.team2.resumeeditorproject.resume.repository.CompanyRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,19 +17,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class ItemsServiceImpl implements ItemsService{
     @Autowired
-    private ItemsRepository itemsRepository;
+    private CompanyRepository companyRepository;
     @Autowired
     private ModelMapper modelMapper;
     @Override
     public ItemsDTO insertItems(ItemsDTO itemsDTO) {
         System.out.println(itemsDTO);
-        Items items = modelMapper.map(itemsDTO, Items.class);
-        Items savedItems = itemsRepository.save(items);
+        Company company = modelMapper.map(itemsDTO, Company.class);
+        Company savedCompany = companyRepository.save(company);
         return modelMapper.map(itemsDTO, ItemsDTO.class);
     }
 
-    public ItemsDTO convertToDto(Items items) {
-        return modelMapper.map(items, ItemsDTO.class);
+    public ItemsDTO convertToDto(Company company) {
+        return modelMapper.map(company, ItemsDTO.class);
     }
     public void setModelMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ResumeGuideService {
     ResumeGuideDTO saveResumeGuide(ResumeGuideDTO resumeGuideDTO);
-    Page<ResumeGuide> getResumeGuidesByUNum(Long uNum, Pageable pageable);
-    ResumeGuide getResumeGuideByGNum(Long gNum);
+    Page<ResumeGuide> getResumeGuidesByUserNo(Long userNo, Pageable pageable);
+
+    ResumeGuideDTO getResumeGuideDetail(Long resumeGuideNo, String username);
 }

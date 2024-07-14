@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.resume.domain;
 
 import com.team2.resumeeditorproject.user.domain.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,12 +10,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * resumeEdit entity
@@ -24,28 +22,31 @@ import lombok.Setter;
  * @since : 04/25/24
  */
 
-@Setter
-@Getter
 @Entity
-@Table(name = "resume_edit")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@Getter
 public class ResumeEdit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long r_num;
+    private Long resumeEditNo;
 
-    private String company;
-    private String occupation;
-    private String item;
     private String options;
-    private String r_content;
+    @Column(length = 5000)
+    private String content;
     private int mode;
 
-    @Column(name = "u_num")
-    private Long u_num;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_no")
+    private Resume resume;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "u_num", insertable = false, updatable = false) //User 엔티티와 관계 정의
+    @JoinColumn(name = "user_no")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_no")
+    private Company company;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "occupation_no")
+    private Occupation occupation;
 }

@@ -12,7 +12,7 @@ public interface CommentService {
 
     Page<Object[]> getComments(Long num, Pageable pageable);
 
-    int deleteComment(Long c_num);
+    int deleteComment(Long commentNo);
 
-    int updateComment(Long c_num, String updateContent);
+    int updateComment(Long commentNo, String updateContent);
 }

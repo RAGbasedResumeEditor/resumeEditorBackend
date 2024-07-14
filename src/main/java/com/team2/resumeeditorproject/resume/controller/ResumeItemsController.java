@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.resume.controller;
 
-import com.team2.resumeeditorproject.resume.domain.Items;
-import com.team2.resumeeditorproject.resume.repository.ItemsRepository;
+import com.team2.resumeeditorproject.resume.domain.Company;
+import com.team2.resumeeditorproject.resume.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +18,13 @@ import java.util.Map;
 public class ResumeItemsController {
 
     @Autowired
-    private ItemsRepository itemsRepository;
+    private CompanyRepository companyRepository;
 
     @GetMapping("/load/{company}")
     public ResponseEntity<Map<String, Object>> loadItems(@PathVariable("company")  String company) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Items> existingItems = itemsRepository.findByCompanyContaining(company);
+            List<Company> existingItems = companyRepository.findByCompanyNameContaining(company);
             if (existingItems != null && !existingItems.isEmpty()) {
                 response.put("status","Success");
                 response.put("itemsList", existingItems);

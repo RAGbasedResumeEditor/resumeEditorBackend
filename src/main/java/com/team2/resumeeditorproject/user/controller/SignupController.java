@@ -58,8 +58,8 @@ public class SignupController {
 
         //30일 이내에 탈퇴한 회원 예외 처리
         User user = userRepository.findByUsername(username);
-        if (user != null && user.getDelDate() != null) {
-            Date delDate = user.getDelDate();
+        if (user != null && user.getDeletedDate() != null) {
+            Date delDate = user.getDeletedDate();
             //삭제한 날짜
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String deleted = dateFormat.format(delDate);
@@ -82,7 +82,6 @@ public class SignupController {
 
         signupService.signup(userDTO);
 
-        // ResponseEntity로 반환
         return ResponseEntity.ok()
                 .body(CommonResponse.builder()
                         .response("회원가입 성공")

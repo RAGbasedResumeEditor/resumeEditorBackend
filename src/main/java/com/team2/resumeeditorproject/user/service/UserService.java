@@ -7,18 +7,10 @@ public interface UserService {
     String getUsername();
     Boolean checkEmailDuplicate(String email);
 
-    int updateUserMode(long u_num);
+    int updateUserMode(long userNo);
     User showUser(String username);
-
-    //회원탈퇴
-    void deleteUser(Long uNum);
-
-    //회원정보 수정
+    void deleteUser(Long userNo);
     void updateUser(UserDTO userDto);
-
-    // 사용자 조회
-    User findUser(Long uNum);
-
-    // User 정보 저장
+    User findUser(Long userNo);
     void saveUser(User user);
 }

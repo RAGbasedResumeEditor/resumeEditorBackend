@@ -45,13 +45,14 @@ public class CommentServiceImplTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        comment = new Comment();
-        comment.setCNum(1L);
-        comment.setCContent("Test Comment");
+        comment = Comment.builder()
+                .commentNo(1L)
+                .content("Test Comment")
+                .build();
 
         commentDTO = new CommentDTO();
-        commentDTO.setCNum(1L);
-        commentDTO.setCContent("Test Comment");
+        commentDTO.setCommentNo(1L);
+        commentDTO.setContent("Test Comment");
     }
 
     @Test
@@ -66,8 +67,8 @@ public class CommentServiceImplTest {
         verify(commentRepository, times(1)).save(any(Comment.class));
         verify(modelMapper, times(1)).map(any(Comment.class), eq(CommentDTO.class));
 
-        assertEquals(commentDTO.getCNum(), result.getCNum());
-        assertEquals(commentDTO.getCContent(), result.getCContent());
+        assertEquals(commentDTO.getCommentNo(), result.getCommentNo());
+        assertEquals(commentDTO.getContent(), result.getContent());
     }
 
     @Test

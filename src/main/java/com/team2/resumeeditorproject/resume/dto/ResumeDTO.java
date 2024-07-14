@@ -17,8 +17,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumeDTO {
-    private Long r_num;
+    private Long resumeNo;
     private String content;
     private Date w_date;
-    private Long u_num;
+    private Long userNo;
 }

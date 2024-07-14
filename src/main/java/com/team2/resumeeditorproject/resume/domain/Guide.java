@@ -1,29 +1,29 @@
 package com.team2.resumeeditorproject.resume.domain;
 
-import jakarta.persistence.Column;
+import java.util.Date;
+
+import com.team2.resumeeditorproject.user.domain.User;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
-@Table(name="guide")
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
-@AllArgsConstructor
 public class Guide {
     @Id
-    @Column(nullable = false, name = "u_num")
-    private Long UNum;
-
-    @Column(nullable = true, name = "awards")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long guideNo;
     private String awards;
-
-    @Column(nullable = true, name = "experiences")
     private String experiences;
+    private Date createdDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_no")
+    private User user;
 }

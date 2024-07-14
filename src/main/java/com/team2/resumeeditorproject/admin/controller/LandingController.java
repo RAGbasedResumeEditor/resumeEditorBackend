@@ -1,25 +1,21 @@
 package com.team2.resumeeditorproject.admin.controller;
 
+import com.team2.resumeeditorproject.admin.dto.LandingPageReviewDTO;
+import com.team2.resumeeditorproject.admin.dto.response.LandingPageReviewsResponse;
+import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
 import com.team2.resumeeditorproject.statistics.dto.response.TotalResumeBoardCountResponse;
 import com.team2.resumeeditorproject.statistics.dto.response.TotalResumeEditCountResponse;
 import com.team2.resumeeditorproject.statistics.dto.response.UserCountResponse;
 import com.team2.resumeeditorproject.statistics.dto.response.VisitTotalCountResponse;
 import com.team2.resumeeditorproject.statistics.service.ResumeStatisticsService;
-import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
 import com.team2.resumeeditorproject.statistics.service.UserStatisticsService;
-import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.team2.resumeeditorproject.common.util.ResponseHandler.createBadRequestResponse;
-import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOkResponse;
 
 @Controller
 @RequestMapping("/landing")
@@ -29,6 +25,7 @@ public class LandingController {
     private final ReviewManagementService reviewService;
     private final UserStatisticsService userStatisticsService;
     private final ResumeStatisticsService resumeStatisticsService;
+    private final ReviewManagementService reviewManagementService;
 
     @GetMapping("/statistics/user-count")
     public ResponseEntity<UserCountResponse> getUserCount() {
@@ -63,17 +60,12 @@ public class LandingController {
     }
 
     @GetMapping("/review")
-    public ResponseEntity<Map<String,Object>> getAllVisibleReviews() {
-        try {
-            List<Review> reviews = reviewService.getVisibleReviews();
+    public ResponseEntity<LandingPageReviewsResponse> getAllVisibleReviews() {
+        List<LandingPageReviewDTO> reviewDTOs = reviewManagementService.getVisibleReviews();
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("review", reviews);
-
-            return createOkResponse(response);
-        } catch (Exception e) {
-            return createBadRequestResponse(e.getMessage());
-        }
-
+        return ResponseEntity.ok()
+                .body(LandingPageReviewsResponse.builder()
+                        .reviews(reviewDTOs)
+                        .build());
     }
 }

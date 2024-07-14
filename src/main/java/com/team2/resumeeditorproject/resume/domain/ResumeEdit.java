@@ -3,11 +3,12 @@ package com.team2.resumeeditorproject.resume.domain;
 import com.team2.resumeeditorproject.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,7 +45,7 @@ public class ResumeEdit {
     @Column(name = "u_num")
     private Long u_num;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "u_num", insertable = false, updatable = false) //User 엔티티와 관계 정의
     private User user;
 }

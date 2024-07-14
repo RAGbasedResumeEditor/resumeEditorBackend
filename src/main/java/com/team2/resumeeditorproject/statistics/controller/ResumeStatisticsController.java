@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.statistics.controller;
 
-import com.team2.resumeeditorproject.admin.dto.request.DailyStatisticsRequest;
-import com.team2.resumeeditorproject.admin.dto.request.MonthlyStatisticsRequest;
+import com.team2.resumeeditorproject.statistics.dto.request.DailyStatisticsRequest;
+import com.team2.resumeeditorproject.statistics.dto.request.MonthlyStatisticsRequest;
 import com.team2.resumeeditorproject.common.util.DateRange;
 import com.team2.resumeeditorproject.common.util.MonthRange;
 import com.team2.resumeeditorproject.statistics.dto.response.AgeCountResponse;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/admin/statistics") // /admin 지우기
+@RequestMapping("/statistics") // /admin 지우기
 @RequiredArgsConstructor
 public class ResumeStatisticsController {
 

@@ -1,5 +1,7 @@
 package com.team2.resumeeditorproject.user.service;
 
+import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
@@ -19,34 +21,12 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder; // 비밀번호 암호화 처리
 
-    //회원가입
-    @Override
-    public void signup(UserDTO userDTO) {
-        //회원가입 진행
-        User user = User.builder()
-                .email(userDTO.getEmail())
-                .username(userDTO.getUsername())
-                .password(bCryptPasswordEncoder.encode(userDTO.getPassword()))
-                .role("ROLE_USER")
-                .birthDate(userDTO.getBirthDate())
-                .age(userDTO.getAge())
-                .gender(userDTO.getGender())
-                .occupation((userDTO.getOccupation()))
-                .company(userDTO.getCompany())
-                .wish(userDTO.getWish())
-                .status(userDTO.getStatus())
-                .mode(1)
-                .build();
-        userRepository.save(user);
-    }
+    private final UserManagementService userManagementService;
+    private final RefreshService refreshService;
+
     @Override
     public Boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    public Boolean checkUsernameDuplicate(String username) {
-        return userRepository.existsByUsername(username);
     }
 
     @Override
@@ -63,7 +43,19 @@ public class UserServiceImpl implements UserService{
     //회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
     public void deleteUser(Long uNum){
-        userRepository.deleteById(uNum);
+        User user = findUser(uNum);
+
+        if (user.getDelDate() != null) {
+            throw new BadRequestException("User already deleted with id: " + uNum);
+        }
+
+        // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
+        userManagementService.updateUserDeleteDate(uNum);
+
+        // 해당 사용자의 refresh 토큰 정보 삭제
+        refreshService.deleteRefreshByUsername(user.getUsername());
+
+        saveUser(user);
     }
 
     @Override

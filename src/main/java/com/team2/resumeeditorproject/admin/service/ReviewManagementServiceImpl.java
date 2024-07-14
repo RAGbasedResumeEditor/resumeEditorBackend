@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import com.team2.resumeeditorproject.admin.dto.LandingPageReviewDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
 import com.team2.resumeeditorproject.common.util.PageUtil;
 import com.team2.resumeeditorproject.exception.NotFoundException;
@@ -101,8 +102,15 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     }
 
     @Override
-    public List<Review> getVisibleReviews() {
-        return reviewRepository.findAllByDisplay("true");
+    public List<LandingPageReviewDTO> getVisibleReviews() {
+        List<Review> visibleReviews = reviewRepository.findAllByDisplay("true");
+
+        return visibleReviews.stream()
+                .map(review -> new LandingPageReviewDTO(
+                        review.getContent(),
+                        review.getRating()
+                ))
+                .collect(Collectors.toList());
     }
 }
 

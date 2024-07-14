@@ -1,9 +1,9 @@
 package com.team2.resumeeditorproject.common.scheduler;
 
+import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.common.util.CronExpressions;
 import com.team2.resumeeditorproject.statistics.service.HistoryService;
 import com.team2.resumeeditorproject.statistics.service.TrafficService;
-import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.RefreshService;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +37,9 @@ public class ApplicationScheduler {
     }
 
     // 트래픽 수집 및 저장
-    @Scheduled(cron = CronExpressions.DAILY_AT_02_00_CRON )
+    @Scheduled(cron = CronExpressions.DAILY_AT_02_00_CRON)
     public void saveTraffic() {
+        log.debug("saveTraffic method is about to be executed.");
         try {
             // 수집한 통계 데이터 저장
             historyService.collectStatistics();

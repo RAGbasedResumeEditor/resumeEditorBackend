@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.user.domain;
 
+import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,6 +49,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)// ResumeEdit와의 양방향 관계를 설정
     private List<ResumeEdit> resumeEdits;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Resume> resumes;
 
     @Builder
     public User(Long uNum, String email, String username, String password, String role, int age, String birthDate, char gender, String company, String occupation, String wish, int status, int mode, Date inDate, Date delDate) {

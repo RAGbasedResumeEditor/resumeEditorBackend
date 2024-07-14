@@ -1,13 +1,18 @@
 package com.team2.resumeeditorproject.admin.service;
 
-import com.team2.resumeeditorproject.exception.NotFoundException;
-import com.team2.resumeeditorproject.review.dto.ReviewDTO;
+
+import com.team2.resumeeditorproject.admin.dto.LandingPageReviewDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
 import com.team2.resumeeditorproject.common.util.PageUtil;
+import com.team2.resumeeditorproject.exception.NotFoundException;
 import com.team2.resumeeditorproject.review.domain.Review;
+import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

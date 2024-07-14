@@ -27,7 +27,6 @@ public class ReviewManagementController {
     @GetMapping("/list")
     public ResponseEntity<ReviewListResponse> getAllReviews(
             @RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
-
         int size = SIZE_OF_PAGE;
 
         Page<ReviewDTO> reviewPage = reviewService.getPagedReviews(pageNo, size);
@@ -60,6 +59,5 @@ public class ReviewManagementController {
                         .status("Success")
                         .time(new Date())
                         .build());
-
     }
 }

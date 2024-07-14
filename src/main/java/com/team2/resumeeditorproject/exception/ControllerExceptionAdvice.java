@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.exception;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,12 +23,12 @@ public class ControllerExceptionAdvice {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> handleException(BadRequestException e) {
+    public  ResponseEntity<Map<String, Object>> handleException(BadRequestException e) {
         Map<String, Object> response = new HashMap<>();
         response.put("response", e.getMessage());
         response.put("time", new Date());
         response.put("status","Fail");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); //400
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler
@@ -66,6 +65,16 @@ public class ControllerExceptionAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(StatisticsException.class)
+    public ResponseEntity<ErrorResponse> handleStatisticsException(StatisticsException exception) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message("An error occurred while processing statistics")
+                .today(new Date())
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse); // 500 Internal Server Error
+    }
+
+    /* 사용하지 않는 듯 하여 일단 주석 처리(피드백 받은 후 수정예정)
         static class ErrorResponse {
             String message;
             Date date;
@@ -79,4 +88,6 @@ public class ControllerExceptionAdvice {
                 return message;
             }
         }
+
+     */
     }

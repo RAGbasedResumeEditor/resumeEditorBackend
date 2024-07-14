@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * resumeBoardDTO
  *
@@ -23,6 +25,6 @@ public class ResumeBoardDTO {
     private String title;
 
     //for admin
-    private int pageNo;
-    private int size;
+    private Date w_date;
+    private String username;
 }

@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.user.config;
 
-import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
+import com.team2.resumeeditorproject.statistics.interceptor.TrafficInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -26,7 +26,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true)
-                .maxAge(3600); // 예를 들어, preflight 결과를 1시간 동안 캐시
+                .maxAge(3600);
     }
 
     @Override

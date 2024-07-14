@@ -1,14 +1,18 @@
 package com.team2.resumeeditorproject.admin.service;
 
+import com.team2.resumeeditorproject.admin.dto.request.SearchUserRequest;
 import com.team2.resumeeditorproject.admin.repository.AdminUserRepository;
+import com.team2.resumeeditorproject.common.util.PageUtil;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -51,17 +55,53 @@ public class UserManagementServiceImpl implements UserManagementService{
 
     // 회원 목록 + 페이징
     @Override
-    public Page<UserDTO> getUserList(Pageable pageable) {
+    public Page<UserDTO> getUserList(int pageNo, int size) {
+        // page가 0보다 작으면 재요청
+        PageUtil.checkUnderZero(pageNo);
+
+        Pageable pageable = PageRequest.of(pageNo, size);
+
         Page<Object[]> userPage = adminUserRepository.findUsersWithResumeEditCount(pageable);
-        return convertToUserDTOPage(userPage);
+        Page<UserDTO> userDTOPage = convertToUserDTOPage(userPage);
+
+        // 결과가 없는 경우
+        PageUtil.checkListEmpty(userDTOPage);
+
+        // page가 totalPages보다 크면 재요청
+        int lastPageNo = userDTOPage.getTotalPages() - 1;
+        PageUtil.checkExcessLastPageNo(pageNo, lastPageNo);
+
+        return userDTOPage;
     }
 
     // 그룹, 키워드 검색 + 페이징
     @Override
     @Transactional(readOnly = true)
-    public Page<UserDTO> searchUsersByGroupAndKeyword(String group, String keyword, Pageable pageable) {
-        Page<Object[]> userPage = adminUserRepository.findByGroupAndKeyword(group, keyword, pageable);
-        return convertToUserDTOPage(userPage);
+    public Page<UserDTO> searchUsersByGroupAndKeyword(SearchUserRequest searchUserRequest, int size) {
+        int pageNo = searchUserRequest.getPageNo();
+        String group = searchUserRequest.getGroup();
+        String keyword = searchUserRequest.getKeyword();
+
+        // pageNo가 음수값이라면 재요청
+        PageUtil.checkUnderZero(pageNo);
+
+        Pageable pageable = PageRequest.of(pageNo, size);
+
+        Page<Object[]> userPage;
+
+        if (StringUtils.hasText(group) && StringUtils.hasText(keyword)) {
+            userPage = adminUserRepository.findByGroupAndKeyword(group, keyword, pageable);
+        } else {
+            userPage = adminUserRepository.findUsersWithResumeEditCount(pageable);
+        }
+        Page<UserDTO> userDTOPage = convertToUserDTOPage(userPage);
+
+        PageUtil.checkListEmpty(userDTOPage);
+
+        int lastPageNo = userDTOPage.getTotalPages() - 1;
+        PageUtil.checkExcessLastPageNo(pageNo, lastPageNo);
+
+        return userDTOPage;
     }
 
     // 회원탈퇴 (del_date 필드에 날짜 추가)

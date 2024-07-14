@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.user.config;
 
-import com.team2.resumeeditorproject.admin.interceptor.TrafficInterceptor;
+import com.team2.resumeeditorproject.statistics.interceptor.TrafficInterceptor;
 import com.team2.resumeeditorproject.user.Jwt.CustomAuthenticationFailureHandler;
 import com.team2.resumeeditorproject.user.Jwt.CustomAuthenticationProvider;
 import com.team2.resumeeditorproject.user.Jwt.CustomLogoutFilter;
@@ -31,7 +31,7 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
+
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
@@ -53,13 +53,12 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
         this.trafficInterceptor = trafficInterceptor;
     }
-    //AuthenticationManager Bean 등록
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 
         return configuration.getAuthenticationManager();
     }
-    //------------------------------------------------
 
     // 비밀번호 암호화
     @Bean
@@ -72,12 +71,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         //CORS 처리
-        /*
-         * 클라이언트가 웹브라우저를 통해서 사이트에 접속 -> 프론트서버에서 리액트로 페이지를 응답
-         * -> 프론트엔드 서버는 보통 3000번대에 띄워 테스트를 하게되고 -> 응답받은 페이지에서 특정 내부 데이터를 API서버로 호출 ->
-         * API데이터는 8088서버에서 응답을 보내야함 -> 이렇게 되면 프론트서버와 백엔드서버의 포트번호가 다르기 때문에 웹브라우저 단에서 CORS를 금지시켜 데이터가 보이지않게됨
-         * -> 그러므로 백엔드단에서 CORS 처리를 해주어야 웹브라우저의 데이터를 볼 수 있다.
-         * */
         http
                 .cors((cors)->cors
                         .configurationSource(new CorsConfigurationSource() {
@@ -118,7 +111,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth)->auth
                         // login, 루트, signup경로에 대해서는 모든 경로 허용
-                        .requestMatchers("/login","/","/signup","/signup/**","/signup/exists/**","/resume-edit/**","/resume-guide/**","/landing/**","/swagger-ui/*","/v3/api-docs/**").permitAll()
+                        .requestMatchers("/login","/","/signup","/signup/**","/signup/exists/**","/resume-edit/**","/resume-guide/**","/landing/**","/statistics/**","/swagger-ui/*","/v3/api-docs/**").permitAll()
                         // ADMIN권한을 가진 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // access토큰이 만료된 상태로 접근을 하기 때문에 로그인자체가 불가능한 상태 이므로 모든 경로 허용

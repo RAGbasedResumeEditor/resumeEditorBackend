@@ -1,15 +1,18 @@
 package com.team2.resumeeditorproject.user.service;
 
+import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -19,34 +22,19 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder; // 비밀번호 암호화 처리
 
-    //회원가입
+    private final UserManagementService userManagementService;
+    private final RefreshService refreshService;
+
     @Override
-    public void signup(UserDTO userDTO) {
-        //회원가입 진행
-        User user = User.builder()
-                .email(userDTO.getEmail())
-                .username(userDTO.getUsername())
-                .password(bCryptPasswordEncoder.encode(userDTO.getPassword()))
-                .role("ROLE_USER")
-                .birthDate(userDTO.getBirthDate())
-                .age(userDTO.getAge())
-                .gender(userDTO.getGender())
-                .occupation((userDTO.getOccupation()))
-                .company(userDTO.getCompany())
-                .wish(userDTO.getWish())
-                .status(userDTO.getStatus())
-                .mode(1)
-                .build();
-        userRepository.save(user);
-    }
-    @Override
-    public Boolean checkEmailDuplicate(String email) {
-        return userRepository.existsByEmail(email);
+    public String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userDetails.getUsername();
     }
 
     @Override
-    public Boolean checkUsernameDuplicate(String username) {
-        return userRepository.existsByUsername(username);
+    public Boolean checkEmailDuplicate(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     @Override
@@ -63,17 +51,19 @@ public class UserServiceImpl implements UserService{
     //회원탈퇴 (del_date 필드에 날짜 추가)
     @Override
     public void deleteUser(Long uNum){
-        userRepository.deleteById(uNum);
-    }
+        User user = findUser(uNum);
 
-    @Override
-    public Boolean checkUserExist(Long uNum){
-        Optional<User> user = userRepository.findById(uNum);
-        if (user.isPresent()) {
-            return true;
-        } else {
-            return false;
+        if (user.getDelDate() != null) {
+            throw new BadRequestException("User already deleted with id: " + uNum);
         }
+
+        // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
+        userManagementService.updateUserDeleteDate(uNum);
+
+        // 해당 사용자의 refresh 토큰 정보 삭제
+        refreshService.deleteRefreshByUsername(user.getUsername());
+
+        saveUser(user);
     }
 
     //회원정보 수정
@@ -112,6 +102,17 @@ public class UserServiceImpl implements UserService{
         if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
             user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         }
+        userRepository.save(user);
+    }
+
+    @Override
+    public User findUser(Long uNum) {
+        return userRepository.findById(uNum)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + uNum));
+    }
+
+    @Override
+    public void saveUser(User user) {
         userRepository.save(user);
     }
 }

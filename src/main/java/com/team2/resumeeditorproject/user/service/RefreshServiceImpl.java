@@ -14,4 +14,9 @@ public class RefreshServiceImpl implements RefreshService{
     public void deleteExpiredTokens() {
         refreshRepository.deleteExpiredTokens();
     }
+
+    @Override
+    public void deleteRefreshByUsername(String username) {
+        refreshRepository.deleteRefreshByUsername(username);
+    }
 }

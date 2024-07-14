@@ -1,4 +1,4 @@
-package com.team2.resumeeditorproject.admin.dto;
+package com.team2.resumeeditorproject.statistics.dto;
 
 import lombok.Data;
 
@@ -20,9 +20,8 @@ public class StatisticsHistoryDTO {
     private String editMode;
     private String editStatus;
     private String editAge;
-    private String editDate;
     private String editOccupation;
     private String editCompany;
-    private Date registerDate;
+    private Date createdDate;
     private LocalDate referenceDate;
 }

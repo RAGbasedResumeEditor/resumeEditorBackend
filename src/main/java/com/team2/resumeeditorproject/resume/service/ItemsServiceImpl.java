@@ -2,7 +2,7 @@ package com.team2.resumeeditorproject.resume.service;
 
 import com.team2.resumeeditorproject.resume.domain.Company;
 import com.team2.resumeeditorproject.resume.dto.ItemsDTO;
-import com.team2.resumeeditorproject.resume.repository.ItemsRepository;
+import com.team2.resumeeditorproject.resume.repository.CompanyRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class ItemsServiceImpl implements ItemsService{
     @Autowired
-    private ItemsRepository itemsRepository;
+    private CompanyRepository companyRepository;
     @Autowired
     private ModelMapper modelMapper;
     @Override
     public ItemsDTO insertItems(ItemsDTO itemsDTO) {
         System.out.println(itemsDTO);
         Company company = modelMapper.map(itemsDTO, Company.class);
-        Company savedCompany = itemsRepository.save(company);
+        Company savedCompany = companyRepository.save(company);
         return modelMapper.map(itemsDTO, ItemsDTO.class);
     }
 

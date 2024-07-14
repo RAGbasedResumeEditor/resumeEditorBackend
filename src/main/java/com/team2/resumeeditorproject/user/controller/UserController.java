@@ -84,24 +84,27 @@ public class UserController extends HttpServlet {
                 user.setAge(tempUser.getAge());
                 user.setBirthDate(tempUser.getBirthDate());
                 user.setGender(tempUser.getGender());
-                user.setCompany(tempUser.getCompany());
-                user.setOccupation(tempUser.getOccupation());
-                user.setWish(tempUser.getWish());
+                user.setCompanyNo(tempUser.getCompany().getCompanyNo());
+                user.setCompanyName(tempUser.getCompany().getCompanyName());
+                user.setOccupationNo(tempUser.getOccupation().getOccupationNo());
+                user.setOccupationName(tempUser.getOccupation().getOccupationName());
+                user.setWishCompanyNo(tempUser.getWishCompany().getCompanyNo());
+                user.setWishCompanyName(tempUser.getWishCompany().getCompanyName());
                 user.setStatus(tempUser.getStatus());
                 user.setMode(tempUser.getMode());
-                user.setInDate(tempUser.getCreatedDate());
-                user.setDelDate(tempUser.getDeletedDate());
+                user.setCreatedDate(tempUser.getCreatedDate());
+                user.setDeletedDate(tempUser.getDeletedDate());
             return createOkResponse(user);
     }
 
     //회원탈퇴
-    @DeleteMapping("/user/{uNum}")
-    public ResponseEntity<CommonResponse> deleteUser(@PathVariable("uNum") Long uNum) throws AuthenticationException {
-        userService.deleteUser(uNum);
+    @DeleteMapping("/user/{userNo}")
+    public ResponseEntity<CommonResponse> deleteUser(@PathVariable("userNo") Long userNo) throws AuthenticationException {
+        userService.deleteUser(userNo);
 
         return ResponseEntity.ok()
                 .body(CommonResponse.builder()
-                        .response("uNum+\"번 회원 탈퇴 완료.")
+                        .response(userNo + "번 회원 탈퇴 완료.")
                         .status("Success")
                         .time(new Date())
                         .build());
@@ -339,11 +342,11 @@ public class UserController extends HttpServlet {
                     formattedResult.put("No", resumeGuideNo); //자소서 번호
 
                     // 두 번째 요소 company
-                    String company = resumeGuide.getCompany();
+                    String company = resumeGuide.getCompany().getCompanyName();
                     formattedResult.put("company", company);
 
                     // 세 번째 요소 occupation
-                    String occupation = resumeGuide.getOccupation();
+                    String occupation = resumeGuide.getOccupation().getOccupationName();
                     formattedResult.put("occupation", occupation);
 
                     formattedResults.add(formattedResult);

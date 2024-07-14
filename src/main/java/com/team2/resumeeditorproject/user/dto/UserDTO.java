@@ -16,13 +16,16 @@ public class UserDTO {
     private Integer age;
     private String birthDate;
     private Character gender;
-    private String company;
-    private String occupation;
-    private String wish;
+    private Long companyNo;
+    private String companyName;
+    private Long occupationNo;
+    private String occupationName;
+    private Long wishCompanyNo;
+    private String wishCompanyName;
     private Integer status;
     private Integer mode;
-    private Date inDate;
-    private Date delDate;
+    private Date createdDate;
+    private Date deletedDate;
     private String authCode;
     // 스네이크로 바꿔보고 안되면?
     // 첨삭횟수 설정 메서드

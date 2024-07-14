@@ -1,6 +1,8 @@
 package com.team2.resumeeditorproject.resume.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,5 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Occupation {
 	@Id
-	private String occupation;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long occupationNo;
+
+	private String occupationName;
 }

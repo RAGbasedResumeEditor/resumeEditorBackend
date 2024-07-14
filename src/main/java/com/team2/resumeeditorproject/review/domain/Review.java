@@ -26,7 +26,7 @@ public class Review {
 	private int mode;
 	@Setter
 	private String display;
-	private Date registerDate;
+	private Date createdDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_no")

@@ -4,7 +4,6 @@ import com.team2.resumeeditorproject.exception.NotFoundException;
 import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
 import com.team2.resumeeditorproject.common.util.PageUtil;
-import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -25,13 +24,13 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     private Page<ReviewDTO> convertToReviewDTOPage(Page<Review> resultPage) {
         List<ReviewDTO> reviewDTOList = resultPage.stream()
                 .map(review -> new ReviewDTO(
-                        review.getRvNum(),
-                        review.getUNum(),
+                        review.getReviewNo(),
+                        review.getUser().getUserNo(),
                         review.getContent(),
                         review.getRating(),
                         review.getMode(),
                         review.getDisplay(),
-                        review.getW_date()
+                        review.getCreatedDate()
                 ))
                 .collect(Collectors.toList());
         return new PageImpl<>(reviewDTOList, resultPage.getPageable(), resultPage.getTotalElements());
@@ -99,14 +98,20 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
     }
 
     @Override
-    public List<LandingPageReviewDTO> getVisibleReviews() {
+    public List<ReviewDTO> getVisibleReviews() {
         List<Review> visibleReviews = reviewRepository.findAllByDisplay("true");
 
         return visibleReviews.stream()
-                .map(review -> new LandingPageReviewDTO(
-                        review.getContent(),
-                        review.getRating()
-                ))
+                .map(review -> ReviewDTO.builder()
+                        .reviewNo(review.getReviewNo())
+                        .userNo(review.getUser().getUserNo())
+                        .content(review.getContent())
+                        .rating(review.getRating())
+                        .mode(review.getMode())
+                        .display(review.getDisplay())
+                        .createdDate(review.getCreatedDate())
+                        .build()
+                )
                 .collect(Collectors.toList());
     }
 }

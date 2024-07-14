@@ -1,15 +1,11 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.dto.response.ReviewDisplayResultResponse;
 import com.team2.resumeeditorproject.admin.dto.response.ReviewListResponse;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
-import com.team2.resumeeditorproject.common.util.PageUtil;
-import com.team2.resumeeditorproject.exception.NotFoundException;
-import com.team2.resumeeditorproject.review.domain.Review;
+import com.team2.resumeeditorproject.common.util.CommonResponse;
 import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/review")
@@ -60,9 +53,9 @@ public class ReviewManagementController {
     }
 
     @PostMapping("/display")
-    public ResponseEntity<ReviewDisplayResultResponse> selectDisplayReview(@RequestParam("reviewNo") Long reviewNo) {
+    public ResponseEntity<CommonResponse> selectDisplayReview(@RequestParam("reviewNo") Long reviewNo) {
         return ResponseEntity.ok()
-                .body(ReviewDisplayResultResponse.builder()
+                .body(CommonResponse.builder()
                         .response(reviewService.selectReview(reviewNo))
                         .status("Success")
                         .time(new Date())

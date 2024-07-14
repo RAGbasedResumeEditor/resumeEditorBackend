@@ -9,6 +9,6 @@ public class VerificationDTO {
     private Long verificationNo;
     private String email;
     private String code;
-    private Date createdAt;
-    private Date expiresAt;
+    private Date createdDate;
+    private Date expireDate;
 }

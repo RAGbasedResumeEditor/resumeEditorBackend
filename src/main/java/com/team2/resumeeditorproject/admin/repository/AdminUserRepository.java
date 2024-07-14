@@ -26,9 +26,9 @@ public interface AdminUserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u, COUNT(re) FROM User u LEFT JOIN u.resumeEdits re WHERE "
             + "(:group = 'username' AND u.username LIKE %:keyword%) OR "
             + "(:group = 'email' AND u.email LIKE %:keyword%) OR "
-            + "(:group = 'company' AND u.company LIKE %:keyword%) OR "
-            + "(:group = 'occupation' AND u.occupation LIKE %:keyword%) OR "
-            + "(:group = 'wish' AND u.wish LIKE %:keyword%) "
+            + "(:group = 'company' AND u.company.companyName LIKE %:keyword%) OR "
+            + "(:group = 'occupation' AND u.occupation.occupationName LIKE %:keyword%) OR "
+            + "(:group = 'wish' AND u.wishCompany.companyName LIKE %:keyword%) "
             + "GROUP BY u ORDER BY u.createdDate DESC")
     Page<Object[]> findByGroupAndKeyword(@Param("group") String group, @Param("keyword") String keyword, Pageable pageable);
 

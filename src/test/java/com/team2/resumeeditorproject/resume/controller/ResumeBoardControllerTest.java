@@ -70,7 +70,7 @@ public class ResumeBoardControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("Success"))
-                .andExpect(jsonPath("$.response[0].r_num").value(1L))
+                .andExpect(jsonPath("$.response[0].resumeNo").value(1L))
                 .andExpect(jsonPath("$.response[0].title").value("Test Title"))
                 .andExpect(jsonPath("$.totalPages").value(1));
     }

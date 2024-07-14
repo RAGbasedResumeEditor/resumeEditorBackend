@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.resume.domain;
 
 import com.team2.resumeeditorproject.user.domain.User;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -28,10 +29,8 @@ public class ResumeEdit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resumeEditNo;
 
-    private String company;
-    private String occupation;
-    private String question;
     private String options;
+    @Column(length = 5000)
     private String content;
     private int mode;
 
@@ -40,6 +39,14 @@ public class ResumeEdit {
     private Resume resume;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_no")//, foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "user_no")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_no")
+    private Company company;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "occupation_no")
+    private Occupation occupation;
 }

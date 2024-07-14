@@ -35,13 +35,16 @@ public class UserManagementServiceImpl implements UserManagementService{
             userDTO.setEmail(user.getEmail());
             userDTO.setGender(user.getGender());
             userDTO.setBirthDate(user.getBirthDate());
-            userDTO.setCompany(user.getCompany());
-            userDTO.setOccupation(user.getOccupation());
-            userDTO.setWish(user.getWish());
+            userDTO.setCompanyNo(user.getCompany().getCompanyNo());
+            userDTO.setCompanyName(user.getCompany().getCompanyName());
+            userDTO.setOccupationNo(user.getOccupation().getOccupationNo());
+            userDTO.setOccupationName(user.getOccupation().getOccupationName());
+            userDTO.setWishCompanyNo(user.getWishCompany().getCompanyNo());
+            userDTO.setWishCompanyName(user.getWishCompany().getCompanyName());
             userDTO.setStatus(user.getStatus());
             userDTO.setMode(user.getMode());
-            userDTO.setInDate(user.getCreatedDate());
-            userDTO.setDelDate(user.getDeletedDate());
+            userDTO.setCreatedDate(user.getCreatedDate());
+            userDTO.setDeletedDate(user.getDeletedDate());
             userDTO.setUserNo(user.getUserNo());
             userDTO.setRole(user.getRole());
             userDTO.setAge(user.getAge());
@@ -114,7 +117,7 @@ public class UserManagementServiceImpl implements UserManagementService{
     }
 
     @Override
-    public void updateDelDateForRoleBlacklist() {
+    public void updateDeletedDateForRoleBlacklist() {
         // 현재 날짜 가져오기
         Date currentDate = new Date();
         // 60일 전 날짜 계산

@@ -9,9 +9,14 @@ spring:
     username: localDB
     password: localDB
 
+  sql:
+    init:
+      mode: always
+
   jpa:
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
     show-sql: true
     hibernate:
       ddl-auto: create-drop

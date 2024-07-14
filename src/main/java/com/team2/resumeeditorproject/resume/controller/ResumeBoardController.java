@@ -207,7 +207,7 @@ public class ResumeBoardController {
             String username = userRepository.findUsernameByUserNo(userNo);
             responseData.put("username", username);
 
-            responseData.put("item", resumeEdit.getQuestion());
+            responseData.put("item", resumeEdit.getCompany().getQuestions());
 
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {

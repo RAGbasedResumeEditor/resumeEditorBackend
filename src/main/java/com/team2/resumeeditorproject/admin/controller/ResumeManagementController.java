@@ -37,7 +37,7 @@ public class ResumeManagementController {
             @RequestParam(value = "pageNo", defaultValue = "0") int pageNo) {
         PageUtil.checkUnderZero(pageNo);
 
-        Pageable pageable = PageRequest.of(pageNo, SIZE_OF_PAGE, Sort.by("RNum").descending());
+        Pageable pageable = PageRequest.of(pageNo, SIZE_OF_PAGE, Sort.by("resumeNo").descending());
         Page<ResumeBoardDTO> resultsPage = resumeManagementService.getPagedResumeBoards(pageable);
 
         int lastPageNo = resultsPage.getTotalPages() - 1;
@@ -90,15 +90,15 @@ public class ResumeManagementController {
     }
 
     //자소서 삭제
-    @DeleteMapping("/{rNum}")
-    public ResponseEntity<CommonResponse> deleteResume(@PathVariable("rNum") Long rNum) {
-        if(!resumeManagementService.checkResumeExists(rNum)){
+    @DeleteMapping("/{resumeNo}")
+    public ResponseEntity<CommonResponse> deleteResume(@PathVariable("resumeNo") Long resumeNo) {
+        if(!resumeManagementService.checkResumeExists(resumeNo)){
             throw new BadRequestException("존재하지 않는 자소서입니다.");
         }
         resumeManagementService.deleteResume(resumeNo);
         return ResponseEntity.ok()
                 .body(CommonResponse.builder()
-                        .response(rNum + "번 자소서 삭제 성공")
+                        .response(resumeNo + "번 자소서 삭제 성공")
                         .status("Success")
                         .time(new Date())
                         .build());

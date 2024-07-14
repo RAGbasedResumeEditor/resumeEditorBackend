@@ -1,15 +1,21 @@
 package com.team2.resumeeditorproject.user.domain;
 
+import com.team2.resumeeditorproject.resume.domain.Company;
+import com.team2.resumeeditorproject.resume.domain.Occupation;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,12 +52,6 @@ public class User {
     @Setter
     private char gender;
     @Setter
-    private String company;
-    @Setter
-    private String occupation;
-    @Setter
-    private String wish;
-    @Setter
     private int status;
     private int mode;
     private Date createdDate;
@@ -62,25 +62,22 @@ public class User {
     @JoinColumn(name = "user_no")
     private List<ResumeEdit> resumeEdits;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_no")
     private List<Resume> resumes;
 
-    @Builder
-    public User(Long userNo, String email, String username, String password, String role, int age, String birthDate, char gender, String company, String occupation, String wish, int status, int mode, Date createdDate, Date deletedDate) {
-        this.userNo = userNo;
-        this.email = email;
-        this.username=username;
-        this.password = password;
-        this.role=role;
-        this.age = age;
-        this.birthDate=birthDate;
-        this.gender = gender;
-        this.company = company;
-        this.occupation = occupation;
-        this.wish = wish;
-        this.status = status;
-        this.mode = mode;
-        this.createdDate = createdDate;
-        this.deletedDate = deletedDate;
-    }
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "occupation_no")
+    private Occupation occupation;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_no")
+    private Company company;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wish_company_no")
+    private Company wishCompany;
 }

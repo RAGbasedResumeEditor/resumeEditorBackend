@@ -30,9 +30,8 @@ public class StatisticsHistory {
     private String editMode;
     private String editStatus;
     private String editAge;
-    private String editDate;
     private String editOccupation;
     private String editCompany;
-    private Date registerDate;
+    private Date createdDate;
     private LocalDate referenceDate;
 }

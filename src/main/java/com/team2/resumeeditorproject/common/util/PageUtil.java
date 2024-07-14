@@ -2,7 +2,6 @@ package com.team2.resumeeditorproject.common.util;
 
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.exception.NotFoundException;
-import com.team2.resumeeditorproject.user.dto.UserDTO;
 import org.springframework.data.domain.Page;
 
 public class PageUtil {

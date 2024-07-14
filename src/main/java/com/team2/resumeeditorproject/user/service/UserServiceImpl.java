@@ -9,6 +9,9 @@ import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,13 @@ public class UserServiceImpl implements UserService{
 
     private final UserManagementService userManagementService;
     private final RefreshService refreshService;
+
+    @Override
+    public String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userDetails.getUsername();
+    }
 
     @Override
     public Boolean checkEmailDuplicate(String email) {

@@ -112,13 +112,19 @@ public class UserController extends HttpServlet {
 
     //회원정보 수정
     @PatchMapping("/user")
-    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody UserDTO userDTO) throws AuthenticationException {
+    public ResponseEntity<CommonResponse> updateUser(@RequestBody UserDTO userDTO) throws AuthenticationException {
         String username = getUsername();
         User tempUser = userService.showUser(username);
         userDTO.setUserNo(tempUser.getUserNo());
 
-        userService.updateUser(userDTO);//수정 처리
-        return createOkResponse(getUsername()+" 회원 수정 완료.");
+        userService.updateUser(userDTO); // Update process
+
+        return ResponseEntity.ok()
+                .body(CommonResponse.builder()
+                        .response(username + " 회원 수정 완료.")
+                        .status("Success")
+                        .time(new Date())
+                        .build());
     }
 
     // 즐겨찾기 목록 조회

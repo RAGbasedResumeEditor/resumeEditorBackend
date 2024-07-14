@@ -1,10 +1,16 @@
 package com.team2.resumeeditorproject.resume.service;
 
+import com.team2.resumeeditorproject.exception.BadRequestException;
+import com.team2.resumeeditorproject.exception.NotFoundException;
 import com.team2.resumeeditorproject.resume.domain.Resume;
+import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.ResumeDTO;
+import com.team2.resumeeditorproject.resume.repository.ResumeEditRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
+import com.team2.resumeeditorproject.user.dto.ResumeEditDetailDTO;
+import com.team2.resumeeditorproject.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,11 +24,12 @@ import java.util.Optional;
  * @since : 04/29/24
  */
 @Service
+@RequiredArgsConstructor
 public class ResumeServiceImpl implements ResumeService{
-    @Autowired
-    private ResumeRepository resumeRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ResumeRepository resumeRepository;
+    private final ResumeEditRepository resumeEditRepository;
+    private final ModelMapper modelMapper;
+    private final UserService userService;
 
     @Override
     public ResumeDTO insertResume(ResumeDTO resumeDTO) {
@@ -49,8 +56,36 @@ public class ResumeServiceImpl implements ResumeService{
     }
 
     @Override
-    public Object getResumeEditDetail(Long num) {
-        return resumeRepository.getResumeEditDetail(num);
+    public ResumeEditDetailDTO getResumeEditDetail(Long rNum, String username) {
+        ResumeEdit resumeEdit = resumeEditRepository.findResumeEditsByRNum(rNum)
+                .stream()
+                .findFirst()
+                .orElse(null);
+        if (resumeEdit == null) {
+            throw new NotFoundException(" - resume edit with r_num " + rNum + " not found");
+        }
+
+        Resume resume = resumeEdit.getResume();
+        if (resume == null) { // 해당하는 첨삭 기록이 없다면
+            throw new NotFoundException(" - resume with r_num " + rNum + " not found");
+        }
+
+        Long uNum = userService.showUser(userService.getUsername()).getUNum();
+        if (!uNum.equals(resume.getU_num())) {
+            throw new BadRequestException(" - 잘못된 접근입니다. (로그인한 사용자의 첨삭 기록이 아닙니다)");
+        }
+
+        return ResumeEditDetailDTO.builder()
+                .rNum(resumeEdit.getR_num())
+                .company(resumeEdit.getCompany())
+                .occupation(resumeEdit.getOccupation())
+                .item(resumeEdit.getItem())
+                .options(resumeEdit.getOptions())
+                .rContent(resumeEdit.getR_content())
+                .mode(resumeEdit.getMode())
+                .content(resume.getContent())
+                .wDate(resume.getW_date())
+                .build();
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,14 +29,11 @@ import java.util.Map;
  */
 @Controller
 @ResponseBody
+@RequiredArgsConstructor
 public class ReissueController {
+
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
-
-    public ReissueController(JWTUtil jwtUtil, RefreshRepository refreshRepository) {
-        this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
-    }
 
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
@@ -45,7 +43,7 @@ public class ReissueController {
 
         //  refresh키값이 없다면
         if (refresh == null) {
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST); //특정한 상태코드 응답
+            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
         }
 
         // 있다면 만료 확인
@@ -82,7 +80,6 @@ public class ReissueController {
         refreshRepository.deleteByRefresh(refresh);
         addRefreshEntity(username, newRefresh, 1209600000L); //생명주기 2주
 
-        //response
         response.setHeader("access", newAccess);
         response.setHeader("refresh", newRefresh);
 
@@ -91,8 +88,7 @@ public class ReissueController {
         responseBody.put("time", new Date());
         responseBody.put("response", "New tokens issued successfully");
 
-        //System.out.println("new access token success");
-        return new ResponseEntity<>(responseBody, HttpStatus.OK); //응답코드 200
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
     // refresh토큰을 DB에 저장하여 관리하기 위한 메서드

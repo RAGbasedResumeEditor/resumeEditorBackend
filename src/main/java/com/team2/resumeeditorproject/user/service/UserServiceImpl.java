@@ -7,11 +7,12 @@ import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -23,6 +24,13 @@ public class UserServiceImpl implements UserService{
 
     private final UserManagementService userManagementService;
     private final RefreshService refreshService;
+
+    @Override
+    public String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userDetails.getUsername();
+    }
 
     @Override
     public Boolean checkEmailDuplicate(String email) {
@@ -56,16 +64,6 @@ public class UserServiceImpl implements UserService{
         refreshService.deleteRefreshByUsername(user.getUsername());
 
         saveUser(user);
-    }
-
-    @Override
-    public Boolean checkUserExist(Long uNum){
-        Optional<User> user = userRepository.findById(uNum);
-        if (user.isPresent()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     //회원정보 수정

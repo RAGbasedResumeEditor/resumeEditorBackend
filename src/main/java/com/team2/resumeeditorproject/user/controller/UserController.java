@@ -1,15 +1,12 @@
 package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
-import com.team2.resumeeditorproject.exception.BadRequestException;
-import com.team2.resumeeditorproject.exception.DelDateException;
-import com.team2.resumeeditorproject.resume.domain.Occupation;
+import com.team2.resumeeditorproject.common.util.CommonResponse;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
-import com.team2.resumeeditorproject.resume.repository.OccupationRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
@@ -24,7 +21,6 @@ import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,10 +38,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -61,27 +54,12 @@ public class UserController extends HttpServlet {
     private final UserRepository userRepository;
     private final RefreshRepository refreshRepository;
     private final UserManagementService userManagementService;
-
-    @Autowired
-    private ResumeBoardService resumeBoardService;
-
-    @Autowired
-    private ResumeRepository resumeRepository;
-
-    @Autowired
-    private ResumeService resumeService;
-
-    @Autowired
-    private ResumeEditService resumeEditService;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private OccupationRepository occupationRepository;
-
-    @Autowired
-    private ResumeGuideService resumeGuideService;
+    private final ResumeBoardService resumeBoardService;
+    private final ResumeRepository resumeRepository;
+    private final ResumeService resumeService;
+    private final ResumeEditService resumeEditService;
+    private final ModelMapper modelMapper;
+    private final ResumeGuideService resumeGuideService;
 
     private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
 
@@ -90,59 +68,6 @@ public class UserController extends HttpServlet {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return userDetails.getUsername();
     }
-
-    // 직종 검색하여 가져오기
-    @GetMapping("/signup/load/{occupation}")
-    public ResponseEntity<Map<String, Object>> loadOccupation(@PathVariable("occupation") String occupation) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            List<Occupation> existingOccupation = occupationRepository.findByOccupationContaining(occupation);
-            if (existingOccupation != null && !existingOccupation.isEmpty()) {
-                response.put("status","Success");
-                response.put("occupationList", existingOccupation);
-
-            } else {
-                response.put("status", "Not found");
-            }
-        } catch (Exception e) {
-            response.put("status", "Error");
-            response.put("message", e.getMessage());
-        }
-        return ResponseEntity.ok(response);
-    }
-
-    //회원가입
-    @PostMapping(value="/signup")
-    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserDTO userDTO) throws IOException {
-        String username = userDTO.getUsername();
-
-        //30일 이내에 탈퇴한 회원 예외 처리
-        User user = userRepository.findByUsername(username);
-        if (user != null && user.getDeletedDate() != null) {
-            Date delDate = user.getDeletedDate();
-            //삭제한 날짜
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String deleted = dateFormat.format(delDate);
-            //회원가입 가능한 날짜
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(delDate);
-            calendar.add(Calendar.DAY_OF_MONTH, 30);
-            Date newDate = calendar.getTime();
-            String available = dateFormat.format(newDate);
-
-            List<String> result = new ArrayList<>();
-            result.add(deleted);
-            result.add(available);
-            throw new DelDateException(result);
-        }
-        //존재하는 username 예외 처리
-        if (userService.checkUsernameDuplicate(username)) {
-            throw new BadRequestException(username + " already exists.");
-        }
-
-        userService.signup(userDTO);//회원가입 처리
-        return createOkResponse("회원가입 성공");
-    }//signup()
 
     //회원조회
     @PostMapping("/user/search")
@@ -170,18 +95,16 @@ public class UserController extends HttpServlet {
     }
 
     //회원탈퇴
-    @DeleteMapping("/user/{userNo}")
-    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("userNo") Long userNo) throws AuthenticationException {
+    @DeleteMapping("/user/{uNum}")
+    public ResponseEntity<CommonResponse> deleteUser(@PathVariable("uNum") Long uNum) throws AuthenticationException {
+        userService.deleteUser(uNum);
 
-            // 회원 탈퇴 처리 후 DB에 탈퇴 날짜 업데이트
-            userManagementService.updateUserDeleteDate(userNo);
-
-            // 해당 사용자의 refresh 토큰 정보 삭제
-            User deletedUser = userRepository.findById(userNo)
-                    .orElseThrow(() -> new RuntimeException("User not found with id: " + userNo));
-            refreshRepository.deleteRefreshByUsername(deletedUser.getUsername());
-
-            return createOkResponse(userNo+"번 회원 탈퇴 완료.");
+        return ResponseEntity.ok()
+                .body(CommonResponse.builder()
+                        .response("uNum+\"번 회원 탈퇴 완료.")
+                        .status("Success")
+                        .time(new Date())
+                        .build());
     }
 
     //회원정보 수정

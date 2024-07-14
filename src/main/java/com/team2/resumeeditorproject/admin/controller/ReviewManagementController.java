@@ -1,11 +1,11 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.review.dto.ReviewDTO;
-import com.team2.resumeeditorproject.admin.dto.response.ReviewDisplayResultResponse;
 import com.team2.resumeeditorproject.admin.dto.response.ReviewListResponse;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
+import com.team2.resumeeditorproject.common.util.CommonResponse;
 import com.team2.resumeeditorproject.exception.NotFoundException;
 import com.team2.resumeeditorproject.review.domain.Review;
+import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -73,18 +73,6 @@ public class ReviewManagementController {
 
         Page<Review> reviewList = reviewService.getDisplayReviews(pageNo);
 
-//        List<ReviewDTO> reviewDTOList = new ArrayList<>();
-//        for (Review review : reviewList) {
-//            ReviewDTO reviewDTO = new ReviewDTO();
-//            reviewDTO.setRv_num(review.getRvNum());
-//            reviewDTO.setU_num(review.getUNum());
-//            reviewDTO.setContent(review.getContent());
-//            reviewDTO.setRating(review.getRating());
-//            reviewDTO.setMode(review.getMode());
-//            reviewDTO.setW_date(review.getW_date());
-//            reviewDTO.setDisplay(review.getDisplay());
-//            reviewDTOList.add(reviewDTO);
-//        }
         List<ReviewDTO> reviewDTOList = reviewList.stream()
                 .map(review -> new ReviewDTO(
                         review.getReviewNo(),
@@ -93,10 +81,9 @@ public class ReviewManagementController {
                         review.getRating(),
                         review.getMode(),
                         review.getDisplay(),
-                        review.getRegisterDate()
+                        review.getW_date()
                 ))
                 .collect(Collectors.toList());
-
         if (reviewDTOList.isEmpty()) {
             throw new NotFoundException("후기가 존재하지 않습니다.");
         }
@@ -109,17 +96,17 @@ public class ReviewManagementController {
     }
 
     @PostMapping("/display")
-    public ResponseEntity<ReviewDisplayResultResponse> selectDisplayReview(@RequestParam("reviewNo") Long reviewNo) {
+    public ResponseEntity<CommonResponse> selectDisplayReview(@RequestParam("reviewNo") Long reviewNo) {
         try {
             return ResponseEntity.ok()
-                    .body(ReviewDisplayResultResponse.builder()
+                    .body(CommonResponse.builder()
                             .response(reviewService.selectReview(reviewNo))
                             .status("Success")
                             .time(new Date())
                             .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(ReviewDisplayResultResponse.builder()
+                    .body(CommonResponse.builder()
                             .response("Failed to selected")
                             .status("Fail")
                             .time(new Date())

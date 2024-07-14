@@ -1,16 +1,21 @@
 package com.team2.resumeeditorproject.admin.controller;
 
 import com.team2.resumeeditorproject.admin.dto.request.SearchUserRequest;
-import com.team2.resumeeditorproject.admin.dto.response.DeleteUserResultResponse;
 import com.team2.resumeeditorproject.admin.dto.response.UserListResponse;
 import com.team2.resumeeditorproject.admin.service.UserDeleteService;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
+import com.team2.resumeeditorproject.common.util.CommonResponse;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 
@@ -56,12 +61,12 @@ public class UserManagementController {
     }
 
     /* 회원 탈퇴 */
-    @DeleteMapping("/{userNo}")
-    public ResponseEntity<DeleteUserResultResponse> deleteUser(@PathVariable("userNo") long userNo) {
-        userDeleteService.deleteUser(userNo);
+    @DeleteMapping("/{uNum}")
+    public ResponseEntity<CommonResponse> deleteUser(@PathVariable("uNum") long uNum) {
+        userDeleteService.deleteUser(uNum);
 
         return ResponseEntity.ok()
-                .body(DeleteUserResultResponse.builder()
+                .body(CommonResponse.builder()
                         .response("User deleted successfully")
                         .status("Success")
                         .time(new Date())

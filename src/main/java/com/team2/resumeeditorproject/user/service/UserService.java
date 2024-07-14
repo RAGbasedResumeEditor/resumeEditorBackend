@@ -4,10 +4,6 @@ import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 
 public interface UserService {
-    // 회원가입
-    void signup(UserDTO userDto);
-
-    Boolean checkUsernameDuplicate(String username);
     Boolean checkEmailDuplicate(String email);
 
     int updateUserMode(long userNo);

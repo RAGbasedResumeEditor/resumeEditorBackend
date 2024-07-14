@@ -29,9 +29,7 @@ public class UserManagementController {
     public ResponseEntity<UserListResponse> getUserList(
             @RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
 
-        int size = SIZE_OF_PAGE;
-
-        Page<UserDTO> userPage = userManagementService.getUserList(pageNo, size);
+        Page<UserDTO> userPage = userManagementService.getUserList(pageNo, SIZE_OF_PAGE);
 
         return ResponseEntity.ok()
                 .body(UserListResponse.builder()
@@ -44,9 +42,7 @@ public class UserManagementController {
     @GetMapping("/list/search")
     public ResponseEntity<UserListResponse> searchUsers(@RequestBody SearchUserRequest searchUserRequest) {
 
-        int size = SIZE_OF_PAGE;
-
-        Page<UserDTO> userPage = userManagementService.searchUsersByGroupAndKeyword(searchUserRequest, size);
+        Page<UserDTO> userPage = userManagementService.searchUsersByGroupAndKeyword(searchUserRequest, SIZE_OF_PAGE);
 
         return ResponseEntity.ok()
                 .body(UserListResponse.builder()

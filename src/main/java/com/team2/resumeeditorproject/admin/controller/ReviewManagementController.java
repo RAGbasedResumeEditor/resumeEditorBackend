@@ -27,9 +27,8 @@ public class ReviewManagementController {
     @GetMapping("/list")
     public ResponseEntity<ReviewListResponse> getAllReviews(
             @RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
-        int size = SIZE_OF_PAGE;
 
-        Page<ReviewDTO> reviewPage = reviewService.getPagedReviews(pageNo, size);
+        Page<ReviewDTO> reviewPage = reviewService.getPagedReviews(pageNo, SIZE_OF_PAGE);
 
         return ResponseEntity.ok()
                 .body(ReviewListResponse.builder()
@@ -40,9 +39,8 @@ public class ReviewManagementController {
 
     @GetMapping("/list/display-review")
     public ResponseEntity<ReviewListResponse> getShowReviews(@RequestParam("pageNo") int pageNo) {
-        int size = SIZE_OF_PAGE;
 
-        Page<ReviewDTO> reviewPage = reviewService.getDisplayReviews(pageNo, size);
+        Page<ReviewDTO> reviewPage = reviewService.getDisplayReviews(pageNo, SIZE_OF_PAGE);
 
         return ResponseEntity.ok()
                 .body(ReviewListResponse.builder()

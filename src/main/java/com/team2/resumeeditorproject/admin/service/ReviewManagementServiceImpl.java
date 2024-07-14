@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.admin.service;
 
-
 import com.team2.resumeeditorproject.admin.dto.LandingPageReviewDTO;
 import com.team2.resumeeditorproject.admin.repository.AdminReviewRepository;
 import com.team2.resumeeditorproject.common.util.PageUtil;

@@ -70,21 +70,23 @@ public class ResumeServiceImpl implements ResumeService{
             throw new NotFoundException(" - resume with r_num " + rNum + " not found");
         }
 
-        Long uNum = userService.showUser(userService.getUsername()).getUNum();
-        if (!uNum.equals(resume.getU_num())) {
+        Long uNum = userService.showUser(userService.getUsername()).getUserNo();
+        if (!uNum.equals(resume.getUser().getUserNo())) {
             throw new BadRequestException(" - 잘못된 접근입니다. (로그인한 사용자의 첨삭 기록이 아닙니다)");
         }
 
         return ResumeEditDetailDTO.builder()
-                .rNum(resumeEdit.getR_num())
-                .company(resumeEdit.getCompany())
-                .occupation(resumeEdit.getOccupation())
-                .item(resumeEdit.getItem())
+                .resumeEditNo(resumeEdit.getResumeEditNo())
+                .companyNo(resumeEdit.getCompany().getCompanyNo())
+                .companyName(resumeEdit.getCompany().getCompanyName())
+                .occupationNo(resumeEdit.getOccupation().getOccupationNo())
+                .occupationName(resumeEdit.getOccupation().getOccupationName())
+                .questions(resumeEdit.getCompany().getQuestions())
                 .options(resumeEdit.getOptions())
-                .rContent(resumeEdit.getR_content())
+                .rContent(resumeEdit.getContent())
                 .mode(resumeEdit.getMode())
                 .content(resume.getContent())
-                .wDate(resume.getW_date())
+                .createdDate(resume.getCreatedDate())
                 .build();
     }
 

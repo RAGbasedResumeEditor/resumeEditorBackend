@@ -92,8 +92,8 @@ public class ResumeGuideController {
                 ResumeGuideDTO resumeGuideDTO = objectMapper.convertValue(requestBody, ResumeGuideDTO.class);
 
                 Long userNo = ((Number) requestBody.get("userNo")).longValue(); // Integer -> Long 변환
-                String company = resumeGuideDTO.getCompany();
-                String occupation = resumeGuideDTO.getOccupation();
+                String company = resumeGuideDTO.getCompanyName();
+                String occupation = resumeGuideDTO.getOccupationName();
                 String content = resumeGuideDTO.getContent();
 
                 // User 테이블에서 해당하는 userNo을 가진 사용자가 존재하는지 확인

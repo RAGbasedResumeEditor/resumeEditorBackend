@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 public class ResumeGuideDTO {
     private Long resumeGuideNo;
     private Long userNo;
-    private String company;
-    private String occupation;
+    private Long companyNo;
+    private String companyName;
+    private Long occupationNo;
+    private String occupationName;
     private String content;
 }

@@ -2,10 +2,7 @@ package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.common.util.CommonResponse;
-import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
-import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
 import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;

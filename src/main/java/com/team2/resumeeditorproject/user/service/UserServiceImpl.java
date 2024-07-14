@@ -73,16 +73,6 @@ public class UserServiceImpl implements UserService {
         saveUser(user);
     }
 
-    @Override
-    public Boolean checkUserExist(Long userNo){
-        Optional<User> user = userRepository.findById(userNo);
-        if (user.isPresent()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     //회원정보 수정
     @Override
     @Transactional

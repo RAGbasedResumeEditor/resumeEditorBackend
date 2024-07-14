@@ -36,26 +36,23 @@ public class ResumeGuideServiceImpl implements ResumeGuideService{
 
     @Override
     public ResumeGuideDTO getResumeGuideDetail(Long gNum, String username) {
-        ResumeGuide resumeGuide = getResumeGuideByGNum(gNum);
+        ResumeGuide resumeGuide = resumeGuideRepository.findById(gNum).orElse(null);
         if (resumeGuide == null) {
             throw new NotFoundException("Resume guide with gNum " + gNum + " not found");
         }
-        Long uNum = userService.showUser(userService.getUsername()).getUNum();
-        if (!uNum.equals(resumeGuide.getUNum())) {
+        Long userNo = userService.showUser(userService.getUsername()).getUserNo();
+        if (!userNo.equals(resumeGuide.getUser().getUserNo())) {
             throw new BadRequestException(" - 잘못된 접근입니다. (로그인한 사용자의 가이드 기록이 아닙니다)");
         }
 
         return ResumeGuideDTO.builder()
-                .gNum(resumeGuide.getGNum())
-                .uNum(resumeGuide.getUNum())
-                .company(resumeGuide.getCompany())
-                .occupation(resumeGuide.getOccupation())
+                .resumeGuideNo(resumeGuide.getResumeGuideNo())
+                .userNo(resumeGuide.getUser().getUserNo())
+                .companyNo(resumeGuide.getCompany().getCompanyNo())
+                .companyName(resumeGuide.getCompany().getCompanyName())
+                .occupationNo(resumeGuide.getOccupation().getOccupationNo())
+                .occupationName(resumeGuide.getOccupation().getOccupationName())
                 .content(resumeGuide.getContent())
                 .build();
-    }
-
-    @Override
-    public ResumeGuide getResumeGuideByGNum(Long gNum) {
-        return resumeGuideRepository.findById(gNum).orElse(null);
     }
 }

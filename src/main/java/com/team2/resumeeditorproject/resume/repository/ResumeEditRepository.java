@@ -15,6 +15,6 @@ import java.util.List;
  * @since : 04/25/24
  */
 public interface ResumeEditRepository extends JpaRepository<ResumeEdit, Long> {
-    @Query("SELECT re FROM ResumeEdit re JOIN re.resume r WHERE r.r_num = :r_num")
-    List<ResumeEdit> findResumeEditsByRNum(@Param("r_num") Long r_num);
+    @Query("SELECT re FROM ResumeEdit re JOIN re.resume r WHERE r.resumeNo = :resumeNo")
+    List<ResumeEdit> findResumeEditsByRNum(@Param("resumeNo") Long resumeNo);
 }

@@ -1,7 +1,6 @@
 package com.team2.resumeeditorproject.resume.repository;
 
 import com.team2.resumeeditorproject.resume.domain.Resume;
-import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,12 +15,6 @@ import org.springframework.data.repository.query.Param;
  * @since : 04/25/24
  */
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
-    @Query("SELECT re, r.content, r.w_date\n" +
-            "FROM ResumeEdit re\n" +
-            "JOIN Resume r ON re.r_num = r.r_num\n" +
-            "WHERE r.r_num = :r_num")
-    Object getResumeEditDetail(@Param("r_num") Long num);
-
     @Query("SELECT re.r_num, re.company, re.occupation, re.mode, r.w_date " +
             "FROM ResumeEdit re " +
             "JOIN Resume r ON re.r_num = r.r_num " +

@@ -82,7 +82,6 @@ public class SignupController {
 
         signupService.signup(userDTO);
 
-        // ResponseEntity로 반환
         return ResponseEntity.ok()
                 .body(CommonResponse.builder()
                         .response("회원가입 성공")

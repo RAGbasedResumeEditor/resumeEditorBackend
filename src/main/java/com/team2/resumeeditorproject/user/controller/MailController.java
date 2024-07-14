@@ -26,7 +26,7 @@ import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOk
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(value="/signup")
+@RequestMapping("/signup")
 public class MailController {
 
     private final MailService mailService;

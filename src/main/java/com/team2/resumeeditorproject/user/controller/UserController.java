@@ -2,11 +2,9 @@ package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.common.util.CommonResponse;
-import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
-import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
-import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
+import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeEditService;
@@ -14,6 +12,7 @@ import com.team2.resumeeditorproject.resume.service.ResumeGuideService;
 import com.team2.resumeeditorproject.resume.service.ResumeService;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
+import com.team2.resumeeditorproject.user.dto.ResumeEditDetailDTO;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
@@ -257,56 +256,11 @@ public class UserController extends HttpServlet {
     }
 
     // 첨삭 기록 상세페이지
-    @GetMapping("/user/edit-list/{num}") // ** re null값인것 처리
-    public ResponseEntity<Map<String, Object>> getResumeBoard(@PathVariable("num")  Long num) {
-        Map<String, Object> response = new HashMap<>();
-        Date today = new Date();
-        try {
-            Resume resume = resumeRepository.findById(num).orElse(null);
-            if (resume == null) { // 해당하는 첨삭 기록이 없다면
-                throw new Exception(" - resume with num " + num + " not found");
-            }
-
-            // 조회하려는 첨삭기록의 u_num이 로그인한 유저의 u_num과 같은지 확인
-            String username = getUsername();
-            Long uNum = userService.showUser(username).getUNum();
-            if(!uNum.equals(resume.getU_num())){ // 일치하지 않는다면
-                throw new Exception(" - 잘못된 접근입니다. (로그인한 사용자의 첨삭 기록이 아닙니다)");
-            }
-
-
-            Object results = resumeService.getResumeEditDetail(num);
-            Object[] resultArray = (Object[]) results;
-            Map<String, Object> responseData = new HashMap<>();
-
-            // 첫 번째 요소는 ResumeEdit
-            ResumeEdit resumeEdit = (ResumeEdit) resultArray[0];
-            resumeEditService.setModelMapper(modelMapper); // Setter or Constructor injection
-            ResumeEditDTO resumeEditDTO = resumeEditService.convertToDto(resumeEdit);
-
-            responseData.put("r_num", resumeEditDTO.getR_num());
-            responseData.put("company", resumeEditDTO.getCompany());
-            responseData.put("occupation", resumeEditDTO.getOccupation());
-            responseData.put("item", resumeEditDTO.getItem());
-            responseData.put("options", resumeEditDTO.getOptions());
-            responseData.put("r_content", resumeEditDTO.getR_content()); // 첨삭 전 자소서
-            responseData.put("mode", resumeEditDTO.getMode());
-
-            // 두 번째 요소는 resume의 content (첨삭 후 자소서)
-            String content = (String) resultArray[1];
-            responseData.put("content", content);
-
-            // 세 번째 요소는 w_date (첨삭일)
-            Date w_date = (Date) resultArray[2];
-            responseData.put("w_date", w_date);
-
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
-        } catch (Exception e) {
-            response.put("response", "server error " + e.getMessage());
-            response.put("time", today);
-            response.put("status", "Fail");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping("/user/edit-list/{num}")
+    public ResponseEntity<ResumeEditDetailDTO> getResumeBoard(@PathVariable("num") Long num) {
+        String username = getUsername();
+        ResumeEditDetailDTO detailDTO = resumeService.getResumeEditDetail(num, username);
+        return new ResponseEntity<>(detailDTO, HttpStatus.OK);
     }
 
     // 자소서 가이드 목록 조회
@@ -372,36 +326,9 @@ public class UserController extends HttpServlet {
 
     // 자소서 가이드 상세 페이지
     @GetMapping("/user/guide-list/{gNum}")
-    public ResponseEntity<Map<String, Object>> getResumeGuideDetail(@PathVariable("gNum") Long gNum) {
-        Map<String, Object> response = new HashMap<>();
-        Date today = new Date();
-
-        try {
-            // 특정 gNum에 해당하는 자기소개서 가이드를 조회
-            ResumeGuide resumeGuide = resumeGuideService.getResumeGuideByGNum(gNum);
-
-            if (resumeGuide == null) {
-                throw new Exception("Resume guide with gNum " + gNum + " not found");
-            }
-
-            // 조회된 자기소개서 가이드의 정보를 response에 담기
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("g_num", resumeGuide.getGNum());
-            responseData.put("u_num", resumeGuide.getUNum());
-            responseData.put("company", resumeGuide.getCompany());
-            responseData.put("occupation", resumeGuide.getOccupation());
-            responseData.put("content", resumeGuide.getContent());
-
-            response.put("response", responseData);
-            response.put("time", today);
-            response.put("status", "Success");
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("response", "Server error: " + e.getMessage());
-            response.put("time", today);
-            response.put("status", "Fail");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    public ResponseEntity<ResumeGuideDTO> getResumeGuideDetail(@PathVariable("gNum") Long gNum) {
+        String username = getUsername();
+        ResumeGuideDTO resumeGuideDTO = resumeGuideService.getResumeGuideDetail(gNum, username);
+        return new ResponseEntity<>(resumeGuideDTO, HttpStatus.OK);
     }
 }

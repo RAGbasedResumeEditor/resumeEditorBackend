@@ -48,4 +48,8 @@ public class ResumeEdit {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "u_num", insertable = false, updatable = false) //User 엔티티와 관계 정의
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "r_num", insertable = false, updatable = false)
+    private Resume resume;
 }

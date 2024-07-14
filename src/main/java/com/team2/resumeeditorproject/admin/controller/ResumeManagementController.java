@@ -37,7 +37,7 @@ public class ResumeManagementController {
             @RequestParam(value = "pageNo", defaultValue = "0") int pageNo) {
         PageUtil.checkUnderZero(pageNo);
 
-        Pageable pageable = PageRequest.of(pageNo, SIZE_OF_PAGE, Sort.by("resumeNo").descending());
+        Pageable pageable = PageRequest.of(pageNo, SIZE_OF_PAGE, Sort.by("resumeStatisticsNo").descending());
         Page<ResumeBoardDTO> resultsPage = resumeManagementService.getPagedResumeBoards(pageable);
 
         int lastPageNo = resultsPage.getTotalPages() - 1;

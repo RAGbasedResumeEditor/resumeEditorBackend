@@ -66,7 +66,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
         // page가 0보다 작으면 재요청
         PageUtil.checkUnderZero(pageNo);
 
-        Pageable pageable = PageRequest.of(pageNo, size, Sort.by("rvNum").descending());
+        Pageable pageable = PageRequest.of(pageNo, size, Sort.by("reviewNo").descending());
 
         Page<Review> reviewPage = reviewRepository.findAll(pageable);
         Page<ReviewDTO> reviewDTOPage = convertToReviewDTOPage(reviewPage);
@@ -87,7 +87,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
         // page가 0보다 작으면 재요청
         PageUtil.checkUnderZero(pageNo);
 
-        Pageable pageable = PageRequest.of(pageNo, size, Sort.by("rvNum").descending());
+        Pageable pageable = PageRequest.of(pageNo, size, Sort.by("reviewNo").descending());
 
         Page<Review> reviewPage = reviewRepository.findByDisplay(pageable);
         Page<ReviewDTO> reviewDTOPage = convertToReviewDTOPage(reviewPage);

@@ -58,7 +58,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService {
         if (title == null || title.trim().isEmpty()) {
             throw new BadRequestException("제목을 입력해야합니다.");
         }
-        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("resumeNo").descending());
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("resumeStatisticsNo").descending());
         Page<ResumeStatistics> pageResult = adminResumeBoardRepository.findByTitleContaining(title, pageable);
 
         if (pageResult.getContent().isEmpty()) {
@@ -78,7 +78,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService {
         if (rating > 5) {
             rating = 5f; // rating이 5를 초과하는 경우 5로 설정
         }
-        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("resumeNo").descending());
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("resumeStatisticsNo").descending());
         Page<ResumeStatistics> pageResult = adminResumeBoardRepository.findByRatingBetween(rating, rating + 0.99f, pageable);
         List<ResumeBoardDTO> dtoList = convertToDTO(pageResult.getContent());
         return new PageImpl<>(dtoList, pageable, pageResult.getTotalElements());

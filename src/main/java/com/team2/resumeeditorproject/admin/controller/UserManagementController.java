@@ -47,7 +47,7 @@ public class UserManagementController {
 
     /* 회원 검색 */
     @GetMapping("/list/search")
-    public ResponseEntity<UserListResponse> searchUsers(@RequestBody SearchUserRequest searchUserRequest) {
+    public ResponseEntity<UserListResponse> searchUsers(SearchUserRequest searchUserRequest) {
 
         int size = SIZE_OF_PAGE;
 

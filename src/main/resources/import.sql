@@ -63,3 +63,5 @@ INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('iam
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('yejeejudy@naver.com', 'd852eb16-9e', '2024-05-30 15:22:19', '2024-05-30 15:27:19');
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('seventhseven@naver.com', 'be41f1ba-39', '2024-05-30 15:23:43', '2024-05-30 15:28:43');
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('je_hn@naver.com', '5ce6ce61-89', '2024-05-30 15:23:37', '2024-05-30 15:28:37');
+
+INSERT INTO PUBLIC.RESUME_STATISTICS (RATING, RATING_COUNT, READ_COUNT, RESUME_NO, TITLE) VALUES (4, 1, 1, 1, 'test');

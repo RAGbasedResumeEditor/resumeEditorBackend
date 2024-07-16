@@ -1,25 +1,19 @@
 package com.team2.resumeeditorproject.user.controller;
 
-import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.common.util.CommonResponse;
-import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
+import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
 import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
-import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
-import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.resume.service.ResumeGuideService;
 import com.team2.resumeeditorproject.resume.service.ResumeService;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.ResumeEditDetailDTO;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
-import com.team2.resumeeditorproject.user.repository.RefreshRepository;
-import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,14 +44,8 @@ import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOk
 public class UserController extends HttpServlet {
 
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final RefreshRepository refreshRepository;
-    private final UserManagementService userManagementService;
     private final ResumeBoardService resumeBoardService;
-    private final ResumeRepository resumeRepository;
     private final ResumeService resumeService;
-    private final ResumeEditService resumeEditService;
-    private final ModelMapper modelMapper;
     private final ResumeGuideService resumeGuideService;
 
     private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
@@ -259,8 +247,8 @@ public class UserController extends HttpServlet {
     }
 
     // 첨삭 기록 상세페이지
-    @GetMapping("/user/edit-list/{num}")
-    public ResponseEntity<ResumeEditDetailDTO> getResumeBoard(@PathVariable("num") Long num) {
+    @GetMapping("/user/edit-list/{resumeEditNo}")
+    public ResponseEntity<ResumeEditDetailDTO> getResumeBoard(@PathVariable("resumeEditNo") Long num) {
         String username = getUsername();
         ResumeEditDetailDTO detailDTO = resumeService.getResumeEditDetail(num, username);
         return new ResponseEntity<>(detailDTO, HttpStatus.OK);
@@ -329,7 +317,7 @@ public class UserController extends HttpServlet {
 
     // 자소서 가이드 상세 페이지
     @GetMapping("/user/guide-list/{resumeGuideNo}")
-    public ResponseEntity<ResumeGuideDTO> getResumeGuideDetail(@PathVariable("gNum") Long gNum) {
+    public ResponseEntity<ResumeGuideDTO> getResumeGuideDetail(@PathVariable("resumeGuideNo") Long gNum) {
         String username = getUsername();
         ResumeGuideDTO resumeGuideDTO = resumeGuideService.getResumeGuideDetail(gNum, username);
         return new ResponseEntity<>(resumeGuideDTO, HttpStatus.OK);

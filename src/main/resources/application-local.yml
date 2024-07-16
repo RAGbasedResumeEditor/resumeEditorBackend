@@ -1,6 +1,6 @@
 
 server:
-  port: 80
+  port: 8081
 
 spring:
   datasource:
@@ -35,4 +35,4 @@ spring:
       mail.smtp.starttls.enable: true
       mail.smtp.ssl.enable: false
   jwt:
-    secret: meaningless-dummy-string
+    secret: ${JWT_SECRET}

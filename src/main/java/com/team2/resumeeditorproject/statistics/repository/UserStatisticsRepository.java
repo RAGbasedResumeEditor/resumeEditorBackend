@@ -21,25 +21,28 @@ public interface UserStatisticsRepository extends JpaRepository<User, Long> {
     List<User> findByCreatedDateBetween(Date startDate, Date endDate);
 
     // 직종 랭킹 Top5
-    @Query(value = "SELECT occupation, COUNT(occupation) AS count " +
-            "FROM user " +
-            "GROUP BY occupation " +
+    @Query(value = "SELECT o.occupation_name, COUNT(u.occupation_no) AS count " +
+            "FROM user u " +
+            "JOIN occupation o ON u.occupation_no = o.occupation_no " +
+            "GROUP BY o.occupation_name " +
             "ORDER BY count DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Object[]> findTop5Occupations();
 
     // 회사 랭킹 Top5
-    @Query(value = "SELECT company, COUNT(company) AS count " +
-            "FROM user " +
-            "GROUP BY company " +
+    @Query(value = "SELECT c.company_name, COUNT(u.company_no) AS count " +
+            "FROM user u " +
+            "JOIN company c ON u.company_no = c.company_no " +
+            "GROUP BY c.company_name " +
             "ORDER BY count DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Object[]> findTop5Companies();
 
     // 희망직종 랭킹 Top5
-    @Query(value = "SELECT wish, COUNT(wish) AS count " +
-            "FROM user " +
-            "GROUP BY wish " +
+    @Query(value = "SELECT c.company_name, COUNT(u.wish_company_no) AS count " +
+            "FROM user u " +
+            "JOIN company c ON u.company_no = c.company_no " +
+            "GROUP BY company_name " +
             "ORDER BY count DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Object[]> findTop5Wishes();

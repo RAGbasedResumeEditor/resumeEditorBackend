@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/statistics") // /admin 지우기
+@RequestMapping("/statistics")
 @RequiredArgsConstructor
 public class RankStatisticsController {
 

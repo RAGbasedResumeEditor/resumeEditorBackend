@@ -1,6 +1,9 @@
 package com.team2.resumeeditorproject.user.service;
 
+import com.team2.resumeeditorproject.exception.DelDateException;
+import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.domain.Verification;
+import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.repository.VerificationRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -10,8 +13,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,6 +25,7 @@ import java.util.UUID;
 public class MailServiceImpl implements MailService { // 인증코드를 생성하고 이메일을 보내는 서비스
 
     private final VerificationRepository verificationRepository;
+    private final UserRepository userRepository;
     private final JavaMailSender mailSender; // 메일을 보내기 위한 인터페이스
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -93,5 +100,28 @@ public class MailServiceImpl implements MailService { // 인증코드를 생성�
                 .expiresDate(futureTime)
                 .build();
         verificationRepository.save(verification);
+    }
+
+    @Override
+    public void handleUserExistsAndDeletedDate(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            Date delDate = user.getDeletedDate();
+            if (delDate != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String deleted = dateFormat.format(delDate);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(delDate);
+                calendar.add(Calendar.DAY_OF_MONTH, 30);
+                Date newDate = calendar.getTime();
+                String available = dateFormat.format(newDate);
+                if (delDate.before(newDate)) {
+                    List<String> result = new ArrayList<>();
+                    result.add(deleted);
+                    result.add(available);
+                    throw new DelDateException(result);
+                }
+            }
+        }
     }
 }

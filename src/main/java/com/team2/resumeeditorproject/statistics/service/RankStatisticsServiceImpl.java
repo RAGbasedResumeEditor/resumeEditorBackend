@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.statistics.service;
 
 import com.team2.resumeeditorproject.exception.StatisticsException;
+import com.team2.resumeeditorproject.resume.repository.OccupationRepository;
 import com.team2.resumeeditorproject.statistics.repository.ResumeEditStatisticsRepository;
 import com.team2.resumeeditorproject.statistics.repository.UserStatisticsRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class RankStatisticsServiceImpl implements RankStatisticsService {
 
     private final ResumeEditStatisticsRepository resumeEditStatisticsRepository;
     private final UserStatisticsRepository userStatisticsRepository;
+    private final OccupationRepository occupationRepository;
 
     public static final String FAILED_TO_FETCH_TOP5_DATA = "Failed to fetch Top5 data for statistics";
 
@@ -25,11 +27,12 @@ public class RankStatisticsServiceImpl implements RankStatisticsService {
     public Map<String, Integer> getTopOccupationRanksByUsers() {
         try {
             List<Object[]> occupationCounts = userStatisticsRepository.findTop5Occupations();
+
             return occupationCounts.stream()
                     .collect(Collectors.toMap(
                             obj -> {
-                                String occupation = (String) obj[0];
-                                return (occupation == null || occupation.isEmpty()) ? "무직" : occupation;
+                                String occupationName = (String) obj[0];
+                                return (occupationName == null || occupationName.isEmpty()) ? "무직" : occupationName;
                             },
                             obj -> ((Long) obj[1]).intValue()
                     ));
@@ -46,8 +49,8 @@ public class RankStatisticsServiceImpl implements RankStatisticsService {
             return companyCounts.stream()
                     .collect(Collectors.toMap(
                             obj -> {
-                                String company = (String) obj[0];
-                                return (company == null || company.isEmpty()) ? "무직" : company;
+                                String companyName = (String) obj[0];
+                                return (companyName == null || companyName.isEmpty()) ? "무직" : companyName;
                             },
                             obj -> ((Long) obj[1]).intValue()
                     ));
@@ -64,8 +67,8 @@ public class RankStatisticsServiceImpl implements RankStatisticsService {
             return wishCounts.stream()
                     .collect(Collectors.toMap(
                             obj -> {
-                                String wish = (String) obj[0];
-                                return (wish == null || wish.isEmpty()) ? "없음" : wish;
+                                String wishCompanyName = (String) obj[0];
+                                return (wishCompanyName == null || wishCompanyName.isEmpty()) ? "없음" : wishCompanyName;
                             },
                             obj -> ((Long) obj[1]).intValue()
                     ));

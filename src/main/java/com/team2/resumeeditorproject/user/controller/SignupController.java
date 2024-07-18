@@ -41,10 +41,6 @@ public class SignupController {
             throw new NotFoundException("검색 결과가 없습니다.");
         }
 
-        LoadOccupationResponse response = LoadOccupationResponse.builder()
-                .occupationList(occupationDTOs)
-                .build();
-
         return ResponseEntity.ok()
                 .body(LoadOccupationResponse.builder()
                         .occupationList(occupationDTOs)

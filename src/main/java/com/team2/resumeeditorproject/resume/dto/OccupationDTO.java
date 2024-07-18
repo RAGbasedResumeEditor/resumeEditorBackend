@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OccupationDTO {
+    private Long occupationNo;
     private String occupationName;
 }

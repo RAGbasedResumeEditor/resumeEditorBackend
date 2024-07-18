@@ -9,5 +9,5 @@ import java.util.Date;
 @Builder
 public class ErrorResponse {
     private String message;
-    private Date today;
+    private Date time;
 }

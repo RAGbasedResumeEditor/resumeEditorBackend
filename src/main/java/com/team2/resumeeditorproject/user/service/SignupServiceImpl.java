@@ -29,7 +29,7 @@ public class SignupServiceImpl implements SignupService {
         List<Occupation> occupationList = occupationRepository.findByOccupationNameContaining(name);
 
         return occupationList.stream()
-                .map(occupation -> new OccupationDTO(occupation.getOccupationName()))
+                .map(occupation -> new OccupationDTO(occupation.getOccupationNo(), occupation.getOccupationName()))
                 .collect(Collectors.toList());
     }
 

@@ -19,21 +19,18 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumeBoardDTO {
-    @JsonProperty("resume_no")
     private Long resumeNo;
 
     private float rating;
 
-    @JsonProperty("rating_count")
     private int ratingCount;
 
-    @JsonProperty("read_count")
     private int readCount;
 
     private String title;
 
     //for admin
-    @JsonProperty("created_date")
+    @JsonProperty("createdDate")
     private Date w_date;
 
     private String username;

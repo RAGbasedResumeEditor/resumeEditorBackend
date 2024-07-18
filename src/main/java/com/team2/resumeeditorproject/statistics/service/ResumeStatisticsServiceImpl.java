@@ -88,7 +88,7 @@ public class ResumeStatisticsServiceImpl implements ResumeStatisticsService {
         Date endDate = DateUtils.toSqlDate(dateRange.endDate().plusDays(1)); // endDate + 1일로 설정하여 범위 포함
 
         try {
-            List<Resume> resumeList = resumeStatisticsRepository.findByWDateBetween(startDate, endDate);
+            List<Resume> resumeList = resumeStatisticsRepository.findByCreatedDateBetween(startDate, endDate);
 
             for (Resume resume : resumeList) {
                 LocalDate date = resume.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -113,7 +113,7 @@ public class ResumeStatisticsServiceImpl implements ResumeStatisticsService {
         LocalDate startDate = monthRange.startMonth().atDay(1);  // 시작 월의 첫 날
         LocalDate endDate = monthRange.endMonth().atEndOfMonth();  // 종료 월의 마지막 날
         try {
-            List<Resume> resumeList = resumeStatisticsRepository.findByWDateBetween(java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+            List<Resume> resumeList = resumeStatisticsRepository.findByCreatedDateBetween(java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
 
             for (Resume resume : resumeList) {
                 LocalDate wDate = resume.getCreatedDate().toInstant()

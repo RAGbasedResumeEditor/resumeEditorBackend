@@ -15,7 +15,7 @@ import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.resume.service.BookmarkService;
 import com.team2.resumeeditorproject.resume.service.RatingService;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
-import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
+import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,12 +80,6 @@ public class ResumeBoardController {
     private ResumeRepository resumeRepository;
 
     private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
-
-    public static String getUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return userDetails.getUsername();
-    }
 
     /* 게시글 목록 */
     @GetMapping("/list")
@@ -347,10 +339,10 @@ public class ResumeBoardController {
 
     /* 별점 확인 */
     @GetMapping("/rating/{num}")
-    public ResponseEntity<Map<String, Object>> getRating(@PathVariable("num") Long num) {
+    public ResponseEntity<Map<String, Object>> getRating(@PathVariable("num") Long num, UserDTO loginUser) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
-        String username = getUsername();
+        String username = loginUser.getUsername();
         Long userNo = userService.showUser(username).getUserNo();
         float result = 0;
 
@@ -472,10 +464,10 @@ public class ResumeBoardController {
 
     /* 즐겨찾기 확인 */
     @GetMapping("/bookmark/{num}")
-    public ResponseEntity<Map<String, Object>> getBookmark(@PathVariable("num")  Long num) {
+    public ResponseEntity<Map<String, Object>> getBookmark(@PathVariable("num")  Long num, UserDTO loginUser) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
-        String username = getUsername();
+        String username = loginUser.getUsername();
         Long userNo = userService.showUser(username).getUserNo();
         String result = "";
 

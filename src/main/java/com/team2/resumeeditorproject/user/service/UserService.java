@@ -4,7 +4,6 @@ import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 
 public interface UserService {
-    String getUsername();
     Boolean checkEmailDuplicate(String email);
 
     int updateUserMode(long userNo);

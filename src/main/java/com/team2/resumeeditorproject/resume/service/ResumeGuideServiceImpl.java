@@ -40,7 +40,7 @@ public class ResumeGuideServiceImpl implements ResumeGuideService{
         if (resumeGuide == null) {
             throw new NotFoundException("Resume guide with gNum " + gNum + " not found");
         }
-        Long userNo = userService.showUser(userService.getUsername()).getUserNo();
+        Long userNo = userService.showUser(username).getUserNo();
         if (!userNo.equals(resumeGuide.getUser().getUserNo())) {
             throw new BadRequestException(" - 잘못된 접근입니다. (로그인한 사용자의 가이드 기록이 아닙니다)");
         }

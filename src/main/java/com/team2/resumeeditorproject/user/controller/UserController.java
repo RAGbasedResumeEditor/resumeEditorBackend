@@ -31,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,17 +63,11 @@ public class UserController extends HttpServlet {
 
     private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
 
-    public static String getUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return userDetails.getUsername();
-    }
-
     //회원조회
     @PostMapping("/user/search")
-    public ResponseEntity<Map<String, Object>> showUser() {
+    public ResponseEntity<Map<String, Object>> showUser(UserDTO loginUser) {
 
-            String username = getUsername();
+            String username = loginUser.getUsername();
 
             User tempUser = userService.showUser(username);
             UserDTO user = new UserDTO();
@@ -111,8 +106,8 @@ public class UserController extends HttpServlet {
 
     //회원정보 수정
     @PatchMapping("/user")
-    public ResponseEntity<CommonResponse> updateUser(@RequestBody UserDTO userDTO) throws AuthenticationException {
-        String username = getUsername();
+    public ResponseEntity<CommonResponse> updateUser(@RequestBody UserDTO userDTO, UserDTO loginUser) throws AuthenticationException {
+        String username = loginUser.getUsername();
         User tempUser = userService.showUser(username);
         userDTO.setUserNo(tempUser.getUserNo());
 
@@ -128,8 +123,8 @@ public class UserController extends HttpServlet {
 
     // 즐겨찾기 목록 조회
     @GetMapping("/user/bookmark")
-    public ResponseEntity<Map<String, Object>> showBookmark(@RequestParam("pageNo") int pageNo) throws AuthenticationException {
-        String username = getUsername();
+    public ResponseEntity<Map<String, Object>> showBookmark(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
+        String username = loginUser.getUsername();
         Long userNo = userService.showUser(username).getUserNo();
         int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
@@ -195,8 +190,8 @@ public class UserController extends HttpServlet {
 
     // 첨삭 기록 목록 조회
     @GetMapping("/user/edit-list")
-    public ResponseEntity<Map<String, Object>> resumeEditList(@RequestParam("pageNo") int pageNo) throws AuthenticationException {
-        String username = getUsername();
+    public ResponseEntity<Map<String, Object>> resumeEditList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
+        String username = loginUser.getUsername();
         Long userNo = userService.showUser(username).getUserNo();
         int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
@@ -260,17 +255,16 @@ public class UserController extends HttpServlet {
 
     // 첨삭 기록 상세페이지
     @GetMapping("/user/edit-list/{num}")
-    public ResponseEntity<ResumeEditDetailDTO> getResumeBoard(@PathVariable("num") Long num) {
-        String username = getUsername();
+    public ResponseEntity<ResumeEditDetailDTO> getResumeBoard(@PathVariable("num") Long num, UserDTO loginUser) {
+        String username = loginUser.getUsername();
         ResumeEditDetailDTO detailDTO = resumeService.getResumeEditDetail(num, username);
         return new ResponseEntity<>(detailDTO, HttpStatus.OK);
     }
 
     // 자소서 가이드 목록 조회
     @GetMapping("/user/guide-list")
-    public ResponseEntity<Map<String, Object>> resumeGuideList(
-            @RequestParam("pageNo") int pageNo) throws AuthenticationException {
-        String username = getUsername();
+    public ResponseEntity<Map<String, Object>> resumeGuideList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
+        String username = loginUser.getUsername();
         Long userNo = userService.showUser(username).getUserNo();
         int size = SIZE_OF_PAGE;
         Map<String, Object> response = new HashMap<>();
@@ -329,8 +323,8 @@ public class UserController extends HttpServlet {
 
     // 자소서 가이드 상세 페이지
     @GetMapping("/user/guide-list/{resumeGuideNo}")
-    public ResponseEntity<ResumeGuideDTO> getResumeGuideDetail(@PathVariable("gNum") Long gNum) {
-        String username = getUsername();
+    public ResponseEntity<ResumeGuideDTO> getResumeGuideDetail(@PathVariable("gNum") Long gNum, UserDTO loginUser) {
+        String username = loginUser.getUsername();
         ResumeGuideDTO resumeGuideDTO = resumeGuideService.getResumeGuideDetail(gNum, username);
         return new ResponseEntity<>(resumeGuideDTO, HttpStatus.OK);
     }

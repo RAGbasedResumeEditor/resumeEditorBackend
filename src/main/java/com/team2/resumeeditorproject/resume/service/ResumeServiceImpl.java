@@ -70,7 +70,7 @@ public class ResumeServiceImpl implements ResumeService{
             throw new NotFoundException(" - resume with r_num " + rNum + " not found");
         }
 
-        Long uNum = userService.showUser(userService.getUsername()).getUserNo();
+        Long uNum = userService.showUser(username).getUserNo();
         if (!uNum.equals(resume.getUser().getUserNo())) {
             throw new BadRequestException(" - 잘못된 접근입니다. (로그인한 사용자의 첨삭 기록이 아닙니다)");
         }

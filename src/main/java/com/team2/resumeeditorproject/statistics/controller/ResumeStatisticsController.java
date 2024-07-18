@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/statistics") // /admin 지우기
+@RequestMapping("/statistics")
 @RequiredArgsConstructor
 public class ResumeStatisticsController {
 

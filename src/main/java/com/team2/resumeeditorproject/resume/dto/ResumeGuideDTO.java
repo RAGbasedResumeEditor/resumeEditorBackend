@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.resume.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +17,6 @@ public class ResumeGuideDTO {
     private Long occupationNo;
     private String occupationName;
     private String content;
+    private String questions;
+    private int mode;
 }

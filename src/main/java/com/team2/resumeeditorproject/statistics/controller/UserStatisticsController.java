@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/statistics/user") // /admin 지우기
+@RequestMapping("/statistics/user")
 @RequiredArgsConstructor
 public class UserStatisticsController {
     

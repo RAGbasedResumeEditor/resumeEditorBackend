@@ -5,4 +5,5 @@ public interface MailService {
     String createUuid();
     void sendEmail(String email);
     void sendEmailEnd(String setFrom, String toMail, String title, String content);
+    void handleUserExistsAndDeletedDate(String email);
 }

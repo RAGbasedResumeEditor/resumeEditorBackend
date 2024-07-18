@@ -19,6 +19,6 @@ public class AgeCountResponse {
     @JsonProperty("50s")
     private int count50s;
 
-    @JsonProperty("60_plus")
+    @JsonProperty("60Plus")
     private int count60Plus;
 }

@@ -9,7 +9,6 @@ import java.util.Date;
 @Data
 @Builder
 public class ResumeEditDetailDTO {
-    @JsonProperty("r_num")
     private Long resumeEditNo;
     private Long companyNo;
     private String companyName;
@@ -18,11 +17,13 @@ public class ResumeEditDetailDTO {
     private String questions;
     private String options;
 
-    @JsonProperty("r_content")
+    @JsonProperty("beforeContent")
     private String rContent;
+
     private int mode;
+
+    @JsonProperty("afterContent")
     private String content;
 
-    @JsonProperty("w_date")
     private Date createdDate;
 }

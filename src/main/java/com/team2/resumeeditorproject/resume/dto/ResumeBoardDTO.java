@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.resume.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,12 +20,18 @@ import java.util.Date;
 @AllArgsConstructor
 public class ResumeBoardDTO {
     private Long resumeNo;
+
     private float rating;
+
     private int ratingCount;
+
     private int readCount;
+
     private String title;
 
     //for admin
+    @JsonProperty("createdDate")
     private Date w_date;
+
     private String username;
 }

@@ -33,13 +33,6 @@ public class UserServiceImpl implements UserService {
     private final RefreshService refreshService;
 
     @Override
-    public String getUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return userDetails.getUsername();
-    }
-
-    @Override
     public Boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
     }

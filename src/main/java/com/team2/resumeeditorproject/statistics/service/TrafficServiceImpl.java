@@ -1,8 +1,8 @@
 package com.team2.resumeeditorproject.statistics.service;
 
 import com.team2.resumeeditorproject.statistics.domain.DailyStatistics;
-import com.team2.resumeeditorproject.statistics.repository.ResumeStatisticsRepository;
 import com.team2.resumeeditorproject.statistics.repository.DailyStatisticsRepository;
+import com.team2.resumeeditorproject.statistics.repository.ResumeStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

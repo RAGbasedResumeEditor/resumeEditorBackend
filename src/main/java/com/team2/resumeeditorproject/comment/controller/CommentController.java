@@ -142,7 +142,7 @@ public class CommentController {
                     // 첫 번째 요소는 Comment
                     Comment comment = (Comment) result[0];
                     formattedResult.put("commentNo", comment.getCommentNo());
-                    formattedResult.put("resumeNo", comment.getResume().getResumeNo());
+                    formattedResult.put("resumeBoardNo", comment.getResumeBoard().getResumeBoardNo());
                     formattedResult.put("userNo", comment.getUser().getUserNo());
                     formattedResult.put("content", comment.getContent());
                     formattedResult.put("w_date", comment.getCreatedDate());

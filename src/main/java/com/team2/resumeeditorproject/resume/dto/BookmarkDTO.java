@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookmarkDTO {
     private Long bookmarkNo;
-    private Long resumeNo;
+    private Long resumeBoardNo;
     private Long userNo;
 }

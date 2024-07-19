@@ -30,6 +30,7 @@ public class ReviewManagementServiceImpl implements  ReviewManagementService {
                 .map(review -> new ReviewDTO(
                         review.getReviewNo(),
                         review.getUser().getUserNo(),
+                        review.getUser().getUsername(),
                         review.getContent(),
                         review.getRating(),
                         review.getMode(),

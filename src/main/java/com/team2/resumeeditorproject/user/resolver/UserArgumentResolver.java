@@ -11,6 +11,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.team2.resumeeditorproject.user.domain.User;
+import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 
 @Component
@@ -29,10 +30,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 			throw new LoginException("Authentication failed");
 		}
 
-		User user = (User) authentication.getPrincipal();
+		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 		UserDTO userDTO = new UserDTO();
-		userDTO.setUsername(user.getUsername());
-		userDTO.setUserNo(user.getUserNo());
+		userDTO.setUsername(customUserDetails.getUsername());
+		userDTO.setUserNo(customUserDetails.getUserNo());
 
 		return userDTO;
 	}

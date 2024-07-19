@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "resume_rating", uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"user_no", "resume_no"})
+		@UniqueConstraint(columnNames = {"user_no", "resume_board_no"})
 })
 @Getter
 @Builder
@@ -35,8 +35,8 @@ public class ResumeRating {
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "resume_no")
-	private Resume resume;
+	@JoinColumn(name = "resume_board_no")
+	private ResumeBoard resumeBoard;
 
 	private float rating;
 

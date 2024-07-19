@@ -9,7 +9,7 @@ public class RatingServiceImpl implements RatingService{
     @Autowired
     private RatingRepository ratingRepository;
     @Override
-    public int ratingCount(long resumeNo, long userNo) {
-        return ratingRepository.countByResumeResumeNoAndUserUserNo(resumeNo, userNo);
+    public int ratingCount(long resumeBoardNo, long userNo) {
+        return ratingRepository.countByResumeBoardResumeBoardNoAndUserUserNo(resumeBoardNo, userNo);
     }
 }

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-import com.team2.resumeeditorproject.resume.domain.Resume;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.user.domain.User;
 
 @Entity
@@ -39,7 +39,7 @@ public class Comment {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_no")
-    private Resume resume;
+    @JoinColumn(name = "resume_board_no")
+    private ResumeBoard resumeBoard;
 
 }

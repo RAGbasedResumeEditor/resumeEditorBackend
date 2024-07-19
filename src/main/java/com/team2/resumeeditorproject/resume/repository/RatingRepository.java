@@ -4,7 +4,7 @@ import com.team2.resumeeditorproject.resume.domain.ResumeRating;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RatingRepository extends JpaRepository<ResumeRating, Long> {
-    int countByResumeResumeNoAndUserUserNo(long resumeNo, long userNo);
+    int countByResumeBoardResumeBoardNoAndUserUserNo(long resumeBoardNo, long userNo);
 
-    ResumeRating findByResumeResumeNoAndUserUserNo(long resumeNo, long userNo);
+    ResumeRating findByResumeBoardResumeBoardNoAndUserUserNo(long resumeBoardNo, long userNo);
 }

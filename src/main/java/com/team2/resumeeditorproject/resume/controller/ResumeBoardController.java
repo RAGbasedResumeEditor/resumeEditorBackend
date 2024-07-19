@@ -280,16 +280,16 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
-            long resumeNo = ratingDTO.getResumeNo();
+            long resumeBoardNo = ratingDTO.getResumeBoardNo();
 
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(resumeNo).orElse(null);
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(resumeBoardNo).orElse(null);
             if (resumeBoard == null) { // 해당하는 게시글이 없다면
-                throw new Exception(" - ResumeBoard with num " + resumeNo + " not found");
+                throw new Exception(" - ResumeBoard with num " + resumeBoardNo + " not found");
             }
 
             Map<String, Object> result = new HashMap<>();
 
-            int isRated = ratingService.ratingCount(ratingDTO.getResumeNo(), ratingDTO.getUserNo());
+            int isRated = ratingService.ratingCount(ratingDTO.getResumeBoardNo(), ratingDTO.getUserNo());
 
             if (isRated > 0) { // 이미 별점을 줬다면
                 throw new Exception(" - 이미 별점을 준 게시글");
@@ -301,7 +301,7 @@ public class ResumeBoardController {
 
             // 별점을 안 준 상태면 rating 테이블에 저장
             ResumeRating resumeRating = ResumeRating.builder()
-                    .resume(resumeRepository.findById(ratingDTO.getResumeNo()).orElseThrow(() -> new IllegalArgumentException("invalid resumeNo")))
+                    .resumeBoard(resumeBoardRepository.findById(ratingDTO.getResumeBoardNo()).orElseThrow(() -> new IllegalArgumentException("invalid resumeBoardNo")))
                     .user(userRepository.findById(ratingDTO.getUserNo()).orElseThrow(() -> new IllegalArgumentException("invalid userNo")))
                     .rating(ratingDTO.getRating())
                     .build();
@@ -310,7 +310,7 @@ public class ResumeBoardController {
 
             // resume_board의 rating_count(게시글 별점 수) 증가
             // 현재(증가 전) rating_count
-            ResumeBoardDTO resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getResumeNo());
+            ResumeBoardDTO resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getResumeBoardNo());
             int beforeRatingCount = resumeBoardDTO.getRatingCount();
             float beforeRating = resumeBoardDTO.getRating();
 
@@ -318,10 +318,10 @@ public class ResumeBoardController {
             float avgRating = (beforeRating * beforeRatingCount + ratingDTO.getRating()) / (beforeRatingCount + 1);
 
             // resume_board의 rating_count, rating 업데이트
-            int ratingCountUpdate = resumeBoardService.updateRatingCount(ratingDTO.getResumeNo(), beforeRatingCount+1, avgRating);
+            int ratingCountUpdate = resumeBoardService.updateRatingCount(ratingDTO.getResumeBoardNo(), beforeRatingCount+1, avgRating);
 
             // 증가한 rating_count 가져오기
-            resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getResumeNo());
+            resumeBoardDTO = resumeBoardService.getResumeBoardForRating(ratingDTO.getResumeBoardNo());
 
             float afterRating = (float) Math.round(resumeBoardDTO.getRating() * 10) /10;
 
@@ -353,7 +353,7 @@ public class ResumeBoardController {
             }
 
             // 별점 여부 확인
-            ResumeRating resumeRating = ratingRepository.findByResumeResumeNoAndUserUserNo(num, userNo);
+            ResumeRating resumeRating = ratingRepository.findByResumeBoardResumeBoardNoAndUserUserNo(num, userNo);
 
             if(resumeRating == null){
                 result = 0; // 별점 안줬음
@@ -439,9 +439,9 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try{
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(bookmarkDTO.getResumeNo()).orElse(null);
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(bookmarkDTO.getResumeBoardNo()).orElse(null);
             if (resumeBoard == null) { // 해당하는 게시글이 없다면
-                throw new Exception(" - ResumeBoard with num " + bookmarkDTO.getResumeNo() + " not found");
+                throw new Exception(" - ResumeBoard with num " + bookmarkDTO.getResumeBoardNo() + " not found");
             }
 
             // 즐겨찾기를 누르면 테이블에 저장
@@ -463,8 +463,8 @@ public class ResumeBoardController {
     }
 
     /* 즐겨찾기 확인 */
-    @GetMapping("/bookmark/{num}")
-    public ResponseEntity<Map<String, Object>> getBookmark(@PathVariable("num")  Long num, UserDTO loginUser) {
+    @GetMapping("/bookmark/{resumeBoardNo}")
+    public ResponseEntity<Map<String, Object>> getBookmark(@PathVariable("resumeBoardNo")  Long resumeBoardNo, UserDTO loginUser) {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         String username = loginUser.getUsername();
@@ -472,13 +472,13 @@ public class ResumeBoardController {
         String result = "";
 
         try {
-            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(resumeBoardNo).orElse(null);
             if (resumeBoard == null) { // 해당하는 게시글이 없다면
-                throw new Exception(" - ResumeBoard with num " + num + " not found");
+                throw new Exception(" - ResumeBoard with num " + resumeBoardNo + " not found");
             }
             
             // 즐겨찾기 여부 확인
-            Bookmark bookmark = bookmarkRepository.findByResumeResumeNoAndUserUserNo(num, userNo);
+            Bookmark bookmark = bookmarkRepository.findByResumeBoardResumeBoardNoAndUserUserNo(resumeBoardNo, userNo);
 
             if (bookmark == null) {
                 result = "false"; // 즐겨찾기 안했음

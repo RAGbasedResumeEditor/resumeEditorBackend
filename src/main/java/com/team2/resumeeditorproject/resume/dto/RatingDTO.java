@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RatingDTO {
-    private Long resumeNo;
+    private Long resumeBoardNo;
     private Long userNo;
     private float rating;
 }

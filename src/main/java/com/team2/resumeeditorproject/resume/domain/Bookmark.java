@@ -18,7 +18,7 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "bookmark", uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"user_no", "resume_no"})
+		@UniqueConstraint(columnNames = {"user_no", "resume_board_no"})
 })
 public class Bookmark {
 	@Id
@@ -28,8 +28,8 @@ public class Bookmark {
 	private Date createdDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "resume_no")
-	private Resume resume;
+	@JoinColumn(name = "resume_board_no")
+	private ResumeBoard resumeBoard;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_no")

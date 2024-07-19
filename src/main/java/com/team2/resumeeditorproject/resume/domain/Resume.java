@@ -39,10 +39,6 @@ public class Resume {
     @JoinColumn(name = "resume_no") 
     private ResumeEdit resumeEdit;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_no") 
-    private List<Comment> comments;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_no")
     private User user;

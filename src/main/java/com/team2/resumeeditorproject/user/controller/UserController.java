@@ -2,7 +2,7 @@ package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.common.util.CommonResponse;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
-import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import com.team2.resumeeditorproject.resume.service.ResumeGuideService;
@@ -139,12 +139,12 @@ public class UserController extends HttpServlet {
                     Map<String, Object> formattedResult = new HashMap<>();
 
                     // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                    ResumeStatistics resumeStatistics = (ResumeStatistics) result[0];
-                    formattedResult.put("resumeNo", resumeStatistics.getResume().getResumeNo());
-                    formattedResult.put("rating", (float) Math.round(resumeStatistics.getRating() * 10) / 10);
-                    formattedResult.put("rating_count", resumeStatistics.getRatingCount());
-                    formattedResult.put("read_num", resumeStatistics.getReadCount());
-                    formattedResult.put("title", resumeStatistics.getTitle());
+                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
+                    formattedResult.put("resumeNo", resumeBoard.getResume().getResumeNo());
+                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeBoard.getRatingCount());
+                    formattedResult.put("read_num", resumeBoard.getReadCount());
+                    formattedResult.put("title", resumeBoard.getTitle());
 
                     // 두 번째 요소는 Resume의 content
                     String content = (String) result[1];

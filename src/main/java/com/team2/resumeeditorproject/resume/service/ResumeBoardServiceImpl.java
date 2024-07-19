@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.resume.service;
 
-import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 
@@ -30,9 +30,9 @@ public class ResumeBoardServiceImpl implements ResumeBoardService{
 
     @Override
     public ResumeBoardDTO insertResumeBoard(ResumeBoardDTO resumeboardDTO) {
-        ResumeStatistics resumeStatistics = modelMapper.map(resumeboardDTO, ResumeStatistics.class);
-        ResumeStatistics savedResumeStatistics = resumeBoardRepository.save(resumeStatistics);
-        return modelMapper.map(savedResumeStatistics, ResumeBoardDTO.class);
+        ResumeBoard resumeBoard = modelMapper.map(resumeboardDTO, ResumeBoard.class);
+        ResumeBoard savedResumeBoard = resumeBoardRepository.save(resumeBoard);
+        return modelMapper.map(savedResumeBoard, ResumeBoardDTO.class);
     }
 
 
@@ -53,8 +53,8 @@ public class ResumeBoardServiceImpl implements ResumeBoardService{
 
     @Override
     public ResumeBoardDTO getResumeBoardForRating(Long resumeNo) {
-        ResumeStatistics resumeStatisticsEntity = resumeBoardRepository.findByResumeNo(resumeNo);
-        ResumeBoardDTO resumeBoardDTO = modelMapper.map(resumeStatisticsEntity, ResumeBoardDTO.class);
+        ResumeBoard resumeBoard = resumeBoardRepository.findByResumeNo(resumeNo);
+        ResumeBoardDTO resumeBoardDTO = modelMapper.map(resumeBoard, ResumeBoardDTO.class);
         return resumeBoardDTO;
     }
 

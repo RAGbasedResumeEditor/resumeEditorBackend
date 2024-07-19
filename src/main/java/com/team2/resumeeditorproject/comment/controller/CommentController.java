@@ -3,7 +3,7 @@ package com.team2.resumeeditorproject.comment.controller;
 import com.team2.resumeeditorproject.comment.domain.Comment;
 import com.team2.resumeeditorproject.comment.dto.CommentDTO;
 import com.team2.resumeeditorproject.comment.service.CommentService;
-import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,8 +44,8 @@ public class CommentController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try {
-            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(commentDTO.getResumeNo()).orElse(null);
-            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(commentDTO.getResumeNo()).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + commentDTO.getResumeNo() + " not found");
             }
 
@@ -115,8 +115,8 @@ public class CommentController {
         Date today = new Date();
 
         try {
-            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(resumeNo).orElse(null);
-            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(resumeNo).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + resumeNo + " not found");
             }
 

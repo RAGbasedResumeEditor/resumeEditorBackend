@@ -4,7 +4,7 @@ import com.team2.resumeeditorproject.admin.repository.AdminResumeBoardRepository
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.exception.NotFoundException;
 import com.team2.resumeeditorproject.resume.domain.Resume;
-import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import com.team2.resumeeditorproject.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +26,13 @@ public class ResumeManagementServiceImpl implements ResumeManagementService {
 
     private final AdminResumeBoardRepository adminResumeBoardRepository;
 
-    private List<ResumeBoardDTO> convertToDTO(List<ResumeStatistics> resumeStatisticsList) {
-        return resumeStatisticsList.stream()
+    private List<ResumeBoardDTO> convertToDTO(List<ResumeBoard> resumeBoardList) {
+        return resumeBoardList.stream()
                 .map(resumeBoard -> {
                     Resume resume = resumeBoard.getResume();
                     User user = resume.getUser();
                     return new ResumeBoardDTO(
-                            resumeBoard.getResumeStatisticsNo(),
+                            resumeBoard.getResumeBoardNo(),
                             (float) Math.round(resumeBoard.getRating() * 10) / 10,
                             resumeBoard.getRatingCount(),
                             resumeBoard.getReadCount(),
@@ -47,7 +47,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService {
     @Override
     @Transactional(readOnly = true)
     public Page<ResumeBoardDTO> getPagedResumeBoards(Pageable pageable) {
-        Page<ResumeStatistics> resumeBoardPage = adminResumeBoardRepository.findAllResumeBoards(pageable);
+        Page<ResumeBoard> resumeBoardPage = adminResumeBoardRepository.findAllResumeBoards(pageable);
         List<ResumeBoardDTO> dtoList = convertToDTO(resumeBoardPage.getContent());
         return new PageImpl<>(dtoList, pageable, resumeBoardPage.getTotalElements());
     }
@@ -58,8 +58,8 @@ public class ResumeManagementServiceImpl implements ResumeManagementService {
         if (title == null || title.trim().isEmpty()) {
             throw new BadRequestException("제목을 입력해야합니다.");
         }
-        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("resumeStatisticsNo").descending());
-        Page<ResumeStatistics> pageResult = adminResumeBoardRepository.findByTitleContaining(title, pageable);
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("resumeBoardNo").descending());
+        Page<ResumeBoard> pageResult = adminResumeBoardRepository.findByTitleContaining(title, pageable);
 
         if (pageResult.getContent().isEmpty()) {
             throw new NotFoundException("존재하지 않습니다.");
@@ -78,8 +78,8 @@ public class ResumeManagementServiceImpl implements ResumeManagementService {
         if (rating > 5) {
             rating = 5f; // rating이 5를 초과하는 경우 5로 설정
         }
-        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("resumeStatisticsNo").descending());
-        Page<ResumeStatistics> pageResult = adminResumeBoardRepository.findByRatingBetween(rating, rating + 0.99f, pageable);
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by("resumeBoardNo").descending());
+        Page<ResumeBoard> pageResult = adminResumeBoardRepository.findByRatingBetween(rating, rating + 0.99f, pageable);
         List<ResumeBoardDTO> dtoList = convertToDTO(pageResult.getContent());
         return new PageImpl<>(dtoList, pageable, pageResult.getTotalElements());
     }
@@ -95,7 +95,7 @@ public class ResumeManagementServiceImpl implements ResumeManagementService {
 
     @Override
     public Boolean checkResumeExists(Long resumeNo) {
-        Optional<ResumeStatistics> resumeBoard = adminResumeBoardRepository.findById(resumeNo);
+        Optional<ResumeBoard> resumeBoard = adminResumeBoardRepository.findById(resumeNo);
         return resumeBoard.isPresent();
     }
 }

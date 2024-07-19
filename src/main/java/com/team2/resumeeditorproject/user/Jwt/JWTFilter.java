@@ -70,13 +70,17 @@ public class JWTFilter extends OncePerRequestFilter {
         } //=> 토큰 검증 완료
 
         // 토큰 내부에서 특정한 username, role 값을 획득
+        Long userNo = jwtUtil.getUserNo(accessToken);
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
+        int mode = jwtUtil.getMode(accessToken);
 
         // user를 생성하여 값 초기화
         User user = User.builder()
+                .userNo(userNo)
                 .username(username)
                 .role(role)
+                .mode(mode)
                 .build();
 
         //UserDetails에 회원 정보 객체 담기

@@ -10,6 +10,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 
 @Component
@@ -28,8 +29,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 			throw new LoginException("Authentication failed");
 		}
 
+		User user = (User) authentication.getPrincipal();
 		UserDTO userDTO = new UserDTO();
-		userDTO.setUsername(authentication.getName());
+		userDTO.setUsername(user.getUsername());
+		userDTO.setUserNo(user.getUserNo());
 
 		return userDTO;
 	}

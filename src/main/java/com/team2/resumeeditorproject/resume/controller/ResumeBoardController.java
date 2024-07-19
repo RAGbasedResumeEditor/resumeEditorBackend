@@ -2,7 +2,7 @@ package com.team2.resumeeditorproject.resume.controller;
 
 import com.team2.resumeeditorproject.resume.domain.Bookmark;
 import com.team2.resumeeditorproject.resume.domain.ResumeRating;
-import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.BookmarkDTO;
 import com.team2.resumeeditorproject.resume.dto.RatingDTO;
@@ -112,11 +112,11 @@ public class ResumeBoardController {
                     Map<String, Object> formattedResult = new HashMap<>();
 
                     // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                    ResumeStatistics resumeStatistics = (ResumeStatistics) result[0];
-                    formattedResult.put("resumeNo", resumeStatistics.getResume().getResumeNo());
-                    formattedResult.put("rating", (float) Math.round(resumeStatistics.getRating() * 10) / 10);
-                    formattedResult.put("rating_count", resumeStatistics.getRatingCount());
-                    formattedResult.put("read_num", resumeStatistics.getReadCount());
+                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
+                    formattedResult.put("resumeNo", resumeBoard.getResume().getResumeNo());
+                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeBoard.getRatingCount());
+                    formattedResult.put("read_num", resumeBoard.getReadCount());
 
                     // 두 번째 요소는 Resume_board의 title
                     String title = (String) result[1];
@@ -158,10 +158,10 @@ public class ResumeBoardController {
         Date today = new Date();
         try {
             // 조회수 증가
-            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(num).orElse(null);
-            if (resumeStatistics != null) {
-                resumeStatistics.setReadCount(resumeStatistics.getReadCount()+1);
-                resumeBoardRepository.save(resumeStatistics);
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
+            if (resumeBoard != null) {
+                resumeBoard.setReadCount(resumeBoard.getReadCount()+1);
+                resumeBoardRepository.save(resumeBoard);
             } else { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
             }
@@ -176,12 +176,12 @@ public class ResumeBoardController {
             Map<String, Object> responseData = new HashMap<>();
 
             // 첫 번째 요소는 ResumeBoard
-            resumeStatistics = (ResumeStatistics) resultArray[0];
-            responseData.put("resumeNo", resumeStatistics.getResume().getResumeNo());
-            responseData.put("rating", (float)Math.round(resumeStatistics.getRating() * 10) / 10);
-            responseData.put("rating_count", resumeStatistics.getRatingCount());
-            responseData.put("read_num", resumeStatistics.getReadCount());
-            responseData.put("title", resumeStatistics.getTitle());
+            resumeBoard = (ResumeBoard) resultArray[0];
+            responseData.put("resumeNo", resumeBoard.getResume().getResumeNo());
+            responseData.put("rating", (float)Math.round(resumeBoard.getRating() * 10) / 10);
+            responseData.put("rating_count", resumeBoard.getRatingCount());
+            responseData.put("read_num", resumeBoard.getReadCount());
+            responseData.put("title", resumeBoard.getTitle());
 
             // 두 번째 요소는 content
             String content = (String) resultArray[1];
@@ -240,12 +240,12 @@ public class ResumeBoardController {
                     Map<String, Object> formattedResult = new HashMap<>();
 
                     // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                    ResumeStatistics resumeStatistics = (ResumeStatistics) result[0];
-                    formattedResult.put("resumeNo", resumeStatistics.getResume().getResumeNo());
-                    formattedResult.put("rating", (float) Math.round(resumeStatistics.getRating() * 10) / 10);
-                    formattedResult.put("rating_count", resumeStatistics.getRatingCount());
-                    formattedResult.put("read_num", resumeStatistics.getReadCount());
-                    formattedResult.put("title", resumeStatistics.getTitle());
+                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
+                    formattedResult.put("resumeNo", resumeBoard.getResume().getResumeNo());
+                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
+                    formattedResult.put("rating_count", resumeBoard.getRatingCount());
+                    formattedResult.put("read_num", resumeBoard.getReadCount());
+                    formattedResult.put("title", resumeBoard.getTitle());
 
                     // 두 번째 요소는 Resume의 content
                     String content = (String) result[1];
@@ -282,8 +282,8 @@ public class ResumeBoardController {
         try {
             long resumeNo = ratingDTO.getResumeNo();
 
-            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(resumeNo).orElse(null);
-            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(resumeNo).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + resumeNo + " not found");
             }
 
@@ -347,8 +347,8 @@ public class ResumeBoardController {
         float result = 0;
 
         try {
-            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(num).orElse(null);
-            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
             }
 
@@ -400,11 +400,11 @@ public class ResumeBoardController {
                 Map<String, Object> formattedResult = new HashMap<>();
 
                 // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                ResumeStatistics resumeStatistics = (ResumeStatistics) result[0];
-                formattedResult.put("resumeNo", resumeStatistics.getResume().getResumeNo());
-                formattedResult.put("rating", (float) Math.round(resumeStatistics.getRating() * 10) / 10);
-                formattedResult.put("rating_count", resumeStatistics.getRatingCount());
-                formattedResult.put("read_num", resumeStatistics.getReadCount());
+                ResumeBoard resumeBoard = (ResumeBoard) result[0];
+                formattedResult.put("resumeNo", resumeBoard.getResume().getResumeNo());
+                formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
+                formattedResult.put("rating_count", resumeBoard.getRatingCount());
+                formattedResult.put("read_num", resumeBoard.getReadCount());
 
                 // 두 번째 요소는 Resume_board의 title
                 String title = (String) result[1];
@@ -439,8 +439,8 @@ public class ResumeBoardController {
         Map<String, Object> response = new HashMap<>();
         Date today = new Date();
         try{
-            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(bookmarkDTO.getResumeNo()).orElse(null);
-            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(bookmarkDTO.getResumeNo()).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + bookmarkDTO.getResumeNo() + " not found");
             }
 
@@ -472,8 +472,8 @@ public class ResumeBoardController {
         String result = "";
 
         try {
-            ResumeStatistics resumeStatistics = resumeBoardRepository.findById(num).orElse(null);
-            if (resumeStatistics == null) { // 해당하는 게시글이 없다면
+            ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);
+            if (resumeBoard == null) { // 해당하는 게시글이 없다면
                 throw new Exception(" - ResumeBoard with num " + num + " not found");
             }
             

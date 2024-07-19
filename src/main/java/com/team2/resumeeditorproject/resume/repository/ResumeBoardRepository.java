@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.resume.repository;
 
-import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,29 +18,29 @@ import java.util.List;
  * @fileName : ResumeBoardRepository
  * @since : 04/30/24
  */
-public interface ResumeBoardRepository extends JpaRepository<ResumeStatistics, Long> {
+public interface ResumeBoardRepository extends JpaRepository<ResumeBoard, Long> {
     @Query("SELECT rb, rb.title, r.content, r.createdDate, row_number() over(order by r.resumeNo asc) as num\n" +
-            "FROM ResumeStatistics rb JOIN Resume r \n" +
+            "FROM ResumeBoard rb JOIN Resume r \n" +
             "order by num desc")
     Page<Object[]> findAllResumeBoards(Pageable pageable);
 
     @Query("SELECT rb, r.content, r.createdDate, r.user.userNo \n" +
-            "FROM ResumeStatistics rb\n" +
+            "FROM ResumeBoard rb\n" +
             "JOIN Resume r \n" +
             "WHERE r.resumeNo = :resumeNo")
     Object findResumeBoard(@Param("resumeNo") Long resumeNo);
 
     @Query("SELECT rb, r.content, r.createdDate, row_number() over(order by r.resumeNo asc) as num " +
-            "FROM ResumeStatistics rb JOIN Resume r " +
+            "FROM ResumeBoard rb JOIN Resume r " +
             "WHERE rb.title LIKE %:keyword% OR r.content LIKE %:keyword% " +
             "ORDER BY num DESC")
     Page<Object[]> findSearchBoard(@Param("keyword") String keyword, Pageable pageable);
 
-    @Query("SELECT rb FROM ResumeStatistics rb JOIN Resume r WHERE r.resumeNo = :resumeNo")
-    ResumeStatistics findByResumeNo(Long resumeNo);
+    @Query("SELECT rb FROM ResumeBoard rb JOIN Resume r WHERE r.resumeNo = :resumeNo")
+    ResumeBoard findByResumeNo(Long resumeNo);
 
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE ResumeStatistics SET ratingCount = :newRatingCount, rating = :newRating WHERE resume.resumeNo = :resumeNo")
+    @Query("UPDATE ResumeBoard SET ratingCount = :newRatingCount, rating = :newRating WHERE resume.resumeNo = :resumeNo")
     int updateRatingCount(@Param("resumeNo") Long resumeNo, @Param("newRatingCount") int newRatingCount, @Param("newRating") float newRating);
 
 //    @Query("SELECT rb, rb.title, r.content, r.w_date, row_number() over(order by rb.resumeNo asc) as num, rb.read_num as read_num, rb.rating as rating\n" +
@@ -49,21 +49,21 @@ public interface ResumeBoardRepository extends JpaRepository<ResumeStatistics, L
 //    List<Object[]> getBoardRankingReadNum();
 
     @Query("SELECT rb, rb.title, r.content, r.createdDate, rb.readCount AS read_num " +
-            "FROM ResumeStatistics rb " +
+            "FROM ResumeBoard rb " +
             "JOIN Resume r " +
             "ORDER BY read_num DESC " +
             "LIMIT 3")
     List<Object[]> getBoardRankingReadNum();
 
     @Query("SELECT rb, rb.title, r.content, r.createdDate, rb.rating AS rating " +
-            "FROM ResumeStatistics rb " +
+            "FROM ResumeBoard rb " +
             "JOIN Resume r " +
             "ORDER BY rating DESC " +
             "LIMIT 3")
     List<Object[]> getBoardRankingRating();
 
     @Query("SELECT rb, r.content, r.createdDate " +
-            "FROM ResumeStatistics rb " +
+            "FROM ResumeBoard rb " +
             "JOIN Resume r " +
             "JOIN Bookmark b " +
             "WHERE b.user.userNo = :userNo " +

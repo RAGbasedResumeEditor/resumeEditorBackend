@@ -27,10 +27,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ResumeStatistics {
+public class ResumeBoard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long resumeStatisticsNo;
+    private Long resumeBoardNo;
 
     private float rating;
     private int ratingCount;

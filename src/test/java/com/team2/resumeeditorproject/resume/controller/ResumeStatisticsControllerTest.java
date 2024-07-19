@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.team2.resumeeditorproject.resume.domain.ResumeStatistics;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import java.util.Date;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(ResumeBoardController.class)
-public class ResumeStatisticsControllerTest {
+public class ResumeBoardControllerTest {
 
     @Mock
     private ResumeBoardService resumeBoardService;
@@ -48,8 +48,8 @@ public class ResumeStatisticsControllerTest {
     @Test
     public void testSearchSuccess() throws Exception {
         Pageable pageable = PageRequest.of(0, 5);
-        ResumeStatistics resumeStatistics = ResumeStatistics.builder()
-                .resumeStatisticsNo(1L)
+        ResumeBoard resumeBoard = ResumeBoard.builder()
+                .resumeBoardNo(1L)
                 .rating(4.5f)
                 .ratingCount(10)
                 .readCount(100)
@@ -59,7 +59,7 @@ public class ResumeStatisticsControllerTest {
         Date w_date = new Date();
         Long num = 1L;
 
-        Object[] result = {resumeStatistics, content, w_date, num};
+        Object[] result = {resumeBoard, content, w_date, num};
         Page<Object[]> resultsPage = new PageImpl<>(Collections.singletonList(result), pageable, 1);
 
         when(resumeBoardService.searchBoard(eq("test"), any(Pageable.class))).thenReturn(resultsPage);
@@ -95,8 +95,8 @@ public class ResumeStatisticsControllerTest {
     @Test
     public void testSearchInvalidPage() throws Exception {
         Pageable pageable = PageRequest.of(1, 5);
-        ResumeStatistics resumeStatistics = ResumeStatistics.builder()
-                .resumeStatisticsNo(1L)
+        ResumeBoard resumeBoard = ResumeBoard.builder()
+                .resumeBoardNo(1L)
                 .rating(4.5f)
                 .ratingCount(10)
                 .readCount(100)
@@ -106,7 +106,7 @@ public class ResumeStatisticsControllerTest {
         Date w_date = new Date();
         Long num = 1L;
 
-        Object[] result = {resumeStatistics, content, w_date, num};
+        Object[] result = {resumeBoard, content, w_date, num};
         Page<Object[]> resultsPage = new PageImpl<>(Collections.singletonList(result), pageable, 1);
 
         when(resumeBoardService.searchBoard(eq("test"), any(Pageable.class))).thenReturn(resultsPage);

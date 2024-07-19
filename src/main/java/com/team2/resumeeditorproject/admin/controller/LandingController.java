@@ -1,9 +1,7 @@
 package com.team2.resumeeditorproject.admin.controller;
 
-import com.team2.resumeeditorproject.admin.dto.LandingPageReviewDTO;
 import com.team2.resumeeditorproject.admin.dto.response.LandingPageReviewsResponse;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
-import com.team2.resumeeditorproject.review.domain.Review;
 import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import com.team2.resumeeditorproject.statistics.dto.response.TotalResumeBoardCountResponse;
 import com.team2.resumeeditorproject.statistics.dto.response.TotalResumeEditCountResponse;

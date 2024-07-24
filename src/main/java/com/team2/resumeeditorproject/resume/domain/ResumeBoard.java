@@ -4,14 +4,17 @@ import java.util.List;
 
 import com.team2.resumeeditorproject.comment.domain.Comment;
 
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,25 +40,25 @@ public class ResumeBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resumeBoardNo;
 
-    private float rating;
+    private double rating;
     private int ratingCount;
     @Setter
     private int readCount;
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_no", insertable = false, updatable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_no", foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Resume resume;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_board_no")
+    @JoinColumn(name = "resume_board_no", foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private List<Comment> comments;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_board_no")
+    @JoinColumn(name = "resume_board_no", foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private List<ResumeRating> resumeRatings;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_board_no")
+    @JoinColumn(name = "resume_board_no", foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private List<Bookmark> bookmarks;
 }

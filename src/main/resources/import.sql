@@ -23,8 +23,8 @@ INSERT INTO RESUME_GUIDE (USER_NO, COMPANY_NO, OCCUPATION_NO, CONTENT) VALUES (3
 INSERT INTO RESUME_GUIDE (USER_NO, COMPANY_NO, OCCUPATION_NO, CONTENT) VALUES (5, 5, 5, '가이드 받은 내용5');
 
 INSERT INTO review (USER_NO, content, rating, mode, display, CREATED_DATE) VALUES (1, '자소서 첨삭 서비스 덕분에 취업에 성공했습니다!', 5, 1, 'true', '2023-06-01 12:00:00');
-INSERT INTO review (USER_NO, content, rating, mode, display, CREATED_DATE) VALUES (1, 'reditor의 꼼꼼한 첨삭으로 자소서가 완벽해졌어요.', 5, 1, 'true', '2023-06-02 13:30:00');
-INSERT INTO review (USER_NO, content, rating, mode, display, CREATED_DATE) VALUES (2, '유용했지만 조금 더 상세한 피드백이 필요해요.', 3, 1, 'false', '2023-06-03 14:45:00');
+INSERT INTO review (USER_NO, content, rating, mode, display, CREATED_DATE) VALUES (2, 'reditor의 꼼꼼한 첨삭으로 자소서가 완벽해졌어요.', 5, 1, 'true', '2023-06-02 13:30:00');
+INSERT INTO review (USER_NO, content, rating, mode, display, CREATED_DATE) VALUES (3, '유용했지만 조금 더 상세한 피드백이 필요해요.', 3, 1, 'false', '2023-06-03 14:45:00');
 INSERT INTO review (USER_NO, content, rating, mode, display, CREATED_DATE) VALUES (4, '첨삭 서비스가 도움이 되었지만, 시간이 좀 오래 걸렸어요.', 4, 1, 'true', '2023-06-04 15:00:00');
 INSERT INTO review (USER_NO, content, rating, mode, display, CREATED_DATE) VALUES (5, '기대에 미치지 못한 서비스였습니다.', 2, 1, 'false', '2023-06-05 16:20:00');
 
@@ -69,5 +69,3 @@ INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('iam
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('yejeejudy@naver.com', 'd852eb16-9e', '2024-05-30 15:22:19', '2024-05-30 15:27:19');
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('seventhseven@naver.com', 'be41f1ba-39', '2024-05-30 15:23:43', '2024-05-30 15:28:43');
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('je_hn@naver.com', '5ce6ce61-89', '2024-05-30 15:23:37', '2024-05-30 15:28:37');
-
-INSERT INTO PUBLIC.RESUME_STATISTICS (RATING, RATING_COUNT, READ_COUNT, RESUME_NO, TITLE) VALUES (4, 1, 1, 1, 'test');

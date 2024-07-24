@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.statistics.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,5 +18,7 @@ public class DailyStatistics {
 
     private int visitCount;
     private int editCount;
+
+    @Column(nullable = false)
     private LocalDate referenceDate;
 }

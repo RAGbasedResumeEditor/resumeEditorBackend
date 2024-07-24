@@ -1,5 +1,6 @@
 package com.team2.resumeeditorproject.resume.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,5 +19,6 @@ public class Occupation {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long occupationNo;
 
+	@Column(length = 500)
 	private String occupationName;
 }

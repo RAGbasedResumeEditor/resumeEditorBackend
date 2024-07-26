@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.user.dto.response;
 
-import com.team2.resumeeditorproject.resume.dto.OccupationDTO;
+import com.team2.resumeeditorproject.occupation.dto.OccupationDTO;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -4,7 +4,7 @@ import com.team2.resumeeditorproject.admin.dto.request.SearchUserRequest;
 import com.team2.resumeeditorproject.admin.dto.response.UserListResponse;
 import com.team2.resumeeditorproject.admin.service.UserDeleteService;
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
-import com.team2.resumeeditorproject.common.util.CommonResponse;
+import com.team2.resumeeditorproject.common.dto.response.CommonResponse;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -58,11 +58,11 @@ public class UserManagementController {
 
     /* 회원 탈퇴 */
     @DeleteMapping("/{userNo}")
-    public ResponseEntity<CommonResponse> deleteUser(@PathVariable("userNo") long userNo) {
+    public ResponseEntity<CommonResponse<String>> deleteUser(@PathVariable("userNo") long userNo) {
         userDeleteService.deleteUser(userNo);
 
         return ResponseEntity.ok()
-                .body(CommonResponse.builder()
+                .body(CommonResponse.<String>builder()
                         .response("User deleted successfully")
                         .status("Success")
                         .time(new Date())

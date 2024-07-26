@@ -2,7 +2,7 @@ package com.team2.resumeeditorproject.admin.controller;
 
 import com.team2.resumeeditorproject.admin.dto.response.ResumeBoardListResponse;
 import com.team2.resumeeditorproject.admin.service.ResumeManagementService;
-import com.team2.resumeeditorproject.common.util.CommonResponse;
+import com.team2.resumeeditorproject.common.dto.response.CommonResponse;
 import com.team2.resumeeditorproject.common.util.PageUtil;
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
@@ -91,13 +91,13 @@ public class ResumeManagementController {
 
     //자소서 삭제
     @DeleteMapping("/{resumeNo}")
-    public ResponseEntity<CommonResponse> deleteResume(@PathVariable("resumeNo") Long resumeNo) {
+    public ResponseEntity<CommonResponse<String>> deleteResume(@PathVariable("resumeNo") Long resumeNo) {
         if(!resumeManagementService.checkResumeExists(resumeNo)){
             throw new BadRequestException("존재하지 않는 자소서입니다.");
         }
         resumeManagementService.deleteResume(resumeNo);
         return ResponseEntity.ok()
-                .body(CommonResponse.builder()
+                .body(CommonResponse.<String>builder()
                         .response(resumeNo + "번 자소서 삭제 성공")
                         .status("Success")
                         .time(new Date())

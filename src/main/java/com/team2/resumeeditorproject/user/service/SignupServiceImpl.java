@@ -1,9 +1,9 @@
 package com.team2.resumeeditorproject.user.service;
 
-import com.team2.resumeeditorproject.resume.domain.Occupation;
-import com.team2.resumeeditorproject.resume.dto.OccupationDTO;
-import com.team2.resumeeditorproject.resume.repository.CompanyRepository;
-import com.team2.resumeeditorproject.resume.repository.OccupationRepository;
+import com.team2.resumeeditorproject.occupation.domain.Occupation;
+import com.team2.resumeeditorproject.occupation.dto.OccupationDTO;
+import com.team2.resumeeditorproject.company.repository.CompanyRepository;
+import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
@@ -26,7 +26,7 @@ public class SignupServiceImpl implements SignupService {
 
     @Override
     public List<OccupationDTO> findOccupationsByName(String name) {
-        List<Occupation> occupationList = occupationRepository.findByOccupationNameContaining(name);
+        List<Occupation> occupationList = occupationRepository.findTop5ByOccupationNameContaining(name);
 
         return occupationList.stream()
                 .map(occupation -> new OccupationDTO(occupation.getOccupationNo(), occupation.getOccupationName()))

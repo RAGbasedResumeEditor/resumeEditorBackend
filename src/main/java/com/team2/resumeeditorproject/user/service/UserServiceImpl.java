@@ -2,22 +2,17 @@ package com.team2.resumeeditorproject.user.service;
 
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.exception.BadRequestException;
-import com.team2.resumeeditorproject.resume.repository.CompanyRepository;
-import com.team2.resumeeditorproject.resume.repository.OccupationRepository;
+import com.team2.resumeeditorproject.company.repository.CompanyRepository;
+import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.Optional;
 
 @Slf4j
 @Service

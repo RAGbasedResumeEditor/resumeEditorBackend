@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
+import com.team2.resumeeditorproject.resume.dto.request.ResumeBoardRequest;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,21 +50,17 @@ public class ResumeBoardControllerTest {
     @Test
     public void testSearchSuccess() throws Exception {
         Pageable pageable = PageRequest.of(0, 5);
-        ResumeBoard resumeBoard = ResumeBoard.builder()
+        ResumeBoardDTO resumeBoard = ResumeBoardDTO.builder()
                 .resumeBoardNo(1L)
                 .rating(4.5f)
                 .ratingCount(10)
                 .readCount(100)
                 .title("Test Title")
                 .build();
-        String content = "Test Content";
-        Date w_date = new Date();
-        Long num = 1L;
 
-        Object[] result = {resumeBoard, content, w_date, num};
-        Page<Object[]> resultsPage = new PageImpl<>(Collections.singletonList(result), pageable, 1);
+        Page<ResumeBoardDTO> resultsPage = new PageImpl<>(Collections.singletonList(resumeBoard), pageable, 1);
 
-        when(resumeBoardService.searchBoard(eq("test"), any(Pageable.class))).thenReturn(resultsPage);
+        when(resumeBoardService.getPagedResumeBoardsContainingTitle(any(ResumeBoardRequest.class))).thenReturn(resultsPage);
 
         mockMvc.perform(get("/list/search")
                         .param("keyword", "test")
@@ -78,9 +76,9 @@ public class ResumeBoardControllerTest {
     @Test
     public void testSearchNoResults() throws Exception {
         Pageable pageable = PageRequest.of(0, 5);
-        Page<Object[]> resultsPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        Page<ResumeBoardDTO> resultsPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
 
-        when(resumeBoardService.searchBoard(eq("empty"), any(Pageable.class))).thenReturn(resultsPage);
+        when(resumeBoardService.getPagedResumeBoardsContainingTitle(any(ResumeBoardRequest.class))).thenReturn(resultsPage);
 
         mockMvc.perform(get("/list/search")
                         .param("keyword", "empty")
@@ -95,21 +93,17 @@ public class ResumeBoardControllerTest {
     @Test
     public void testSearchInvalidPage() throws Exception {
         Pageable pageable = PageRequest.of(1, 5);
-        ResumeBoard resumeBoard = ResumeBoard.builder()
+        ResumeBoardDTO resumeBoard = ResumeBoardDTO.builder()
                 .resumeBoardNo(1L)
                 .rating(4.5f)
                 .ratingCount(10)
                 .readCount(100)
                 .title("Test Title")
                 .build();
-        String content = "Test Content";
-        Date w_date = new Date();
-        Long num = 1L;
 
-        Object[] result = {resumeBoard, content, w_date, num};
-        Page<Object[]> resultsPage = new PageImpl<>(Collections.singletonList(result), pageable, 1);
+        Page<ResumeBoardDTO> resultsPage = new PageImpl<>(Collections.singletonList(resumeBoard), pageable, 1);
 
-        when(resumeBoardService.searchBoard(eq("test"), any(Pageable.class))).thenReturn(resultsPage);
+        when(resumeBoardService.getPagedResumeBoardsContainingTitle(any(ResumeBoardRequest.class))).thenReturn(resultsPage);
 
         mockMvc.perform(get("/list/search")
                         .param("keyword", "test")
@@ -122,7 +116,7 @@ public class ResumeBoardControllerTest {
 
     @Test
     public void testSearchServerError() throws Exception {
-        when(resumeBoardService.searchBoard(eq("error"), any(Pageable.class))).thenThrow(new RuntimeException("Test Exception"));
+        when(resumeBoardService.getPagedResumeBoardsContainingTitle(any(ResumeBoardRequest.class))).thenThrow(new RuntimeException("Test Exception"));
 
         mockMvc.perform(get("/list/search")
                         .param("keyword", "error")

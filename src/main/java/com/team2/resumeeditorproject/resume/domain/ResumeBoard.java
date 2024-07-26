@@ -2,6 +2,7 @@ package com.team2.resumeeditorproject.resume.domain;
 
 import java.util.List;
 
+import com.team2.resumeeditorproject.bookmark.domain.Bookmark;
 import com.team2.resumeeditorproject.comment.domain.Comment;
 
 import jakarta.persistence.ConstraintMode;
@@ -12,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;

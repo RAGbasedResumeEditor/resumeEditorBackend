@@ -1,5 +1,7 @@
 package com.team2.resumeeditorproject.resume.domain;
 
+import com.team2.resumeeditorproject.company.domain.Company;
+import com.team2.resumeeditorproject.occupation.domain.Occupation;
 import com.team2.resumeeditorproject.user.domain.User;
 
 import jakarta.persistence.Column;
@@ -12,10 +14,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Entity
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Entity
 public class ResumeGuide {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

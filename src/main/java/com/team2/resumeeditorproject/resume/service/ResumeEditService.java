@@ -1,11 +1,9 @@
 package com.team2.resumeeditorproject.resume.service;
 
-import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
+import com.team2.resumeeditorproject.common.enumeration.ResultMessage;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
-import com.team2.resumeeditorproject.user.domain.User;
-import org.modelmapper.ModelMapper;
+import com.team2.resumeeditorproject.user.dto.UserDTO;
 
-import java.util.List;
 /**
  * resumeEditService
  *
@@ -14,8 +12,5 @@ import java.util.List;
  * @since : 04/25/24
  */
 public interface ResumeEditService {
-    ResumeEditDTO insertResumeEdit(ResumeEditDTO resumeEditDTO);
-    ResumeEditDTO insertResumeEditTransaction(ResumeEditDTO resumeEditDTO, String content, User user, int mode) throws Exception;
-    ResumeEditDTO convertToDto(ResumeEdit resumeEdit);
-    void setModelMapper(ModelMapper modelMapper);
+    ResultMessage saveResumeEdit(ResumeEditDTO resumeEditDTO, UserDTO user);
 }

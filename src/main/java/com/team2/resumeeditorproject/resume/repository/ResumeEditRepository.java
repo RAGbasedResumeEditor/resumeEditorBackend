@@ -1,11 +1,10 @@
 package com.team2.resumeeditorproject.resume.repository;
 
-import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 
 /**
  * resumeEditRepository
@@ -15,6 +14,5 @@ import java.util.List;
  * @since : 04/25/24
  */
 public interface ResumeEditRepository extends JpaRepository<ResumeEdit, Long> {
-    @Query("SELECT re FROM ResumeEdit re JOIN re.resume r WHERE r.resumeNo = :resumeNo")
-    List<ResumeEdit> findResumeEditsByRNum(@Param("resumeNo") Long resumeNo);
+	List<ResumeEdit> findResumeEditsByResumeResumeNo(Long resumeNo);
 }

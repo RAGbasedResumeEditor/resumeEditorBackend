@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.user.domain;
 
-import com.team2.resumeeditorproject.resume.domain.Company;
-import com.team2.resumeeditorproject.resume.domain.Occupation;
+import com.team2.resumeeditorproject.company.domain.Company;
+import com.team2.resumeeditorproject.occupation.domain.Occupation;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 

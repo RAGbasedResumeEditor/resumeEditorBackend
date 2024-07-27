@@ -31,15 +31,15 @@ public class ResumeManagementServiceImpl implements ResumeManagementService {
                 .map(resumeBoard -> {
                     Resume resume = resumeBoard.getResume();
                     User user = resume.getUser();
-                    return new ResumeBoardDTO(
-                            resumeBoard.getResumeBoardNo(),
-                            (float) Math.round(resumeBoard.getRating() * 10) / 10,
-                            resumeBoard.getRatingCount(),
-                            resumeBoard.getReadCount(),
-                            resumeBoard.getTitle(),
-                            resume.getCreatedDate(),
-                            user.getUsername()
-                    );
+                    return ResumeBoardDTO.builder()
+                            .resumeBoardNo(resumeBoard.getResumeBoardNo())
+                            .rating( (float) Math.round(resumeBoard.getRating() * 10) / 10)
+                            .ratingCount(resumeBoard.getRatingCount())
+                            .readCount(resumeBoard.getReadCount())
+                            .title(resumeBoard.getTitle())
+                            .createdDate(resume.getCreatedDate())
+                            .username(user.getUsername())
+                            .build();
                 })
                 .collect(Collectors.toList());
     }

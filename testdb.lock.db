@@ -1,6 +1,6 @@
 #FileLock
-#Fri Jul 19 00:33:24 KST 2024
-server=192.168.35.209\:52733
-hostName=DESKTOP-U820NG4
+#Sat Aug 03 20:21:21 KST 2024
+server=192.168.219.101\:56590
+hostName=192.168.219.101
 method=file
-id=190c679ffc3c97bce5086eb28325c207a124ab96d13
+id=19117f8fcd1fc71c6ff638dfc45eb0f37b1dab99ced

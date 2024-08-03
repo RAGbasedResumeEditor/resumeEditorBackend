@@ -1,7 +1,11 @@
 package com.team2.resumeeditorproject.resume.service;
 
-import java.util.List;
-
+import com.team2.resumeeditorproject.common.util.PageUtil;
+import com.team2.resumeeditorproject.exception.DataNotFoundException;
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
+import com.team2.resumeeditorproject.resume.dto.request.ResumeBoardRequest;
+import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,13 +13,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.team2.resumeeditorproject.common.util.PageUtil;
-import com.team2.resumeeditorproject.exception.DataNotFoundException;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
-import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
-import com.team2.resumeeditorproject.resume.dto.request.ResumeBoardRequest;
-import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
+import java.util.List;
 
 /**
  * resumeBoardServiceImpl
@@ -30,6 +30,7 @@ public class ResumeBoardServiceImpl implements ResumeBoardService {
 	private ResumeBoardRepository resumeBoardRepository;
 
 	@Override
+	@Transactional
 	public ResumeBoardDTO getResumeBoard(long resumeBoardNo) {
 		ResumeBoard resumeBoard = resumeBoardRepository.findById(resumeBoardNo).orElseThrow(() -> new DataNotFoundException("게시물이 없습니다"));
 		resumeBoardRepository.updateReadCount(resumeBoardNo);
@@ -52,7 +53,7 @@ public class ResumeBoardServiceImpl implements ResumeBoardService {
 		PageUtil.checkUnderZero(resumeBoardRequest.getPageNo());
 
 		Pageable pageable = PageRequest.of(resumeBoardRequest.getPageNo(), resumeBoardRequest.getPageSize());
-		Page<ResumeBoard> resumeBoards = resumeBoardRepository.findAllByTitleContaining(StringUtils.defaultString(resumeBoardRequest.getKeyword()), pageable);
+		Page<ResumeBoard> resumeBoards = resumeBoardRepository.findAllByTitleContainingOrderByResumeBoardNoDesc(StringUtils.defaultString(resumeBoardRequest.getKeyword()), pageable);
 
 		PageUtil.checkListEmpty(resumeBoards);
 		PageUtil.checkExcessLastPageNo(pageable.getPageNumber(), resumeBoards.getTotalPages() - 1);

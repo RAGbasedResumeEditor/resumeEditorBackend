@@ -344,7 +344,7 @@ public class ResumeBoardController {
         Date today = new Date();
         String username = loginUser.getUsername();
         Long userNo = userService.showUser(username).getUserNo();
-        float result = 0;
+        double result = 0;
 
         try {
             ResumeBoard resumeBoard = resumeBoardRepository.findById(num).orElse(null);

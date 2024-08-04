@@ -3,8 +3,8 @@ server:
 
 spring:
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/resumeEditorDB
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/resumeEditorDB
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 

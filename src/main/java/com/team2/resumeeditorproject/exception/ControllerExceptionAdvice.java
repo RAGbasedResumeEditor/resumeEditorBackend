@@ -68,7 +68,7 @@ public class ControllerExceptionAdvice {
     @ExceptionHandler(StatisticsException.class)
     public ResponseEntity<ErrorResponse> handleStatisticsException(StatisticsException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .message("An error occurred while processing statistics")
+                .response("An error occurred while processing statistics")
                 .time(new Date())
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse); // 500 Internal Server Error

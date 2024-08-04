@@ -6,8 +6,8 @@ import java.util.Date;
 
 @Data
 public class RefreshDTO {
-    private Long reNum;
+    private Long refreshNo;
     private String username;
     private String refresh;
-    private Date expiration;
+    private Date expirationDate;
 }

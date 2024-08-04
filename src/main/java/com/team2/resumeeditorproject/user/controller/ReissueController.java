@@ -100,7 +100,7 @@ public class ReissueController {
         RefreshDTO refreshDTO = new RefreshDTO();
         refreshDTO.setUsername(username);
         refreshDTO.setRefresh(refresh);
-        refreshDTO.setExpiration(date);
+        refreshDTO.setExpirationDate(date);
 
         // Refresh 엔티티로 변환
         Refresh refreshEntity = Refresh.builder()

@@ -2,7 +2,7 @@ package com.team2.resumeeditorproject.admin.controller;
 
 import com.team2.resumeeditorproject.admin.dto.response.ReviewListResponse;
 import com.team2.resumeeditorproject.admin.service.ReviewManagementService;
-import com.team2.resumeeditorproject.common.util.CommonResponse;
+import com.team2.resumeeditorproject.common.dto.response.CommonResponse;
 import com.team2.resumeeditorproject.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -50,9 +50,9 @@ public class ReviewManagementController {
     }
 
     @PostMapping("/display")
-    public ResponseEntity<CommonResponse> selectDisplayReview(@RequestParam("reviewNo") Long reviewNo) {
+    public ResponseEntity<CommonResponse<String>> selectDisplayReview(@RequestParam("reviewNo") Long reviewNo) {
         return ResponseEntity.ok()
-                .body(CommonResponse.builder()
+                .body(CommonResponse.<String>builder()
                         .response(reviewService.selectReview(reviewNo))
                         .status("Success")
                         .time(new Date())

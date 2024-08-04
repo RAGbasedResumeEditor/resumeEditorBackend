@@ -1,5 +1,7 @@
 package com.team2.resumeeditorproject.resume.domain;
 
+import com.team2.resumeeditorproject.company.domain.Company;
+import com.team2.resumeeditorproject.occupation.domain.Occupation;
 import com.team2.resumeeditorproject.user.domain.User;
 
 import jakarta.persistence.Column;
@@ -13,7 +15,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * resumeEdit entity
@@ -25,6 +31,9 @@ import lombok.Getter;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResumeEdit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -15,12 +15,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumeEditDTO {
-    private Long resumeNo;
-    private String company;
-    private String occupation;
+    private long resumeNo;
+    private long companyNo;
+    private String companyName;
+    private long occupationNo;
+    private String occupationName;
     private String item;
     private String options;
-    private String r_content;
+    private String content;
     private int mode;
-    private Long userNo;
+    private long userNo;
 }

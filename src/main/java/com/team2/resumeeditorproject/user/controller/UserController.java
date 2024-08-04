@@ -1,6 +1,6 @@
 package com.team2.resumeeditorproject.user.controller;
 
-import com.team2.resumeeditorproject.common.util.CommonResponse;
+import com.team2.resumeeditorproject.common.dto.response.CommonResponse;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;

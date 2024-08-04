@@ -1,6 +1,8 @@
 package com.team2.resumeeditorproject.resume.service;
 
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
+import com.team2.resumeeditorproject.resume.dto.request.ResumeBoardRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,24 +16,15 @@ import java.util.List;
  * @since : 04/30/24
  */
 public interface ResumeBoardService {
-    ResumeBoardDTO insertResumeBoard(ResumeBoardDTO resumeboardDTO);
+    ResumeBoardDTO getResumeBoard(long resumeBoardNo);
 
-    Page<Object[]> getAllResumeBoards(Pageable pageable);
+    Page<ResumeBoardDTO> getPagedResumeBoardsContainingTitle(ResumeBoardRequest resumeBoardRequest);
 
-    Object getResumeBoard(long resumeNo);
+    List<ResumeBoardDTO> getHighestReadCountResumeBoard();
 
-    Page<Object[]> searchBoard(String keyword, Pageable pageable);
+    List<ResumeBoardDTO> getHighestRatingResumeBoard();
 
-    ResumeBoardDTO getResumeBoardForRating(Long resumeNo);
-
-    int updateRatingCount(Long resumeNo, int newRatingCount, float newRating);
-
-    List<Object[]> getBoardRankingReadNum();
-
-    List<Object[]> getBoardRankingRating();
+    boolean isNotExistResumeBoard(long resumeBoardNo);
 
     Page<Object[]> getBookmarkList(long userNo, Pageable pageable);
-
-
-//    float getRating(long resumeNo);
 }

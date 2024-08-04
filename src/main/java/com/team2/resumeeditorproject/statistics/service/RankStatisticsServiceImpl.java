@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.statistics.service;
 
 import com.team2.resumeeditorproject.exception.StatisticsException;
-import com.team2.resumeeditorproject.resume.repository.OccupationRepository;
+import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import com.team2.resumeeditorproject.statistics.repository.ResumeEditStatisticsRepository;
 import com.team2.resumeeditorproject.statistics.repository.UserStatisticsRepository;
 import lombok.RequiredArgsConstructor;

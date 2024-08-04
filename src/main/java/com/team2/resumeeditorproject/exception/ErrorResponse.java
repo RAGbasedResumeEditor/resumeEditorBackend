@@ -8,6 +8,6 @@ import java.util.Date;
 @Getter
 @Builder
 public class ErrorResponse {
-    private String message;
+    private String response;
     private Date time;
 }

@@ -43,7 +43,7 @@ public class MailConfig {
         properties.setProperty("mail.smtp.starttls.enable", "true");
         properties.setProperty("mail.debug", "true");
         properties.setProperty("mail.smtp.ssl.trust", host);
-        properties.setProperty("mail.smtp.ssl.enable","false");
+        properties.setProperty("mail.smtp.ssl.enable", "false");
         return properties;
     }
 }

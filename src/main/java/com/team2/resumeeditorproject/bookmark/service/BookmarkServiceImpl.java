@@ -23,7 +23,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 	@Override
 	public ResultMessage toggleBookmark(BookmarkDTO bookmarkDTO, UserDTO loginUser) {
 		if (bookmarkRepository.existsByResumeBoardResumeBoardNoAndUserUserNo(bookmarkDTO.getResumeBoardNo(), bookmarkDTO.getUserNo())) {
-			bookmarkRepository.deleteById(bookmarkDTO.getBookmarkNo());
+			Bookmark bookmark = bookmarkRepository.findByResumeBoardResumeBoardNoAndUserUserNo(bookmarkDTO.getResumeBoardNo(), bookmarkDTO.getUserNo());
+			bookmarkRepository.deleteById(bookmark.getBookmarkNo());
 			return ResultMessage.Canceled;
 		}
 

@@ -26,7 +26,7 @@ public class ResumeRatingServiceImpl implements ResumeRatingService {
 	@Override
 	public ResumeRatingDTO getResumeRating(long resumeBoardNo, UserDTO loginUser) {
 		ResumeRating resumeRating = ratingRepository.findByResumeBoardResumeBoardNoAndUserUserNo(resumeBoardNo, loginUser.getUserNo())
-				.orElseThrow(() -> new DataNotFoundException("can't find rating"));
+				.orElseThrow(() -> new DataNotFoundException("can't find rating."));
 
 		return ResumeRatingDTO.builder()
 				.rating(resumeRating.getRating())

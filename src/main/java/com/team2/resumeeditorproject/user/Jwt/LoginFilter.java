@@ -136,13 +136,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         RefreshDTO refreshDTO = new RefreshDTO();
         refreshDTO.setUsername(username);
         refreshDTO.setRefresh(refresh);
-        refreshDTO.setExpiration(date);
+        refreshDTO.setExpirationDate(date);
 
         // Refresh 엔티티로 변환
         Refresh refreshEntity = Refresh.builder()
                 .username(refreshDTO.getUsername())
                 .refresh(refreshDTO.getRefresh())
-                .expirationDate(refreshDTO.getExpiration())
+                .expirationDate(refreshDTO.getExpirationDate())
                 .build();
 
         refreshRepository.save(refreshEntity);

@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RatingRepository extends JpaRepository<ResumeRating, Long> {
     Optional<ResumeRating> findByResumeBoardResumeBoardNoAndUserUserNo(long resumeBoardNo, long userNo);
+
+    boolean existsByResumeBoardResumeBoardNo(long resumeBoardNo);
 }

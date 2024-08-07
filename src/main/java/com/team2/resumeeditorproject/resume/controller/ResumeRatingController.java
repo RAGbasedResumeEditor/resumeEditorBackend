@@ -4,14 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.team2.resumeeditorproject.common.dto.response.CommonResponse;
 import com.team2.resumeeditorproject.exception.DataNotFoundException;
 import com.team2.resumeeditorproject.resume.dto.ResumeRatingDTO;
-import com.team2.resumeeditorproject.resume.service.ResumeRatingService;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
+import com.team2.resumeeditorproject.resume.service.ResumeRatingService;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 
 @RestController
@@ -34,6 +36,16 @@ public class ResumeRatingController {
 		return ResponseEntity.ok()
 				.body(CommonResponse.<ResumeRatingDTO>builder()
 						.response(resumeRatingService.getResumeRating(resumeBoardNo, loginUser))
+						.status("success")
+						.build());
+	}
+
+	@PostMapping("/{resumeBoardNo}/rating")
+	public ResponseEntity<CommonResponse<Void>> setRating(@RequestBody ResumeRatingDTO ratingDTO, UserDTO loginUser) {
+		resumeRatingService.saveResumeRating(ratingDTO, loginUser);
+
+		return ResponseEntity.ok()
+				.body(CommonResponse.<Void>builder()
 						.status("success")
 						.build());
 	}

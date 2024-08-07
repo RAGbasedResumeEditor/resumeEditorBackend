@@ -47,7 +47,7 @@ public class MailController {
         } catch (Exception exception) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ErrorResponse.builder()
-                            .message("서버 오류")
+                            .response("서버 오류")
                             .time(new Date())
                             .build());
         }
@@ -68,7 +68,7 @@ public class MailController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ErrorResponse.builder()
-                            .message("인증 실패")
+                            .response("인증 실패")
                             .time(new Date())
                             .build());
         }

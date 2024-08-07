@@ -1,4 +1,4 @@
-package com.team2.resumeeditorproject.user.domain;
+package com.team2.resumeeditorproject.user.refresh.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.util.Date;
 
+@Deprecated
 @Data
 @Builder
 public class ResumeEditDetailDTO {

@@ -1,4 +1,4 @@
-package com.team2.resumeeditorproject.user.dto;
+package com.team2.resumeeditorproject.user.refresh.dto;
 
 import lombok.Data;
 

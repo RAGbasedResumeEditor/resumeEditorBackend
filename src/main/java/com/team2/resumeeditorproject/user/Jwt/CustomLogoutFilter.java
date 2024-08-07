@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.user.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.resumeeditorproject.user.repository.RefreshRepository;
+import com.team2.resumeeditorproject.user.refresh.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

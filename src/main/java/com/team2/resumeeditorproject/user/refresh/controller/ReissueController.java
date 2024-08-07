@@ -1,10 +1,10 @@
-package com.team2.resumeeditorproject.user.controller;
+package com.team2.resumeeditorproject.user.refresh.controller;
 
 import com.team2.resumeeditorproject.user.Jwt.JWTUtil;
-import com.team2.resumeeditorproject.user.domain.Refresh;
-import com.team2.resumeeditorproject.user.dto.RefreshDTO;
+import com.team2.resumeeditorproject.user.refresh.domain.Refresh;
+import com.team2.resumeeditorproject.user.refresh.dto.RefreshDTO;
 
-import com.team2.resumeeditorproject.user.repository.RefreshRepository;
+import com.team2.resumeeditorproject.user.refresh.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

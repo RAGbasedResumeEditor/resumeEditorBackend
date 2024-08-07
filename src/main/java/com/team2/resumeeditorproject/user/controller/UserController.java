@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.user.controller;
 
 import com.team2.resumeeditorproject.common.dto.response.CommonResponse;
+import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
@@ -10,7 +11,10 @@ import com.team2.resumeeditorproject.resume.service.ResumeService;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.ResumeEditDetailDTO;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
+import com.team2.resumeeditorproject.user.service.SignupService;
 import com.team2.resumeeditorproject.user.service.UserService;
+import com.team2.resumeeditorproject.user.service.UserValidatorService;
+
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -44,10 +48,26 @@ public class UserController extends HttpServlet {
     private final ResumeBoardService resumeBoardService;
     private final ResumeService resumeService;
     private final ResumeGuideService resumeGuideService;
+    private final SignupService signupService;
+    private final UserValidatorService userValidatorService;
 
     private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
 
+    @PostMapping("/user/signup")
+    public ResponseEntity<CommonResponse<Void>> signup(@RequestBody UserDTO userDTO) {
+        userValidatorService.checkCanRejoinAfterWithdrawal(userDTO.getUsername());
+        userValidatorService.checkUsernameDuplicate(userDTO.getUsername());
+
+        signupService.signup(userDTO);
+
+        return ResponseEntity.ok()
+                .body(CommonResponse.<Void>builder()
+                        .status("Success")
+                        .build());
+    }
+
     //회원조회
+    @Deprecated
     @PostMapping("/user/search")
     public ResponseEntity<Map<String, Object>> showUser(UserDTO loginUser) {
 
@@ -73,6 +93,15 @@ public class UserController extends HttpServlet {
                 user.setCreatedDate(tempUser.getCreatedDate());
                 user.setDeletedDate(tempUser.getDeletedDate());
             return createOkResponse(user);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<CommonResponse<UserDTO>> getUserByUsername(@RequestParam("username") String username) {
+        return ResponseEntity.ok()
+                .body(CommonResponse.<UserDTO>builder()
+                        .response(userService.getUserByUsername(username))
+                        .status("success")
+                        .build());
     }
 
     //회원탈퇴

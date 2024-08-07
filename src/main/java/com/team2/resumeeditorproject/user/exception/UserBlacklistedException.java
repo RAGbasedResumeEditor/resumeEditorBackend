@@ -1,4 +1,4 @@
-package com.team2.resumeeditorproject.user.Error;
+package com.team2.resumeeditorproject.user.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

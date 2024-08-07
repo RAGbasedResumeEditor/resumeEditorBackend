@@ -1,6 +1,6 @@
-package com.team2.resumeeditorproject.user.repository;
+package com.team2.resumeeditorproject.user.refresh.repository;
 
-import com.team2.resumeeditorproject.user.domain.Refresh;
+import com.team2.resumeeditorproject.user.refresh.domain.Refresh;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

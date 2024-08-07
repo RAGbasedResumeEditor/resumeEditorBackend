@@ -5,7 +5,7 @@ import com.team2.resumeeditorproject.common.util.CronExpressions;
 import com.team2.resumeeditorproject.statistics.service.HistoryService;
 import com.team2.resumeeditorproject.statistics.service.TrafficService;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
-import com.team2.resumeeditorproject.user.service.RefreshService;
+import com.team2.resumeeditorproject.user.refresh.service.RefreshService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;

@@ -1,6 +1,7 @@
 package com.team2.resumeeditorproject.user.service;
 
-import com.team2.resumeeditorproject.user.Error.UserBlacklistedException;
+import com.team2.resumeeditorproject.exception.DataNotFoundException;
+import com.team2.resumeeditorproject.user.exception.UserBlacklistedException;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.CustomUserDetails;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 // DB 연결하여 회원 조회하기 위한 클래스
 @Service
@@ -25,10 +27,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }
+
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+
+        User user = optionalUser.orElseThrow(() -> new DataNotFoundException("User not found"));
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -112,26 +113,18 @@ public class UserManagementServiceImpl implements UserManagementService{
     public void updateUserDeleteDate(Long userNo) {
         User user = adminUserRepository.findById(userNo)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userNo));
-        user.setDeletedDate(new Date()); // 현재 시간으로 탈퇴 날짜 업데이트
+        user.setDeletedDate(LocalDateTime.now()); // 현재 시간으로 탈퇴 날짜 업데이트
         adminUserRepository.save(user);
     }
 
     @Override
     public void updateDeletedDateForRoleBlacklist() {
-        // 현재 날짜 가져오기
-        Date currentDate = new Date();
-        // 60일 전 날짜 계산
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
-        calendar.add(Calendar.DATE, -60);
-        Date dateBefore60Days = calendar.getTime();
-
         // "ROLE_BLACKLIST"인 사용자의 정보를 가져옴
         List<User> blacklistedUsers = adminUserRepository.findByRole("ROLE_BLACKLIST");
 
         // 가져온 사용자 중 del_date가 60일 이상 지난 사용자의 del_date를 null로 업데이트
         for (User user : blacklistedUsers) {
-            if (user.getDeletedDate() != null && user.getDeletedDate().before(dateBefore60Days)) {
+            if (user.getDeletedDate() != null && user.getDeletedDate().isBefore(LocalDateTime.now().minusDays(60))) {
                 user.setDeletedDate(null);
             }
         }

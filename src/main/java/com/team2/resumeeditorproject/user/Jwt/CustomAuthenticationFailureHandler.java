@@ -1,7 +1,7 @@
 package com.team2.resumeeditorproject.user.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.resumeeditorproject.user.Error.UserBlacklistedException;
+import com.team2.resumeeditorproject.user.exception.UserBlacklistedException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

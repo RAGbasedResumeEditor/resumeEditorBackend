@@ -25,6 +25,7 @@ import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -59,9 +60,9 @@ public class User {
     @Setter
     private int status;
     private int mode;
-    private Date createdDate;
+    private LocalDateTime createdDate;
     @Setter
-    private Date deletedDate;
+    private LocalDateTime deletedDate;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_no", foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))

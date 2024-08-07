@@ -1,11 +1,15 @@
 package com.team2.resumeeditorproject.user.service;
 
+import java.util.Optional;
+
 import com.team2.resumeeditorproject.admin.service.UserManagementService;
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.company.repository.CompanyRepository;
+import com.team2.resumeeditorproject.exception.DataNotFoundException;
 import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
+import com.team2.resumeeditorproject.user.refresh.service.RefreshService;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,19 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final OccupationRepository occupationRepository;
     private final CompanyRepository companyRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder; // 비밀번호 암호화 처리
-
     private final UserManagementService userManagementService;
     private final RefreshService refreshService;
-
-    @Override
-    public Boolean checkEmailDuplicate(String email) {
-        return userRepository.existsByEmail(email);
-    }
 
     @Override
     @Transactional
@@ -40,7 +37,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User showUser(String username) {
-        return userRepository.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+
+        return optionalUser.orElseThrow(() -> new DataNotFoundException("User not found"));
+    }
+
+    @Override
+    public UserDTO getUserByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+
+        User user = optionalUser.orElseThrow(() -> new DataNotFoundException("User not found"));
+
+        return UserDTO.builder()
+                .userNo(user.getUserNo())
+                .email(user.getEmail())
+                .username((user.getUsername()))
+                .role(user.getRole())
+                .age(user.getAge())
+                .birthDate(user.getBirthDate())
+                .gender(user.getGender())
+                .companyNo(user.getCompany().getCompanyNo())
+                .companyName(user.getCompany().getCompanyName())
+                .occupationNo(user.getOccupation().getOccupationNo())
+                .occupationName(user.getOccupation().getOccupationName())
+                .wishCompanyNo(user.getWishCompany().getCompanyNo())
+                .wishCompanyName(user.getWishCompany().getCompanyName())
+                .status(user.getStatus())
+                .mode(user.getMode())
+                .createdDate(user.getCreatedDate())
+                .deletedDate(user.getDeletedDate())
+                .build();
     }
 
     //회원탈퇴 (del_date 필드에 날짜 추가)

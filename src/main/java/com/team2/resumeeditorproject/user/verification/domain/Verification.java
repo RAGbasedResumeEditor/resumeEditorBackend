@@ -1,4 +1,4 @@
-package com.team2.resumeeditorproject.user.domain;
+package com.team2.resumeeditorproject.user.verification.domain;
 
 import java.util.Date;
 

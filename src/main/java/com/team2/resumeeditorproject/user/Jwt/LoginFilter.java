@@ -2,11 +2,11 @@ package com.team2.resumeeditorproject.user.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.statistics.interceptor.TrafficInterceptor;
-import com.team2.resumeeditorproject.user.domain.Refresh;
+import com.team2.resumeeditorproject.user.refresh.domain.Refresh;
 import com.team2.resumeeditorproject.user.domain.User;
-import com.team2.resumeeditorproject.user.dto.RefreshDTO;
+import com.team2.resumeeditorproject.user.refresh.dto.RefreshDTO;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
-import com.team2.resumeeditorproject.user.repository.RefreshRepository;
+import com.team2.resumeeditorproject.user.refresh.repository.RefreshRepository;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

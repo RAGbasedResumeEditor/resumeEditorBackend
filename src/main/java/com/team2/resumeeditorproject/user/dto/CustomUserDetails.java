@@ -1,9 +1,11 @@
 package com.team2.resumeeditorproject.user.dto;
 
+import com.team2.resumeeditorproject.common.util.DateUtils;
 import com.team2.resumeeditorproject.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -87,7 +89,7 @@ public class CustomUserDetails implements UserDetails {
     public Date getReactivationDate() {
         if (user.getDeletedDate() != null) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(user.getDeletedDate());
+            calendar.setTime(Timestamp.valueOf(user.getDeletedDate()));
             calendar.add(Calendar.DATE, 60);
             return calendar.getTime();
         }

@@ -1,6 +1,6 @@
-package com.team2.resumeeditorproject.user.service;
+package com.team2.resumeeditorproject.user.refresh.service;
 
-import com.team2.resumeeditorproject.user.repository.RefreshRepository;
+import com.team2.resumeeditorproject.user.refresh.repository.RefreshRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

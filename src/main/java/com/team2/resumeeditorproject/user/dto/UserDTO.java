@@ -1,12 +1,18 @@
 package com.team2.resumeeditorproject.user.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
     private Long userNo;
     private String email;
@@ -24,8 +30,8 @@ public class UserDTO {
     private String wishCompanyName;
     private Integer status;
     private Integer mode;
-    private Date createdDate;
-    private Date deletedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime deletedDate;
     private String authCode;
 
     // 첨삭횟수 설정 메서드

@@ -30,11 +30,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 			throw new LoginException("Authentication failed");
 		}
 
-		if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
+		if (!(authentication.getPrincipal() instanceof CustomUserDetails customUserDetails)) {
 			throw new LoginException("Authentication failed");
 		}
 
-		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 		UserDTO userDTO = new UserDTO();
 		userDTO.setUsername(customUserDetails.getUsername());
 		userDTO.setUserNo(customUserDetails.getUserNo());

@@ -33,7 +33,7 @@ public class SignupStatisticsServiceImpl implements SignupStatisticsService {
             List<User> users = userStatisticsRepository.findByCreatedDateBetween(DateUtils.toSqlDate(dateRange.startDate()), DateUtils.toSqlDate(dateRange.endDate()));
 
             for (User user : users) {
-                LocalDate registrationDate = user.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate registrationDate = user.getCreatedDate().toLocalDate();
                 signupDate.merge(registrationDate, 1, Integer::sum);
             }
 
@@ -58,7 +58,7 @@ public class SignupStatisticsServiceImpl implements SignupStatisticsService {
             List<User> users = userStatisticsRepository.findByCreatedDateBetween(DateUtils.toSqlDate(startDate), DateUtils.toSqlDate(endDate));
 
             for (User user : users) {
-                YearMonth yearMonth = YearMonth.from(user.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                YearMonth yearMonth = YearMonth.from(user.getCreatedDate());
                 monthlySignupDate.merge(yearMonth, 1, Integer::sum);
             }
 

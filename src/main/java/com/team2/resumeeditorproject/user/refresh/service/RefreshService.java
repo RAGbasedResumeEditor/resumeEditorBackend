@@ -1,4 +1,4 @@
-package com.team2.resumeeditorproject.user.service;
+package com.team2.resumeeditorproject.user.refresh.service;
 
 public interface RefreshService {
     void deleteExpiredTokens();

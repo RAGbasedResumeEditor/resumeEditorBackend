@@ -2,7 +2,7 @@ package com.team2.resumeeditorproject.admin.service;
 
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.user.domain.User;
-import com.team2.resumeeditorproject.user.service.RefreshService;
+import com.team2.resumeeditorproject.user.refresh.service.RefreshService;
 import com.team2.resumeeditorproject.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

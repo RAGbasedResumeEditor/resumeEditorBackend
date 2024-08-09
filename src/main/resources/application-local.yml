@@ -13,6 +13,13 @@ spring:
     init:
       mode: always
 
+  devtools:
+    livereload:
+      enabled: true
+    remote:
+      restart:
+        enabled: true
+
   jpa:
     properties:
       hibernate:
@@ -24,15 +31,3 @@ spring:
   redis:
     host: meaningless-dummy-string
     port: 1234
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${EMAIL_ADDRESS}
-    password: ${EMAIL_PASSWORD}
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-      mail.smtp.ssl.enable: false
-  jwt:
-    secret: ${JWT_SECRET}

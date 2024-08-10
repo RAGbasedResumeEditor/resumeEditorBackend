@@ -116,6 +116,8 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // access토큰이 만료된 상태로 접근을 하기 때문에 로그인자체가 불가능한 상태 이므로 모든 경로 허용
                         .requestMatchers("/reissue").permitAll()
+                        // 모니터링 healthcheck
+                        .requestMatchers("/healthcheck").permitAll()
                         // 그외 요청은 로그인 사용자만 접근 가능
                         .anyRequest().authenticated());
 

@@ -78,7 +78,7 @@ public class SecurityConfig {
                             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                                 CorsConfiguration configuration = new CorsConfiguration();
                                 // 프론트에서 보낼 3000번대 포트 허용
-                                configuration.setAllowedOrigins(Arrays.asList("https://reditor.me", "https://www.reditor.me","http://localhost:3000"));
+                                configuration.setAllowedOrigins(Arrays.asList("https://reditor.me", "https://www.reditor.me", "http://localhost:3000", "http://localhost:3001"));
                                 // GET, POST 등 모든 메서드 허용
                                 configuration.setAllowedMethods(Collections.singletonList("*"));
                                 // 쿠키, HTTP 인증 등을 사용하는 요청을 허용

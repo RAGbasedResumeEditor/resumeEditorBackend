@@ -21,7 +21,7 @@ public class PageUtil {
 
     public static <T> void checkListEmpty(Page<T> page) {
         if (page.getTotalElements() == 0) {
-            throw new NotFoundException("검색 결과가 존재하지 않습니다");
+            throw new NotFoundException("결과가 존재하지 않습니다");
         }
     }
 

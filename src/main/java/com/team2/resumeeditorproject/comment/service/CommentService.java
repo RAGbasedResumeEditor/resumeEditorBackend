@@ -1,18 +1,17 @@
 package com.team2.resumeeditorproject.comment.service;
 
 import com.team2.resumeeditorproject.comment.dto.CommentDTO;
+import com.team2.resumeeditorproject.common.enumeration.ResultMessage;
+import com.team2.resumeeditorproject.user.dto.UserDTO;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface CommentService {
 
-    CommentDTO insertComment(CommentDTO commentDTO);
+    ResultMessage insertComment(CommentDTO commentDTO, UserDTO loginUser);
 
-    Page<Object[]> getComments(Long num, Pageable pageable);
+    Page<CommentDTO> getPagedComments(Long resumeNo, int pageNo, int size);
 
-    int deleteComment(Long commentNo);
+    ResultMessage deleteComment(Long commentNo);
 
-    int updateComment(Long commentNo, String updateContent);
+    ResultMessage updateComment(Long commentNo, String updateContent);
 }

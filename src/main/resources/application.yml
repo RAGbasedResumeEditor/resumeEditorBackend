@@ -2,6 +2,9 @@ server:
   port: 8088
 
 spring:
+  profiles:
+    include: dev
+
   redis:
     host: ${REDIS_HOST}
     port: ${REDIS_PORT}

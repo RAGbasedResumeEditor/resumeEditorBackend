@@ -1,5 +1,7 @@
 package com.team2.resumeeditorproject.comment.domain;
 
+import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -15,14 +17,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
-import com.team2.resumeeditorproject.user.domain.User;
+import java.util.Date;
 
 @Entity
 @Getter

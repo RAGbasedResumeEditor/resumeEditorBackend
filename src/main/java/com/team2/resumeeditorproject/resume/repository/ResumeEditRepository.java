@@ -1,10 +1,11 @@
 package com.team2.resumeeditorproject.resume.repository;
 
-import java.util.List;
-
+import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
+import java.util.List;
 
 /**
  * resumeEditRepository
@@ -14,5 +15,9 @@ import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
  * @since : 04/25/24
  */
 public interface ResumeEditRepository extends JpaRepository<ResumeEdit, Long> {
-	List<ResumeEdit> findResumeEditsByResumeResumeNo(Long resumeNo);
+	List<ResumeEdit> findResumeEditsByResumeEditNo(Long resumeNo);
+
+
+	Page<ResumeEdit> findAllByUserUserNoOrderByResumeEditNoDesc(long userNo, Pageable pageable);
+
 }

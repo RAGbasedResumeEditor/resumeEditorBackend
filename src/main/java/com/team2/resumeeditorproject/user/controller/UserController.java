@@ -1,10 +1,14 @@
 package com.team2.resumeeditorproject.user.controller;
 
+import com.team2.resumeeditorproject.bookmark.dto.BookmarkDTO;
+import com.team2.resumeeditorproject.bookmark.service.BookmarkService;
+import com.team2.resumeeditorproject.common.dto.response.CommonListResponse;
 import com.team2.resumeeditorproject.common.dto.response.CommonResponse;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
-import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
+import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
 import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
+import com.team2.resumeeditorproject.resume.service.ResumeEditService;
 import com.team2.resumeeditorproject.resume.service.ResumeGuideService;
 import com.team2.resumeeditorproject.resume.service.ResumeService;
 import com.team2.resumeeditorproject.user.domain.User;
@@ -42,7 +46,9 @@ public class UserController extends HttpServlet {
 
     private final UserService userService;
     private final ResumeBoardService resumeBoardService;
+    private final BookmarkService bookmarkService;
     private final ResumeService resumeService;
+    private final ResumeEditService resumeEditService;
     private final ResumeGuideService resumeGuideService;
 
     private static final int SIZE_OF_PAGE = 5; // 한 페이지에 보여줄 게시글 수
@@ -51,38 +57,38 @@ public class UserController extends HttpServlet {
     @PostMapping("/user/search")
     public ResponseEntity<Map<String, Object>> showUser(UserDTO loginUser) {
 
-            String username = loginUser.getUsername();
+        String username = loginUser.getUsername();
 
-            User tempUser = userService.showUser(username);
-            UserDTO user = new UserDTO();
-                user.setUserNo(tempUser.getUserNo());
-                user.setEmail(tempUser.getEmail());
-                user.setUsername((tempUser.getUsername()));
-                user.setRole(tempUser.getRole());
-                user.setAge(tempUser.getAge());
-                user.setBirthDate(tempUser.getBirthDate());
-                user.setGender(tempUser.getGender());
-                user.setCompanyNo(tempUser.getCompany().getCompanyNo());
-                user.setCompanyName(tempUser.getCompany().getCompanyName());
-                user.setOccupationNo(tempUser.getOccupation().getOccupationNo());
-                user.setOccupationName(tempUser.getOccupation().getOccupationName());
-                user.setWishCompanyNo(tempUser.getWishCompany().getCompanyNo());
-                user.setWishCompanyName(tempUser.getWishCompany().getCompanyName());
-                user.setStatus(tempUser.getStatus());
-                user.setMode(tempUser.getMode());
-                user.setCreatedDate(tempUser.getCreatedDate());
-                user.setDeletedDate(tempUser.getDeletedDate());
-            return createOkResponse(user);
+        User tempUser = userService.showUser(username);
+        UserDTO user = new UserDTO();
+        user.setUserNo(tempUser.getUserNo());
+        user.setEmail(tempUser.getEmail());
+        user.setUsername((tempUser.getUsername()));
+        user.setRole(tempUser.getRole());
+        user.setAge(tempUser.getAge());
+        user.setBirthDate(tempUser.getBirthDate());
+        user.setGender(tempUser.getGender());
+        user.setCompanyNo(tempUser.getCompany().getCompanyNo());
+        user.setCompanyName(tempUser.getCompany().getCompanyName());
+        user.setOccupationNo(tempUser.getOccupation().getOccupationNo());
+        user.setOccupationName(tempUser.getOccupation().getOccupationName());
+        user.setWishCompanyNo(tempUser.getWishCompany().getCompanyNo());
+        user.setWishCompanyName(tempUser.getWishCompany().getCompanyName());
+        user.setStatus(tempUser.getStatus());
+        user.setMode(tempUser.getMode());
+        user.setCreatedDate(tempUser.getCreatedDate());
+        user.setDeletedDate(tempUser.getDeletedDate());
+        return createOkResponse(user);
     }
 
     //회원탈퇴
-    @DeleteMapping("/user/{userNo}")
-    public ResponseEntity<CommonResponse> deleteUser(@PathVariable("userNo") Long userNo) throws AuthenticationException {
-        userService.deleteUser(userNo);
+    @DeleteMapping("/user")
+    public ResponseEntity<CommonResponse> deleteUser(UserDTO loginUser) throws AuthenticationException {
+        userService.deleteUser(loginUser.getUserNo());
 
         return ResponseEntity.ok()
                 .body(CommonResponse.builder()
-                        .response(userNo + "번 회원 탈퇴 완료.")
+                        .response(loginUser.getUserNo() + "번 회원 탈퇴 완료.")
                         .status("Success")
                         .time(new Date())
                         .build());
@@ -107,141 +113,41 @@ public class UserController extends HttpServlet {
 
     // 즐겨찾기 목록 조회
     @GetMapping("/user/bookmark")
-    public ResponseEntity<Map<String, Object>> showBookmark(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
-        String username = loginUser.getUsername();
-        Long userNo = userService.showUser(username).getUserNo();
+    public ResponseEntity<CommonListResponse<BookmarkDTO>> bookmarkList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
         int size = SIZE_OF_PAGE;
-        Map<String, Object> response = new HashMap<>();
-        Date today = new Date();
 
-        try{
-            // 즐겨찾기한 목록 보여주기
-            // 로그인한 user의 userNo과 일치하는 항목을 bookmark 테이블에서 찾고, 그에 해당하는 resumeNo으로 목록 불러오기
-            pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
+        Page<BookmarkDTO> bookmarks = bookmarkService.getBookmarkList(loginUser.getUserNo(), pageNo, size);
 
-            // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-            Pageable pageable = PageRequest.of(pageNo, size);
-            Page<Object[]> resultsPage = resumeBoardService.getBookmarkList(userNo, pageable);
-
-            if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
-                response.put("response", "게시글이 없습니다.");
-            }
-            else { // 게시글이 있는 경우
-                if(pageNo > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                    pageNo = resultsPage.getTotalPages() - 1;
-                    pageable = PageRequest.of(pageNo, size);
-                    resultsPage = resumeBoardService.getBookmarkList(userNo, pageable);
-                }
-
-                List<Map<String, Object>> formattedResults = new ArrayList<>();
-
-                for (Object[] result : resultsPage.getContent()) {
-                    Map<String, Object> formattedResult = new HashMap<>();
-
-                    // 첫 번째 요소는 ResumeBoard와 Resume의 필드를 포함하는 객체
-                    ResumeBoard resumeBoard = (ResumeBoard) result[0];
-                    formattedResult.put("resumeNo", resumeBoard.getResume().getResumeNo());
-                    formattedResult.put("rating", (float) Math.round(resumeBoard.getRating() * 10) / 10);
-                    formattedResult.put("rating_count", resumeBoard.getRatingCount());
-                    formattedResult.put("read_num", resumeBoard.getReadCount());
-                    formattedResult.put("title", resumeBoard.getTitle());
-
-                    // 두 번째 요소는 Resume의 content
-                    String content = (String) result[1];
-                    formattedResult.put("content", content);
-
-                    // 세 번째 요소는 Resume의 w_date
-                    Date w_date = (Date) result[2];
-                    formattedResult.put("w_date", w_date);
-
-                    formattedResults.add(formattedResult);
-                }
-                response.put("response", formattedResults);
-            }
-            response.put("time", today);
-            response.put("status", "Success");
-            response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } catch (Exception e) {
-            response.put("response", "server error : bookmark list Fail " + e.getMessage());
-            response.put("time", today);
-            response.put("status", "Fail");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return ResponseEntity
+                .ok()
+                .body(CommonListResponse.<BookmarkDTO>builder()
+                        .status("Success")
+                        .response(bookmarks.toList())
+                        .totalPages(bookmarks.getTotalPages())
+                        .build());
     }
 
     // 첨삭 기록 목록 조회
     @GetMapping("/user/edit-list")
-    public ResponseEntity<Map<String, Object>> resumeEditList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
-        String username = loginUser.getUsername();
-        Long userNo = userService.showUser(username).getUserNo();
+    public ResponseEntity<CommonListResponse<ResumeEditDTO>> resumeEditList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
         int size = SIZE_OF_PAGE;
-        Map<String, Object> response = new HashMap<>();
-        Date today = new Date();
 
-        try{
-            pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
+        Page<ResumeEditDTO> resumeEdits = resumeEditService.myPageEditList(loginUser.getUserNo(), pageNo, size);
 
-            // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-            Pageable pageable = PageRequest.of(pageNo, size);
-            Page<Object[]> resultsPage = resumeService.myPageEditList(userNo, pageable);
-
-            if(resultsPage.getTotalElements() == 0){ // 게시글이 없는 경우
-                response.put("response", "게시글이 없습니다.");
-            }
-            else { // 게시글이 있는 경우
-                if(pageNo > resultsPage.getTotalPages() - 1){ // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                    pageNo = resultsPage.getTotalPages() - 1;
-                    pageable = PageRequest.of(pageNo, size);
-                    resultsPage = resumeService.myPageEditList(userNo, pageable);
-                }
-
-                List<Map<String, Object>> formattedResults = new ArrayList<>();
-
-                for (Object[] result : resultsPage.getContent()) {
-                    Map<String, Object> formattedResult = new HashMap<>();
-
-                    // 첫 번째 요소 resumeNo
-                    long resumeNo = (long) result[0];
-                    formattedResult.put("resumeNo", resumeNo);
-
-                    // 두 번째, 세 번째 요소 company, occupation
-                    String title = result[1] + " " + result[2];
-                    formattedResult.put("title", title);
-
-                    // 네 번째 요소 mode
-                    int mode = (int) result[3];
-                    formattedResult.put("mode", mode);
-
-                    // 다섯 번째 요소 w_date
-                    Date w_date = (Date) result[4];
-                    formattedResult.put("w_date", w_date);
-
-                    formattedResults.add(formattedResult);
-                }
-                response.put("response", formattedResults);
-            }
-            response.put("time", today);
-            response.put("status", "Success");
-            response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } catch (Exception e) {
-            response.put("response", "server error : bookmark list Fail " + e.getMessage());
-            response.put("time", today);
-            response.put("status", "Fail");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return ResponseEntity
+                .ok()
+                .body(CommonListResponse.<ResumeEditDTO>builder()
+                        .status("Success")
+                        .response(resumeEdits.toList())
+                        .totalPages(resumeEdits.getTotalPages())
+                        .build());
     }
 
     // 첨삭 기록 상세페이지
     @GetMapping("/user/edit-list/{resumeEditNo}")
-    public ResponseEntity<ResumeEditDetailDTO> getResumeBoard(@PathVariable("num") Long num, UserDTO loginUser) {
+    public ResponseEntity<ResumeEditDetailDTO> getResumeBoard(@PathVariable("resumeEditNo") Long resumeEditNo, UserDTO loginUser) {
         String username = loginUser.getUsername();
-        ResumeEditDetailDTO detailDTO = resumeService.getResumeEditDetail(num, username);
+        ResumeEditDetailDTO detailDTO = resumeService.getResumeEditDetail(resumeEditNo, username);
         return new ResponseEntity<>(detailDTO, HttpStatus.OK);
     }
 

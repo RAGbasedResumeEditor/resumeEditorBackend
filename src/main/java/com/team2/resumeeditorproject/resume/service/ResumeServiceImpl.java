@@ -1,9 +1,5 @@
 package com.team2.resumeeditorproject.resume.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.exception.NotFoundException;
 import com.team2.resumeeditorproject.resume.domain.Resume;
@@ -12,8 +8,8 @@ import com.team2.resumeeditorproject.resume.repository.ResumeEditRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
 import com.team2.resumeeditorproject.user.dto.ResumeEditDetailDTO;
 import com.team2.resumeeditorproject.user.service.UserService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 /**
  * resumeServiceImpl
@@ -31,7 +27,7 @@ public class ResumeServiceImpl implements ResumeService {
 
 	@Override
 	public ResumeEditDetailDTO getResumeEditDetail(Long rNum, String username) {
-		ResumeEdit resumeEdit = resumeEditRepository.findResumeEditsByResumeResumeNo(rNum)
+		ResumeEdit resumeEdit = resumeEditRepository.findResumeEditsByResumeEditNo(rNum)
 				.stream()
 				.findFirst()
 				.orElse(null);
@@ -57,16 +53,11 @@ public class ResumeServiceImpl implements ResumeService {
 				.occupationName(resumeEdit.getOccupation().getOccupationName())
 				.questions(resumeEdit.getCompany().getQuestions())
 				.options(resumeEdit.getOptions())
-				.rContent(resumeEdit.getContent())
+				.beforeContent(resumeEdit.getContent())
 				.mode(resumeEdit.getMode())
-				.content(resume.getContent())
+				.afterContent(resume.getContent())
 				.createdDate(resume.getCreatedDate())
 				.build();
-	}
-
-	@Override
-	public Page<Object[]> myPageEditList(long userNo, Pageable pageable) {
-		return resumeRepository.getMyPageEditList(userNo, pageable);
 	}
 
 }

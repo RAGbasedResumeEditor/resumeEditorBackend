@@ -2,9 +2,7 @@ package com.team2.resumeeditorproject.resume.service;
 
 import com.team2.resumeeditorproject.resume.dto.ResumeBoardDTO;
 import com.team2.resumeeditorproject.resume.dto.request.ResumeBoardRequest;
-
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -25,6 +23,4 @@ public interface ResumeBoardService {
     List<ResumeBoardDTO> getHighestRatingResumeBoard();
 
     boolean isNotExistResumeBoard(long resumeBoardNo);
-
-    Page<Object[]> getBookmarkList(long userNo, Pageable pageable);
 }

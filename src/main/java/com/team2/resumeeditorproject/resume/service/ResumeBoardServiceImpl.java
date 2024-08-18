@@ -110,8 +110,5 @@ public class ResumeBoardServiceImpl implements ResumeBoardService {
 		return !resumeBoardRepository.existsById(resumeBoardNo);
 	}
 
-	@Override
-	public Page<Object[]> getBookmarkList(long userNo, Pageable pageable) {
-		return resumeBoardRepository.getBookmarkList(userNo, pageable);
-	}
+
 }

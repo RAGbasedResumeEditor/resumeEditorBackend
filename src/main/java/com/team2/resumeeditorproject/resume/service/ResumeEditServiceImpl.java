@@ -1,9 +1,7 @@
 package com.team2.resumeeditorproject.resume.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.team2.resumeeditorproject.common.enumeration.ResultMessage;
+import com.team2.resumeeditorproject.common.util.PageUtil;
 import com.team2.resumeeditorproject.company.repository.CompanyRepository;
 import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import com.team2.resumeeditorproject.resume.domain.Resume;
@@ -17,8 +15,13 @@ import com.team2.resumeeditorproject.user.domain.User;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.UserService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * resumeEditServiceImpl
@@ -31,9 +34,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ResumeEditServiceImpl implements ResumeEditService {
 	private final ResumeEditRepository resumeEditRepository;
+	private final ResumeRepository resumeRepository;
 	private final ResumeBoardRepository resumeBoardRepository;
 	private final UserService userService;
-	private final ResumeRepository resumeRepository;
 	private final UserRepository userRepository;
 	private final CompanyRepository companyRepository;
 	private final OccupationRepository occupationRepository;
@@ -76,5 +79,27 @@ public class ResumeEditServiceImpl implements ResumeEditService {
 		}
 
 		return ResultMessage.Registered;
+	}
+
+	@Override
+	public Page<ResumeEditDTO> myPageEditList(long userNo, int pageNo, int size) {
+		PageUtil.checkUnderZero(pageNo);
+
+		Pageable pageable = PageRequest.of(pageNo, size);
+
+		Page<ResumeEdit> resumeEdits = resumeEditRepository.findAllByUserUserNoOrderByResumeEditNoDesc(userNo, pageable);
+
+		PageUtil.checkListEmpty(resumeEdits);
+		PageUtil.checkExcessLastPageNo(pageable.getPageNumber(), resumeEdits.getTotalPages() - 1);
+
+		return new PageImpl<>(resumeEdits.stream()
+				.map(resumeEdit -> ResumeEditDTO.builder()
+						.resumeEditNo(resumeEdit.getResumeEditNo())
+						.mode(resumeEdit.getMode())
+						.companyName(resumeEdit.getCompany().getCompanyName())
+						.occupationName(resumeEdit.getOccupation().getOccupationName())
+						.createdDate(resumeEdit.getResume().getCreatedDate())
+						.build())
+				.toList(), pageable, resumeEdits.getTotalElements());
 	}
 }

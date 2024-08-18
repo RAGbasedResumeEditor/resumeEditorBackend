@@ -28,12 +28,4 @@ public interface ResumeBoardRepository extends JpaRepository<ResumeBoard, Long> 
 	@Query("UPDATE ResumeBoard SET readCount = readCount + 1 WHERE resumeBoardNo = :resumeBoardNo")
 	void updateReadCount(@Param("resumeBoardNo") Long resumeBoardNo);
 
-	@Query("SELECT rb, r.content, r.createdDate " +
-			"FROM ResumeBoard rb " +
-			"JOIN Resume r " +
-			"JOIN Bookmark b " +
-			"JOIN User u " +
-			"WHERE u.userNo = :userNo " +
-			"ORDER BY b.bookmarkNo DESC")
-	Page<Object[]> getBookmarkList(@Param("userNo") long userNo, Pageable pageable);
 }

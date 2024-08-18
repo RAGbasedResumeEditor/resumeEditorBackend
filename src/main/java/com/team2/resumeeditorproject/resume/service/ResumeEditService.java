@@ -3,6 +3,7 @@ package com.team2.resumeeditorproject.resume.service;
 import com.team2.resumeeditorproject.common.enumeration.ResultMessage;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
+import org.springframework.data.domain.Page;
 
 /**
  * resumeEditService
@@ -13,4 +14,6 @@ import com.team2.resumeeditorproject.user.dto.UserDTO;
  */
 public interface ResumeEditService {
     ResultMessage saveResumeEdit(ResumeEditDTO resumeEditDTO, UserDTO user);
+    Page<ResumeEditDTO> myPageEditList(long userNo, int pageNo, int size);
+
 }

@@ -1,6 +1,5 @@
 package com.team2.resumeeditorproject.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,14 +15,8 @@ public class ResumeEditDetailDTO {
     private String occupationName;
     private String questions;
     private String options;
-
-    @JsonProperty("beforeContent")
-    private String rContent;
-
+    private String beforeContent;
+    private String afterContent;
     private int mode;
-
-    @JsonProperty("afterContent")
-    private String content;
-
     private Date createdDate;
 }

@@ -1,22 +1,23 @@
 package com.team2.resumeeditorproject.resume.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import com.team2.resumeeditorproject.common.enumeration.ResultMessage;
+import com.team2.resumeeditorproject.common.util.PageUtil;
+import com.team2.resumeeditorproject.company.repository.CompanyRepository;
 import com.team2.resumeeditorproject.exception.BadRequestException;
 import com.team2.resumeeditorproject.exception.NotFoundException;
+import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
 import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
-import com.team2.resumeeditorproject.company.repository.CompanyRepository;
-import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeGuideRepository;
 import com.team2.resumeeditorproject.user.dto.UserDTO;
 import com.team2.resumeeditorproject.user.repository.UserRepository;
 import com.team2.resumeeditorproject.user.service.UserService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +44,23 @@ public class ResumeGuideServiceImpl implements ResumeGuideService {
 	}
 
 	@Override
-	public Page<ResumeGuide> getResumeGuidesByUserNo(Long userNo, Pageable pageable) {
-		return resumeGuideRepository.findByUserUserNo(userNo, pageable);
+	public Page<ResumeGuideDTO> getResumeGuidesByUserNo(Long userNo, int pageNo, int size) {
+		PageUtil.checkUnderZero(pageNo);
+
+		Pageable pageable = PageRequest.of(pageNo, size);
+
+		Page<ResumeGuide> resumeGuides = resumeGuideRepository.findByUserUserNoOrderByResumeGuideNoDesc(userNo, pageable);
+
+		PageUtil.checkListEmpty(resumeGuides);
+		PageUtil.checkExcessLastPageNo(pageable.getPageNumber(), resumeGuides.getTotalPages() - 1);
+
+		return new PageImpl<>(resumeGuides.stream()
+				.map(resumeGuide -> ResumeGuideDTO.builder()
+						.resumeGuideNo(resumeGuide.getResumeGuideNo())
+						.companyName(resumeGuide.getCompany().getCompanyName())
+						.occupationName(resumeGuide.getOccupation().getOccupationName())
+						.build())
+				.toList(), pageable, resumeGuides.getTotalElements());
 	}
 
 	@Override

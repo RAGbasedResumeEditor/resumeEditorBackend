@@ -4,7 +4,6 @@ import com.team2.resumeeditorproject.bookmark.dto.BookmarkDTO;
 import com.team2.resumeeditorproject.bookmark.service.BookmarkService;
 import com.team2.resumeeditorproject.common.dto.response.CommonListResponse;
 import com.team2.resumeeditorproject.common.dto.response.CommonResponse;
-import com.team2.resumeeditorproject.resume.domain.ResumeGuide;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
 import com.team2.resumeeditorproject.resume.dto.ResumeGuideDTO;
 import com.team2.resumeeditorproject.resume.service.ResumeBoardService;
@@ -18,8 +17,6 @@ import com.team2.resumeeditorproject.user.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -32,10 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.team2.resumeeditorproject.common.util.ResponseHandler.createOkResponse;
@@ -153,62 +147,18 @@ public class UserController extends HttpServlet {
 
     // 자소서 가이드 목록 조회
     @GetMapping("/user/guide-list")
-    public ResponseEntity<Map<String, Object>> resumeGuideList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
-        String username = loginUser.getUsername();
-        Long userNo = userService.showUser(username).getUserNo();
+    public ResponseEntity<CommonListResponse<ResumeGuideDTO>> resumeGuideList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
         int size = SIZE_OF_PAGE;
-        Map<String, Object> response = new HashMap<>();
-        Date today = new Date();
 
-        try {
-            pageNo = (pageNo < 0) ? 0 : pageNo; // 페이지가 음수인 경우 첫 페이지로 이동하게
+        Page<ResumeGuideDTO> resumeGuides = resumeGuideService.getResumeGuidesByUserNo(loginUser.getUserNo(), pageNo, size);
 
-            // 페이지 및 페이지 크기를 기반으로 페이징된 결과를 가져옴
-            Pageable pageable = PageRequest.of(pageNo, size);
-            Page<ResumeGuide> resultsPage = resumeGuideService.getResumeGuidesByUserNo(userNo, pageable);
-
-            if (resultsPage.getTotalElements() == 0) { // 게시글이 없는 경우
-                response.put("response", "게시글이 없습니다.");
-            } else { // 게시글이 있는 경우
-                if (pageNo > resultsPage.getTotalPages() - 1) { // 페이지 범위를 초과한 경우 마지막 페이지로 이동하게
-                    pageNo = resultsPage.getTotalPages() - 1;
-                    pageable = PageRequest.of(pageNo, size);
-                    resultsPage = resumeGuideService.getResumeGuidesByUserNo(userNo, pageable);
-                }
-
-                List<Map<String, Object>> formattedResults = new ArrayList<>();
-
-                for (ResumeGuide resumeGuide : resultsPage.getContent()) {
-                    Map<String, Object> formattedResult = new HashMap<>();
-
-                    // 첫 번째 요소 resumeGuideNo
-                    Long resumeGuideNo = resumeGuide.getResumeGuideNo();
-                    formattedResult.put("No", resumeGuideNo); //자소서 번호
-
-                    // 두 번째 요소 company
-                    String company = resumeGuide.getCompany().getCompanyName();
-                    formattedResult.put("company", company);
-
-                    // 세 번째 요소 occupation
-                    String occupation = resumeGuide.getOccupation().getOccupationName();
-                    formattedResult.put("occupation", occupation);
-
-                    formattedResults.add(formattedResult);
-                }
-                response.put("response", formattedResults);
-            }
-            response.put("time", today);
-            response.put("status", "Success");
-            response.put("totalPages", resultsPage.getTotalPages()); // 총 페이지 수
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } catch (Exception e) {
-            response.put("response", "server error : guide list Fail [" + e.getMessage() + "]");
-            response.put("time", today);
-            response.put("status", "Fail");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return ResponseEntity
+                .ok()
+                .body(CommonListResponse.<ResumeGuideDTO>builder()
+                        .status("Success")
+                        .response(resumeGuides.toList())
+                        .totalPages(resumeGuides.getTotalPages())
+                        .build());
     }
 
     // 자소서 가이드 상세 페이지

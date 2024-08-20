@@ -18,5 +18,5 @@ public class ResumeEditDetailDTO {
     private String beforeContent;
     private String afterContent;
     private int mode;
-    private Date createdDate;
+    private Date createdDate; 
 }

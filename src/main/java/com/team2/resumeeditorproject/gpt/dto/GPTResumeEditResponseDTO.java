@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -12,16 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class GPTResumeEditResponseDTO {
     private String status;
-    private List<DiffItem> diff;
+    private List<List<Object>> diff;
     private String result;
-    private String error;
-}
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-class DiffItem {
-    private int type;
-    private String text;
 }

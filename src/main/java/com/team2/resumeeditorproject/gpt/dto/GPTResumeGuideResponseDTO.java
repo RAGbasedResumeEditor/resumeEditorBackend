@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 public class GPTResumeGuideResponseDTO {
     private String result;
-    private String message;
+    private String status;
 }

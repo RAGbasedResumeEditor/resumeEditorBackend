@@ -1,18 +1,31 @@
 package com.team2.resumeeditorproject.gpt.controller;
 
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.resumeeditorproject.gpt.dto.GPTResumeEditRequestDTO;
 import com.team2.resumeeditorproject.gpt.dto.GPTResumeEditResponseDTO;
 import com.team2.resumeeditorproject.gpt.dto.GPTResumeGuideRequestDTO;
 import com.team2.resumeeditorproject.gpt.dto.GPTResumeGuideResponseDTO;
+
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -30,8 +43,27 @@ public class ResumeGPTController {
 	@Value("${PYTHON_SERVER}")
 	String pythonServerUrl;
 
+	private void API테스트(GPTResumeEditRequestDTO requestData) {
+		RestClient restClient = RestClient.builder()
+			.messageConverters(httpMessageConverters -> httpMessageConverters.add(new MappingJackson2HttpMessageConverter()))
+			.requestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
+			.build();
+
+		String result = restClient.post()
+
+			.uri(pythonServerUrl + "/rag_chat")
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(requestData)
+			.retrieve()
+			.body(String.class);
+	}
+
 	@PostMapping("/rag-chat")
 	public ResponseEntity<GPTResumeEditResponseDTO> ragChat(@RequestBody GPTResumeEditRequestDTO requestData) {
+
+		/* 참고해서 작업 */
+		API테스트(requestData);
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 

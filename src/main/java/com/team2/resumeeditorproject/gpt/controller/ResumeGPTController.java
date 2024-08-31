@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.team2.resumeeditorproject.gpt.dto.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 @RestController
 @RequestMapping("/gpt")
 public class ResumeGPTController {
+	private static final Logger log = LoggerFactory.getLogger(ResumeGPTController.class);
 	@Value("${PYTHON_SERVER}")
 	String pythonServerUrl;
 	RestClient restClient = RestClient.builder()
@@ -34,10 +37,9 @@ public class ResumeGPTController {
 
 	@PostMapping("/rag-chat")
 	public ResponseEntity<GPTResumeEditResponseDTO> ragChat(@RequestBody GPTResumeEditRequestDTO requestData) {
-
+		log.info("pythonServerUrl: {}", pythonServerUrl);
 		try {
 			GPTResumeEditResponseDTO responseDTO = restClient.post()
-
 					.uri(pythonServerUrl + "/rag_chat")
 					.contentType(MediaType.APPLICATION_JSON)
 					.body(requestData)
@@ -46,6 +48,7 @@ public class ResumeGPTController {
 			return ResponseEntity.ok(responseDTO);
 		} catch (Exception e) {
 			// 예외 처리: 파싱 오류나 다른 문제 발생 시 처리
+			log.error(e.getMessage(), e);
 			GPTResumeEditResponseDTO errorResponse = new GPTResumeEditResponseDTO(null, null, "Fail");
 			return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

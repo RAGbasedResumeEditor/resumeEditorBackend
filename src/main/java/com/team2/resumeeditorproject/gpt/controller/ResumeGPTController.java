@@ -1,32 +1,18 @@
 package com.team2.resumeeditorproject.gpt.controller;
 
 
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.resumeeditorproject.gpt.dto.GPTResumeEditRequestDTO;
-import com.team2.resumeeditorproject.gpt.dto.GPTResumeEditResponseDTO;
-import com.team2.resumeeditorproject.gpt.dto.GPTResumeGuideRequestDTO;
-import com.team2.resumeeditorproject.gpt.dto.GPTResumeGuideResponseDTO;
+import com.team2.resumeeditorproject.gpt.dto.*;
 
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -39,58 +25,25 @@ import org.springframework.beans.factory.annotation.Value;
 @RestController
 @RequestMapping("/gpt")
 public class ResumeGPTController {
-	RestTemplate restTemplate = new RestTemplate();
 	@Value("${PYTHON_SERVER}")
 	String pythonServerUrl;
-
-	private void API테스트(GPTResumeEditRequestDTO requestData) {
-		RestClient restClient = RestClient.builder()
+	RestClient restClient = RestClient.builder()
 			.messageConverters(httpMessageConverters -> httpMessageConverters.add(new MappingJackson2HttpMessageConverter()))
 			.requestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
 			.build();
 
-		String result = restClient.post()
-
-			.uri(pythonServerUrl + "/rag_chat")
-			.contentType(MediaType.APPLICATION_JSON)
-			.body(requestData)
-			.retrieve()
-			.body(String.class);
-	}
-
 	@PostMapping("/rag-chat")
 	public ResponseEntity<GPTResumeEditResponseDTO> ragChat(@RequestBody GPTResumeEditRequestDTO requestData) {
 
-		/* 참고해서 작업 */
-		API테스트(requestData);
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<GPTResumeEditRequestDTO> request = new HttpEntity<>(requestData, headers);
 		try {
-			// 서버 응답을 String으로 받기
-			ResponseEntity<String> response = restTemplate.postForEntity(pythonServerUrl + "rag_chat", request, String.class);
+			GPTResumeEditResponseDTO responseDTO = restClient.post()
 
-			// JSON 파서를 사용하기 위해 ObjectMapper 인스턴스 생성
-			ObjectMapper objectMapper = new ObjectMapper();
-			GPTResumeEditResponseDTO responseDTO;
-
-			// 서버의 응답이 JSON일 경우 처리
-			if (response.getStatusCode() == HttpStatus.OK && response.getHeaders().getContentType().includes(MediaType.APPLICATION_JSON)) {
-				responseDTO = objectMapper.readValue(response.getBody(), GPTResumeEditResponseDTO.class);
-				return ResponseEntity.ok(responseDTO);
-			}
-			// 서버의 응답이 text/plain일 경우 처리
-			else if (response.getStatusCode() == HttpStatus.OK && response.getHeaders().getContentType().includes(MediaType.TEXT_PLAIN)) {
-				responseDTO = objectMapper.readValue(response.getBody(), GPTResumeEditResponseDTO.class);
-				return ResponseEntity.ok(responseDTO);
-			}
-			// 예상하지 못한 Content-Type이거나 상태 코드가 성공적이지 않을 때의 처리
-			else {
-				GPTResumeEditResponseDTO errorResponse = new GPTResumeEditResponseDTO(null, null, "Fail");
-				return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+					.uri(pythonServerUrl + "/rag_chat")
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(requestData)
+					.retrieve()
+					.body(GPTResumeEditResponseDTO.class);
+			return ResponseEntity.ok(responseDTO);
 		} catch (Exception e) {
 			// 예외 처리: 파싱 오류나 다른 문제 발생 시 처리
 			GPTResumeEditResponseDTO errorResponse = new GPTResumeEditResponseDTO(null, null, "Fail");
@@ -100,33 +53,16 @@ public class ResumeGPTController {
 
 	@PostMapping("/resume-guide")
 	public ResponseEntity<GPTResumeGuideResponseDTO> resumeGuide(@RequestBody GPTResumeGuideRequestDTO requestData) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
 
-		HttpEntity<GPTResumeGuideRequestDTO> request = new HttpEntity<>(requestData, headers);
 		try {
-			// 서버 응답을 String으로 받기
-			ResponseEntity<String> response = restTemplate.postForEntity(pythonServerUrl + "resume_guide", request, String.class);
+			GPTResumeGuideResponseDTO responseDTO = restClient.post()
 
-			// JSON 파서를 사용하기 위해 ObjectMapper 인스턴스 생성
-			ObjectMapper objectMapper = new ObjectMapper();
-			GPTResumeGuideResponseDTO responseDTO;
-
-			// 서버의 응답이 JSON일 경우 처리
-			if (response.getStatusCode() == HttpStatus.OK && response.getHeaders().getContentType().includes(MediaType.APPLICATION_JSON)) {
-				responseDTO = objectMapper.readValue(response.getBody(), GPTResumeGuideResponseDTO.class);
-				return ResponseEntity.ok(responseDTO);
-			}
-			// 서버의 응답이 text/plain일 경우 처리
-			else if (response.getStatusCode() == HttpStatus.OK && response.getHeaders().getContentType().includes(MediaType.TEXT_PLAIN)) {
-				responseDTO = objectMapper.readValue(response.getBody(), GPTResumeGuideResponseDTO.class);
-				return ResponseEntity.ok(responseDTO);
-			}
-			// 예상하지 못한 Content-Type이거나 상태 코드가 성공적이지 않을 때의 처리
-			else {
-				GPTResumeGuideResponseDTO errorResponse = new GPTResumeGuideResponseDTO("Fail", "Unexpected Content-Type or status code");
-				return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+					.uri(pythonServerUrl + "/resume_guide")
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(requestData)
+					.retrieve()
+					.body(GPTResumeGuideResponseDTO.class);
+			return ResponseEntity.ok(responseDTO);
 		} catch (Exception e) {
 			// 예외 처리: 파싱 오류나 다른 문제 발생 시 처리
 			GPTResumeGuideResponseDTO errorResponse = new GPTResumeGuideResponseDTO("Fail", e.getMessage());
@@ -134,4 +70,40 @@ public class ResumeGPTController {
 		}
 	}
 
+	@PostMapping("/job-search")
+	public ResponseEntity<JobSearchResponseDTO> jobSearch(@RequestBody JobSearchRequestDTO requestData) {
+		try {
+			JobSearchResponseDTO responseDTO = restClient.post()
+
+					.uri(pythonServerUrl + "/job_search")
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(requestData)
+					.retrieve()
+					.body(JobSearchResponseDTO.class);
+			return ResponseEntity.ok(responseDTO);
+		} catch (Exception e) {
+			// Handling exceptions
+			JobSearchResponseDTO errorResponse = JobSearchResponseDTO.builder()
+					.status("Fail")
+					.build();
+			return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/social-enterprise")
+	public ResponseEntity<SocialEnterpriseResponseDTO> socialEnterprise() {
+		try {
+			SocialEnterpriseResponseDTO responseDTO = restClient.get()
+					.uri(pythonServerUrl + "/social_enterprise")
+					.retrieve()
+					.body(SocialEnterpriseResponseDTO.class);
+			return ResponseEntity.ok(responseDTO);
+		} catch (Exception e) {
+			// Handling exceptions
+			SocialEnterpriseResponseDTO errorResponse = SocialEnterpriseResponseDTO.builder()
+					.status("Fail")
+					.build();
+			return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

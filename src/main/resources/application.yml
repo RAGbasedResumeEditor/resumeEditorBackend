@@ -4,6 +4,10 @@ server:
 spring:
   profiles:
     include: dev
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
   redis:
     host: ${REDIS_HOST}
@@ -20,3 +24,8 @@ spring:
       mail.smtp.ssl.enable: false
   jwt:
     secret: ${JWT_SECRET}
+
+  server:
+    max-http-header-size: 40000
+    tomcat:
+      max-http-post-size: 20971520  # POST 요청의 최대 크기를 20MB로 설정

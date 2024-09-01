@@ -27,9 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 @RestController
 @RequestMapping("/gpt")
 public class ResumeGPTController {
+	String pythonServerUrl= "https://resume-editor-python.vercel.app";
 	private static final Logger log = LoggerFactory.getLogger(ResumeGPTController.class);
-	@Value("${PYTHON_SERVER}")
-	String pythonServerUrl;
+
 	RestClient restClient = RestClient.builder()
 			.messageConverters(httpMessageConverters -> httpMessageConverters.add(new MappingJackson2HttpMessageConverter()))
 			.requestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))

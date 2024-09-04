@@ -7,7 +7,9 @@ import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
+import com.team2.resumeeditorproject.resume.domain.ResumeEditExtension;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
+import com.team2.resumeeditorproject.resume.enumulation.ResumeEditExtensionType;
 import com.team2.resumeeditorproject.resume.dto.request.ResumeEditRequest;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeEditRepository;
@@ -41,6 +43,7 @@ public class ResumeEditServiceImpl implements ResumeEditService {
 	private final UserRepository userRepository;
 	private final CompanyRepository companyRepository;
 	private final OccupationRepository occupationRepository;
+	private final ResumeEditExtensionService resumeEditExtensionService;
 
 	@Transactional
 	@Override
@@ -61,12 +64,15 @@ public class ResumeEditServiceImpl implements ResumeEditService {
 				.mode(resumeEditRequest.getMode())
 				.resume(resume)
 				.user(user)
-				.company(companyRepository.findById(resumeEditRequest.getCompanyNo()).orElseThrow(() -> new IllegalArgumentException("Invalid Company No: " + resumeEditRequest.getCompanyNo())))
-				.occupation(occupationRepository.findById(resumeEditRequest.getOccupationNo()).orElseThrow(() -> new IllegalArgumentException("Invalid Occupation No: " + resumeEditRequest.getOccupationNo())))
+				.company(companyRepository.findById(resumeEditRequest.getCompanyNo()).orElse(null))
+				.occupation(occupationRepository.findById(resumeEditRequest.getOccupationNo()).orElse(null))
+				.question(resumeEditRequest.getQuestion())
 				.build();
 
 		resumeEditRepository.save(resumeEdit);
 
+		resumeEditRequest.setResumeEditNo(resumeEdit.getResumeEditNo());
+		resumeEditExtensionService.saveResumeEditExtension(resumeEditRequest);
 
 		// mode가 pro(2)인 경우, resume_board 테이블에 저장하고 user mode 2로 변경
 		if (resumeEditRequest.getMode() == 2) {
@@ -94,13 +100,26 @@ public class ResumeEditServiceImpl implements ResumeEditService {
 		PageUtil.checkExcessLastPageNo(pageable.getPageNumber(), resumeEdits.getTotalPages() - 1);
 
 		return new PageImpl<>(resumeEdits.stream()
-				.map(resumeEdit -> ResumeEditDTO.builder()
+				.map(resumeEdit -> {
+					String companyName = resumeEdit.getCompany() != null ? resumeEdit.getCompany().getCompanyName() : resumeEdit.getEntityExtensionList().stream()
+						.filter(resumeEditExtension -> resumeEditExtension.getResumeEditExtensionType() == ResumeEditExtensionType.Company)
+						.findFirst()
+						.orElse(ResumeEditExtension.empty).getContent();
+
+					String occupationName = resumeEdit.getOccupation() != null ? resumeEdit.getOccupation().getOccupationName() : resumeEdit.getEntityExtensionList().stream()
+						.filter(resumeEditExtension -> resumeEditExtension.getResumeEditExtensionType() == ResumeEditExtensionType.Occupation)
+						.findFirst()
+						.orElse(ResumeEditExtension.empty).getContent();
+
+					return ResumeEditDTO.builder()
 						.resumeEditNo(resumeEdit.getResumeEditNo())
 						.mode(resumeEdit.getMode())
-						.companyName(resumeEdit.getCompany().getCompanyName())
-						.occupationName(resumeEdit.getOccupation().getOccupationName())
+						.companyName(companyName)
+						.question(resumeEdit.getQuestion())
+						.occupationName(occupationName)
 						.createdDate(resumeEdit.getResume().getCreatedDate())
-						.build())
+						.build();
+				})
 				.toList(), pageable, resumeEdits.getTotalElements());
 	}
 }

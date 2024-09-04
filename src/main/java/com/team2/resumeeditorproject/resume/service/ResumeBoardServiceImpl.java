@@ -44,7 +44,7 @@ public class ResumeBoardServiceImpl implements ResumeBoardService {
 				.content(resumeBoard.getResume().getContent())
 				.createdDate(resumeBoard.getResume().getCreatedDate())
 				.username(resumeBoard.getResume().getUser().getUsername())
-				.questions(resumeBoard.getResume().getResumeEdit().getCompany().getQuestions())
+				.questions(resumeBoard.getResume().getResumeEdit().getQuestion())
 				.build();
 	}
 

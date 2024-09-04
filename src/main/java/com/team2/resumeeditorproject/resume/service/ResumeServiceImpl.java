@@ -51,7 +51,7 @@ public class ResumeServiceImpl implements ResumeService {
 				.companyName(resumeEdit.getCompany().getCompanyName())
 				.occupationNo(resumeEdit.getOccupation().getOccupationNo())
 				.occupationName(resumeEdit.getOccupation().getOccupationName())
-				.questions(resumeEdit.getCompany().getQuestions())
+				.questions(resumeEdit.getQuestion())
 				.options(resumeEdit.getOptions())
 				.beforeContent(resumeEdit.getContent())
 				.mode(resumeEdit.getMode())

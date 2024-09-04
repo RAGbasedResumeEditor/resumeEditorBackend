@@ -34,9 +34,9 @@ INSERT INTO RESUME (USER_NO, CONTENT, CREATED_DATE) VALUES (3, '게임은 사람
 INSERT INTO RESUME (USER_NO, CONTENT, CREATED_DATE) VALUES (4, '**지원동기를 기술해주세요.** 저는 게임이 사용자들에게 가장 친근하게 다가갈 수 있는 소프트웨어이기 때문에, 사용자들의 피드백이 빠르게 전달된다고 생각합니다.',  NOW());
 INSERT INTO RESUME (USER_NO, CONTENT, CREATED_DATE) VALUES (4, '현대자동차는 전기차 시장에서 가격적 측면을 넘어, 고성능 브랜드 가치를 추가하기 위해 박차를 가하고 있습니다.',  NOW());
 
-INSERT INTO RESUME_EDIT (MODE, COMPANY_NO, OCCUPATION_NO, RESUME_NO, USER_NO, CONTENT, OPTIONS) VALUES (1, 1, 1, 1, 1, 'pro mode 5/7 첨삭받을 자소서입니다', null);
-INSERT INTO RESUME_EDIT (MODE, COMPANY_NO, OCCUPATION_NO, RESUME_NO, USER_NO, CONTENT, OPTIONS) VALUES (2, 2, 1, 2, 1, '게임은 사람들에게 가장 친근하게 다가갈 수 있는 소프트웨어인 만큼 사용자들의 피드백이 빠르다고 생각합니다. 긍정적인 반응은 제가 개발을 하는 원동력이며 부정적인 반응은 제가 나아갈 방향을 알려주는 이정표가 된다고 생각합니다. 그렇기에 빠르게 사용자 반응을 살필 수 있는 직무에서 근무한다면 그만큼 빠르게 성장할 수 있을 거 같아 지원하였습니다. 두 번째 이유는 제가 쌓아온 경험을 기반으로 기여할수 있는 부분이 있다고 믿기 때문입니다. 저는 3개월간의 인턴십과 5개월간의 부트캠프 경험을 통해 UI구현 뿐만 아니라 API 와 DB 구축에도 참여하며 개발 경험을 쌓았습니다. 또한 다른 사람들과 같이 개발하며 다양한 협업 도구를 활용한 협업 능력 역시 키울 수 있었습니다. 마지막으로 펄어비스는 해외 매출 비중이 77%를 차지하는 글로벌 회사입니다. 저의 다년간의 해외경험은 해외 오피스와 협력하며 다양한 프로젝트를 효과적으로 수행하는 데 큰 자산이 될 것입니다.만약 제가 입사하게 된다면 게임 내 미니게임 컨텐츠를 제작해 보고 싶습니다. 게임을 즐기다 보면 간혹 어려운 메인 컨텐츠에 가로막혀 좌절했던것 같습니다. 이때 게임 내의 이벤트를 통한 보상을 통해 다음 컨텐츠로 나아갈수 있게 되었을때 큰 희열을 느꼇던것 같습니다.펄어비스의 프론트엔드 개발자로서 인게임 컨텐츠 제작을 통해 사용자들에게 최고의 사용자 경험을 제공하고 싶습니다.', null);
-INSERT INTO RESUME_EDIT (MODE, COMPANY_NO, OCCUPATION_NO, RESUME_NO, USER_NO, CONTENT, OPTIONS) VALUES (1, 3, 3, 3, 2, 'Industrial AI 개발에 있어서 가장 중요한 역량은 현업 이해도와 AI 개발 능력의 조화이며, 저는 개발 능력의 향상을 위해 장기 AI 교육과 프로젝트 수행 기간을 가졌습니다. ', null);
+INSERT INTO RESUME_EDIT (MODE, COMPANY_NO, OCCUPATION_NO, RESUME_NO, USER_NO, CONTENT, OPTIONS) VALUES (1, 1, null, 1, 1, 'pro mode 5/7 첨삭받을 자소서입니다', null);
+INSERT INTO RESUME_EDIT (MODE, COMPANY_NO, OCCUPATION_NO, RESUME_NO, USER_NO, CONTENT, OPTIONS) VALUES (2, null, null, 2, 1, '게임은 사람들에게 가장 친근하게 다가갈 수 있는 소프트웨어인 만큼 사용자들의 피드백이 빠르다고 생각합니다. 긍정적인 반응은 제가 개발을 하는 원동력이며 부정적인 반응은 제가 나아갈 방향을 알려주는 이정표가 된다고 생각합니다. 그렇기에 빠르게 사용자 반응을 살필 수 있는 직무에서 근무한다면 그만큼 빠르게 성장할 수 있을 거 같아 지원하였습니다. 두 번째 이유는 제가 쌓아온 경험을 기반으로 기여할수 있는 부분이 있다고 믿기 때문입니다. 저는 3개월간의 인턴십과 5개월간의 부트캠프 경험을 통해 UI구현 뿐만 아니라 API 와 DB 구축에도 참여하며 개발 경험을 쌓았습니다. 또한 다른 사람들과 같이 개발하며 다양한 협업 도구를 활용한 협업 능력 역시 키울 수 있었습니다. 마지막으로 펄어비스는 해외 매출 비중이 77%를 차지하는 글로벌 회사입니다. 저의 다년간의 해외경험은 해외 오피스와 협력하며 다양한 프로젝트를 효과적으로 수행하는 데 큰 자산이 될 것입니다.만약 제가 입사하게 된다면 게임 내 미니게임 컨텐츠를 제작해 보고 싶습니다. 게임을 즐기다 보면 간혹 어려운 메인 컨텐츠에 가로막혀 좌절했던것 같습니다. 이때 게임 내의 이벤트를 통한 보상을 통해 다음 컨텐츠로 나아갈수 있게 되었을때 큰 희열을 느꼇던것 같습니다.펄어비스의 프론트엔드 개발자로서 인게임 컨텐츠 제작을 통해 사용자들에게 최고의 사용자 경험을 제공하고 싶습니다.', null);
+INSERT INTO RESUME_EDIT (MODE, COMPANY_NO, OCCUPATION_NO, RESUME_NO, USER_NO, CONTENT, OPTIONS) VALUES (1, 3, 3, 3, 1, 'Industrial AI 개발에 있어서 가장 중요한 역량은 현업 이해도와 AI 개발 능력의 조화이며, 저는 개발 능력의 향상을 위해 장기 AI 교육과 프로젝트 수행 기간을 가졌습니다. ', null);
 INSERT INTO RESUME_EDIT (MODE, COMPANY_NO, OCCUPATION_NO, RESUME_NO, USER_NO, CONTENT, OPTIONS) VALUES (2, 3, 2, 4, 3, '"일정과 비용을 모두 관리하는 생산관리 실무자가 되겠습니다"', null);
 INSERT INTO RESUME_EDIT (MODE, COMPANY_NO, OCCUPATION_NO, RESUME_NO, USER_NO, CONTENT, OPTIONS) VALUES (1, 5, 5, 5, 4, 'CSE는 이슈 발생 시 동료 엔지니어와 협업 하는 과정에서 유연하고 분석적인 사고가 필요합니다.', null);
 
@@ -69,3 +69,7 @@ INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('iam
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('yejeejudy@naver.com', 'd852eb16-9e', '2024-05-30 15:22:19', '2024-05-30 15:27:19');
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('seventhseven@naver.com', 'be41f1ba-39', '2024-05-30 15:23:43', '2024-05-30 15:28:43');
 INSERT INTO verification ( email, code, created_date, expires_date) VALUES ('je_hn@naver.com', '5ce6ce61-89', '2024-05-30 15:23:37', '2024-05-30 15:28:37');
+
+INSERT INTO PUBLIC.RESUME_EDIT_EXTENSION (RESUME_EDIT_NO, CONTENT, RESUME_EDIT_EXTENSION_TYPE) VALUES (1, '테스트', 'Occupation');
+INSERT INTO PUBLIC.RESUME_EDIT_EXTENSION (RESUME_EDIT_NO, CONTENT, RESUME_EDIT_EXTENSION_TYPE) VALUES (2, '직무', 'Occupation');
+INSERT INTO PUBLIC.RESUME_EDIT_EXTENSION (RESUME_EDIT_NO, CONTENT, RESUME_EDIT_EXTENSION_TYPE) VALUES (2, '회사', 'Company');

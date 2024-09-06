@@ -8,6 +8,7 @@ import com.team2.resumeeditorproject.resume.domain.Resume;
 import com.team2.resumeeditorproject.resume.domain.ResumeBoard;
 import com.team2.resumeeditorproject.resume.domain.ResumeEdit;
 import com.team2.resumeeditorproject.resume.dto.ResumeEditDTO;
+import com.team2.resumeeditorproject.resume.dto.request.ResumeEditRequest;
 import com.team2.resumeeditorproject.resume.repository.ResumeBoardRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeEditRepository;
 import com.team2.resumeeditorproject.resume.repository.ResumeRepository;
@@ -43,34 +44,34 @@ public class ResumeEditServiceImpl implements ResumeEditService {
 
 	@Transactional
 	@Override
-	public ResultMessage saveResumeEdit(ResumeEditDTO resumeEditDTO, UserDTO loginUser) {
+	public ResultMessage saveResumeEdit(ResumeEditRequest resumeEditRequest, UserDTO loginUser) {
 
 		User user = userRepository.findById(loginUser.getUserNo()).orElseThrow(() -> new IllegalArgumentException("Invalid User"));
 
-		ResumeEdit resumeEdit = ResumeEdit.builder()
-				.options(resumeEditDTO.getOptions())
-				.content(resumeEditDTO.getContent())
-				.mode(resumeEditDTO.getMode())
-				.resume(resumeRepository.findById(resumeEditDTO.getResumeNo()).orElseThrow(() -> new IllegalArgumentException("Invalid Resume")))
-				.user(user)
-				.company(companyRepository.findById(resumeEditDTO.getCompanyNo()).orElseThrow(() -> new IllegalArgumentException("Invalid Company No: " + resumeEditDTO.getCompanyNo())))
-				.occupation(occupationRepository.findById(resumeEditDTO.getOccupationNo()).orElseThrow(() -> new IllegalArgumentException("Invalid Occupation No: " + resumeEditDTO.getOccupationNo())))
-				.build();
-
-		resumeEditRepository.save(resumeEdit);
-
 		Resume resume = Resume.builder()
-				.content(resumeEditDTO.getContent())
-				.resumeEdit(resumeEdit)
+				.content(resumeEditRequest.getBeforeContent())
 				.user(user)
 				.build();
 
 		resumeRepository.save(resume);
 
+		ResumeEdit resumeEdit = ResumeEdit.builder()
+				.options(resumeEditRequest.getOptions())
+				.content(resumeEditRequest.getAfterContent())
+				.mode(resumeEditRequest.getMode())
+				.resume(resume)
+				.user(user)
+				.company(companyRepository.findById(resumeEditRequest.getCompanyNo()).orElseThrow(() -> new IllegalArgumentException("Invalid Company No: " + resumeEditRequest.getCompanyNo())))
+				.occupation(occupationRepository.findById(resumeEditRequest.getOccupationNo()).orElseThrow(() -> new IllegalArgumentException("Invalid Occupation No: " + resumeEditRequest.getOccupationNo())))
+				.build();
+
+		resumeEditRepository.save(resumeEdit);
+
+
 		// mode가 pro(2)인 경우, resume_board 테이블에 저장하고 user mode 2로 변경
-		if (resumeEditDTO.getMode() == 2) {
+		if (resumeEditRequest.getMode() == 2) {
 			ResumeBoard resumeBoard = ResumeBoard.builder()
-					.title(resumeEditDTO.getCompanyName() + " " + resumeEditDTO.getOccupationName())
+					.title(resumeEdit.getCompany().getCompanyName() + " " + resumeEdit.getOccupation().getOccupationName())
 					.resume(resume)
 					.build();
 

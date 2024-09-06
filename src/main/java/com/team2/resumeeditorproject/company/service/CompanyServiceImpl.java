@@ -1,13 +1,11 @@
 package com.team2.resumeeditorproject.company.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.team2.resumeeditorproject.company.dto.CompanyDTO;
 import com.team2.resumeeditorproject.company.repository.CompanyRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +15,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 	@Override
 	public List<CompanyDTO> searchCompany(String keyword) {
-		return companyRepository.findTop5ByCompanyNameContaining(keyword)
+		return companyRepository.findByCompanyNameContaining(keyword)
 				.stream()
 				.map(company -> CompanyDTO.builder()
 						.companyNo(company.getCompanyNo())

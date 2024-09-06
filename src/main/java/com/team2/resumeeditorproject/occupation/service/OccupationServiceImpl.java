@@ -1,12 +1,11 @@
 package com.team2.resumeeditorproject.occupation.service;
 
-import java.util.List;
-
+import com.team2.resumeeditorproject.occupation.dto.OccupationDTO;
+import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.team2.resumeeditorproject.occupation.dto.OccupationDTO;
-import com.team2.resumeeditorproject.occupation.repository.OccupationRepository;
+import java.util.List;
 
 /**
  * OccupationServiceImpl
@@ -22,7 +21,7 @@ public class OccupationServiceImpl implements OccupationService {
 
 	@Override
 	public List<OccupationDTO> searchOccupations(String keyword) {
-		return occupationRepository.findTop5ByOccupationNameContaining(keyword)
+		return occupationRepository.findByOccupationNameContaining(keyword)
 				.stream()
 				.map(occupation -> OccupationDTO.builder()
 						.occupationNo(occupation.getOccupationNo())

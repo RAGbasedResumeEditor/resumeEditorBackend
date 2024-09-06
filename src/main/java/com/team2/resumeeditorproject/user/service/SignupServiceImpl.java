@@ -26,7 +26,7 @@ public class SignupServiceImpl implements SignupService {
 
     @Override
     public List<OccupationDTO> findOccupationsByName(String name) {
-        List<Occupation> occupationList = occupationRepository.findTop5ByOccupationNameContaining(name);
+        List<Occupation> occupationList = occupationRepository.findByOccupationNameContaining(name);
 
         return occupationList.stream()
                 .map(occupation -> new OccupationDTO(occupation.getOccupationNo(), occupation.getOccupationName()))

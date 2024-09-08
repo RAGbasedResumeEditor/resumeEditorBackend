@@ -19,4 +19,5 @@ public class GPTResumeEditRequestDTO {
     private int temperature;
     private String collection;
     private String mode;
+    private String technique;
 }

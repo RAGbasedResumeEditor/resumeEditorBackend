@@ -123,10 +123,9 @@ public class UserController extends HttpServlet {
 
     // 첨삭 기록 목록 조회
     @GetMapping("/user/edit-list")
-    public ResponseEntity<CommonListResponse<ResumeEditDTO>> resumeEditList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) throws AuthenticationException {
-        int size = SIZE_OF_PAGE;
+    public ResponseEntity<CommonListResponse<ResumeEditDTO>> resumeEditList(@RequestParam("pageNo") int pageNo, UserDTO loginUser) {
 
-        Page<ResumeEditDTO> resumeEdits = resumeEditService.myPageEditList(loginUser.getUserNo(), pageNo, size);
+	    Page<ResumeEditDTO> resumeEdits = resumeEditService.myPageEditList(loginUser.getUserNo(), pageNo, SIZE_OF_PAGE);
 
         return ResponseEntity
                 .ok()

@@ -25,6 +25,7 @@ public class ResumeEditDTO {
     private String companyName;
     private long occupationNo;
     private String occupationName;
+    private String question;
     private String item;
     private String options;
     private String content;

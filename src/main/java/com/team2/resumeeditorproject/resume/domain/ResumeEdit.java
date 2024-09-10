@@ -1,9 +1,12 @@
 package com.team2.resumeeditorproject.resume.domain;
 
+import java.util.List;
+
 import com.team2.resumeeditorproject.company.domain.Company;
 import com.team2.resumeeditorproject.occupation.domain.Occupation;
 import com.team2.resumeeditorproject.user.domain.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -14,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -41,6 +45,8 @@ public class ResumeEdit {
 
     private String options;
     @Column(length = 5000)
+    private String question;
+    @Column(length = 5000)
     private String content;
     private int mode;
 
@@ -59,4 +65,8 @@ public class ResumeEdit {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "occupation_no", foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Occupation occupation;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "resume_edit_no", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private List<ResumeEditExtension> entityExtensionList;
 }

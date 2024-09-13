@@ -51,7 +51,7 @@ public class User {
     private String role;
     @Setter
     private int age;
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     @Setter
     private String birthDate;
     @Setter

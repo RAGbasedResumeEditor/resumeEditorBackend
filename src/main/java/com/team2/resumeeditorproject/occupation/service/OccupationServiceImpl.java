@@ -29,4 +29,13 @@ public class OccupationServiceImpl implements OccupationService {
 						.build())
 				.toList();
 	}
+
+	@Override
+	public long findOccupation(String occupationName) {
+		if(occupationRepository.findByOccupationName(occupationName)==null){
+			return -1;
+		}
+
+		return occupationRepository.findByOccupationName(occupationName).getOccupationNo();
+	}
 }

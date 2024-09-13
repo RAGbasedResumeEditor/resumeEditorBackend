@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface OccupationRepository extends JpaRepository<Occupation, Long> {
     List<Occupation> findByOccupationNameContaining(String occupationName);
+
+    Occupation findByOccupationName(String occupationName);
 }

@@ -1,10 +1,12 @@
 package com.team2.resumeeditorproject.occupation.service;
 
-import java.util.List;
-
-import com.team2.resumeeditorproject.occupation.domain.Occupation;
 import com.team2.resumeeditorproject.occupation.dto.OccupationDTO;
+
+import java.util.List;
 
 public interface OccupationService {
     List<OccupationDTO> searchOccupations(String keyword);
+
+    long findOccupation(String occupationName);
+
 }

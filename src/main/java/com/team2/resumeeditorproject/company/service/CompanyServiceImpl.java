@@ -24,4 +24,13 @@ public class CompanyServiceImpl implements CompanyService {
 						.build())
 				.toList();
 	}
+
+	@Override
+	public long findCompany(String companyName) {
+		if(companyRepository.findByCompanyName(companyName)==null){
+			return -1;
+		}
+
+		return companyRepository.findByCompanyName(companyName).getCompanyNo();
+	}
 }

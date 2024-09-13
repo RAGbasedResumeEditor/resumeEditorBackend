@@ -77,7 +77,7 @@ public class ResumeEditServiceImpl implements ResumeEditService {
 		// mode가 pro(2)인 경우, resume_board 테이블에 저장하고 user mode 2로 변경
 		if (resumeEditRequest.getMode() == 2) {
 			ResumeBoard resumeBoard = ResumeBoard.builder()
-					.title(resumeEdit.getCompany().getCompanyName() + " " + resumeEdit.getOccupation().getOccupationName())
+					.title(resumeEditRequest.getCompanyName() + " " + resumeEditRequest.getOccupationName())
 					.resume(resume)
 					.build();
 
